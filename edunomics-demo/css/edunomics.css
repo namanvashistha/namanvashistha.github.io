@@ -1,7 +1,10 @@
 
 
 body{
-
+    overflow: hidden;
+    background-image: url('../images/default.jpg');
+    background-size: cover;
+    background-origin: content-box;
 }
 .form-control::-moz-placeholder{
    color: #DDDDDD;
