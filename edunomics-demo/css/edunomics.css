@@ -908,7 +908,7 @@ h1 small, h2 small, h3 small, h1 .small, h2 .small, h3 .small {
     background-color: #FF3B30;
 }
 
-@media (max-width:100px){
+@media (max-width:1000px){
     .fixed-plugin{
         top: 80px;
         right: 0px;
