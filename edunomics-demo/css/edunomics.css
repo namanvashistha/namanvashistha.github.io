@@ -797,7 +797,7 @@ h1 small, h2 small, h3 small, h1 .small, h2 .small, h3 .small {
         width: auto;
     }
     .main .subscribe .form-inline .btn{
-        width: 96%;
+        width: 93%;
     }
 }
 @media (min-width:768px){
