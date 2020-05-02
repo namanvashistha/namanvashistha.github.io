@@ -12,9 +12,12 @@ function autocomplete(inp, arr) {
      for (i = 0; i < arr.length; i++) {
        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
          b = document.createElement("DIV");
-         b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-         b.innerHTML += arr[i].substr(val.length);
-         b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+         s = "<a style='text-decoration: none; color:white;' target='_blank' ";
+         s+= "href='http://www.edunomics.in/workinprogress/"+ arr[i] +"'>";
+         s += "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+         s += arr[i].substr(val.length);
+         s += "<input type='hidden' value='" + arr[i] + "'>";
+         b.innerHTML += s+"</a>";
          b.addEventListener("click", function(e) {
              inp.value = this.getElementsByTagName("input")[0].value;
              closeAllLists();
