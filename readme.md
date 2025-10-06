@@ -14,5 +14,6 @@ Please read [CONTRIBUTING.md](https://github.com/namanvashistha/foodly/blob/mast
 
 ## License
 
+
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/namanvashistha/foodly/blob/master/LICENSE) file for details
  
