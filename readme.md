@@ -4,9 +4,7 @@
 
 ## [namanvashistha.io](http://namanvashistha.github.io/)
 
-### Prerequisites
-- clone the repo
-- text editor
+
 
 
 ## Contributing
