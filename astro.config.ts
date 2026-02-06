@@ -1,5 +1,4 @@
 import mdx from '@astrojs/mdx';
-import node from '@astrojs/node';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import expressiveCode from 'astro-expressive-code';
@@ -46,9 +45,6 @@ const config = defineConfig({
 			},
 		}),
 	],
-	adapter: node({
-		mode: 'standalone',
-	}),
 });
 
 export default config;
