@@ -3,17 +3,16 @@
 		"id": 1,
 		"icon": {
 			"type": "lucide",
-			"name": "cake"
+			"name": "map-pin"
 		},
-		"text": "1 year old"
+		"text": "Based in India"
 	},
 	{
 		"id": 2,
 		"icon": {
 			"type": "lucide",
-			"name": "earth"
+			"name": "briefcase"
 		},
-		"type": "lucide",
-		"text": "Made in Germany"
+		"text": "Software Engineer"
 	}
 ]
