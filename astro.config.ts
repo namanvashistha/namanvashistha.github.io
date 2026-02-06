@@ -21,7 +21,7 @@ const {
 
 // https://astro.build/config
 const config = defineConfig({
-	site: 'https://spectre.lou.gg',
+	site: 'https://namanvashistha.github.io',
 	output: 'static',
 	integrations: [
 		expressiveCode({
@@ -30,30 +30,19 @@ const config = defineConfig({
 		mdx(),
 		sitemap(),
 		spectre({
-			name: 'Spectre',
+			name: 'Naman Vashistha',
 			openGraph: {
 				home: {
-					title: 'Spectre',
-					description: 'A minimalistic theme for Astro.',
+					title: 'Naman Vashistha',
+					description: 'Software Development Engineer - II',
 				},
 				blog: {
 					title: 'Blog',
-					description: 'News and guides for Spectre.',
+					description: 'Technical blog posts and insights.',
 				},
 				projects: {
 					title: 'Projects',
 				},
-			},
-			giscus: {
-				repository: GISCUS_REPO,
-				repositoryId: GISCUS_REPO_ID,
-				category: GISCUS_CATEGORY,
-				categoryId: GISCUS_CATEGORY_ID,
-				mapping: GISCUS_MAPPING as GiscusMapping,
-				strict: GISCUS_STRICT === 'true',
-				reactionsEnabled: GISCUS_REACTIONS_ENABLED === 'true',
-				emitMetadata: GISCUS_EMIT_METADATA === 'true',
-				lang: GISCUS_LANG,
 			},
 		}),
 	],

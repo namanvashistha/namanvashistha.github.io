@@ -2,7 +2,7 @@
 	"name": "whole-wasp",
 	"type": "module",
 	"version": "1.0.2",
-	"packageManager": "pnpm@10.27.0",
+	"packageManager": "bun@1.3.8",
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
