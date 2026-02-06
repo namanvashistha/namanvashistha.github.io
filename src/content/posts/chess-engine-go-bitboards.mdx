@@ -1,0 +1,145 @@
+---
+title: 'Building a Fast and Smart Chess Engine Using Bitboards'
+description: 'How bitboards and pure Go logic enable blazing-fast move validation, legal move generation, and rule enforcement in a chess engine'
+image: "../assets/spectre.png"
+createdAt: 04-22-2025
+draft: false
+tags:
+  - chess
+  - go
+---
+
+When you sit down to play chess online, there's a brain on the server side that checks whether your moves are legal, prevents cheating, and enforces the rules of the game. That brain is the chess engine.
+
+In this post, we'll walk through how a chess engine is implemented under the hood—specifically one written in Go, backed by the blazing speed of bitboards. Whether you're building your own chess app or just curious about how engines work, this post dives into the guts of what makes the game tick.
+
+## ♟️ What Is the Engine Responsible For?
+
+At its core, the engine is the rulebook of chess in code form. It needs to:
+
+- Understand how each piece moves
+- Enforce all special rules (castling, en passant, promotion)
+- Reject illegal moves
+- Detect checks, pins, checkmates, and stalemates
+
+It's not responsible for persistence (that's the repository's job), nor for coordinating services (handled by the service layer). The engine lives in its own pure Go package—no external dependencies, just logic.
+
+## ✅ What Happens When You Play a Move?
+
+Let's say it's the first move of the game, and White tries `e2` to `e4`. Here's what the engine does to validate this move:
+
+1. **Check the source square (`e2`)**:
+   - Is there a White Pawn on it?
+2. **Check the target square (`e4`)**:
+   - Is it empty?
+3. **Pawn-specific rules**:
+   - Is this the pawn's first move? If so, can it move 2 squares?
+4. **King safety**:
+   - After making this move hypothetically, does it leave the King in check?
+
+The engine doesn't just guess. It checks all these conditions explicitly and systematically.
+
+## ⚡ Enter Bitboards: The Secret Weapon
+
+We want our engine to be fast—like "respond in milliseconds" fast. That's where bitboards come in.
+
+A bitboard is a 64-bit unsigned integer (`uint64`). Each bit corresponds to one square on the chess board. A `1` means something is true about that square. For example:
+
+- Bitboard of White Pawns: 1s where pawns are
+- Bitboard of all occupied squares: 1s wherever any piece is present
+
+Imagine the board as this:
+
+```
+8 | 0 0 0 0 0 0 0 0
+7 | 0 0 0 0 0 0 0 0
+6 | 0 0 0 0 0 0 0 0
+5 | 0 0 0 0 0 0 0 0
+4 | 0 0 0 0 0 0 0 0
+3 | 0 0 0 0 0 0 0 0
+2 | 1 1 1 1 1 1 1 1  ← White Pawns
+1 | 0 0 0 0 0 0 0 0
+    a b c d e f g h
+```
+
+This is represented in Go as:
+
+```go
+var whitePawns uint64 = 0x000000000000FF00
+```
+
+With bitboards, you can:
+
+- Get all pawns with a single value
+- Find empty squares: `^occupiedSquares`
+- Calculate legal pawn moves with shifts like `whitePawns << 8`
+
+Bitwise operations (`AND`, `OR`, `SHIFT`) are insanely fast—no loops required.
+
+## 👨‍💻 Example: Generating Pawn Moves
+
+Here's how you'd generate single-step pawn moves using bitboards in Go:
+
+```go
+singleMoves := (whitePawns << 8) & ^occupiedSquares
+```
+
+Want to allow double moves from the 2nd rank?
+
+```go
+doubleMoves := ((whitePawns & rank2Mask) << 16) & ^occupiedSquares
+```
+
+Add attack logic (diagonal captures), en passant rules, and you're already halfway to a serious chess engine.
+
+## 🔒 Validating King Safety
+
+One of the trickiest parts is ensuring that a move doesn't leave your king in check. Here's the approach:
+
+1. Make the move virtually (don't modify real board yet)
+2. Recalculate all opponent attack bitboards
+3. If the king is under attack, reject the move
+
+This way, the engine enforces all safety rules without relying on the game state from external services.
+
+## 📦 Engine Is a Pure Go Package
+
+By keeping the engine as a pure Go package:
+
+- It's portable and testable
+- There are no dependencies on HTTP, database, or external services
+- All the logic lives in memory and runs lightning-fast
+
+You can plug this engine into your service layer or even into a CLI-based chess app or bot.
+
+## 🧪 Testing the Engine
+
+Unit tests are critical. Since the engine doesn't rely on any infrastructure, it's easy to write tests like:
+
+```go
+assert.True(t, engine.IsMoveLegal("e2", "e4", whiteBoard))
+assert.False(t, engine.IsMoveLegal("e2", "e5", whiteBoard))
+```
+
+You can simulate full games, generate perft (performance test) numbers, and validate against known legal positions.
+
+## 🏁 What's Next?
+
+Now that the engine can validate moves and generate legal positions, you can layer on:
+
+- Move scoring and search (for an AI opponent)
+- Threefold repetition detection
+- Draws by insufficient material
+
+But even without AI, a robust engine ensures fair, rule-compliant play—which is essential for multiplayer games, tournaments, or bots.
+
+## ✨ TL;DR
+
+- The Engine is the brain that validates chess rules
+- It uses bitboards (64-bit integers) to represent the board and calculate legal moves ultra-fast
+- All logic is implemented in a pure Go package—clean, testable, and fast
+- Bitboards let you write elegant, blazing-fast chess logic without messy loops or nested conditionals
+
+If you're building a chess app or just love systems programming, bitboards are one of the most satisfying tricks in the book.
+
+**Repository**: [https://github.com/namanvashistha/chess](https://github.com/namanvashistha/chess)

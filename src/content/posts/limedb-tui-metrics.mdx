@@ -1,0 +1,48 @@
+---
+title: 'Real-time Metrics and Ring Balance: A Major TUI Upgrade for LimeDB'
+description: 'Enhanced TUI with live node metrics (CPU, memory, uptime), latency tracking, and statistical ring balance visualization'
+image: "../assets/spectre.png"
+createdAt: 11-20-2025
+draft: false
+tags:
+  - database
+  - distributed-systems
+  - tui
+  - devops
+---
+
+This commit significantly enhances the Text-based User Interface (TUI) for LimeDB, our lightweight, fast, open-source distributed key-value store. The focus is on providing developers with immediate, actionable insights into cluster health and data distribution.
+
+## What's New
+
+### 1. Real-time Node Metrics
+
+The `ClusterStatus` widget in the TUI now displays crucial operational metrics for each LimeDB node. These include:
+
+- **CPU Usage**: Percentage of system CPU being utilized by the node process
+- **Memory Usage**: Amount of JVM memory consumed by the node
+- **Uptime**: How long the node process has been running
+- **Latency**: Round-trip time to communicate with the node
+
+**Why this matters**: This provides a quick overview of individual node health, helping identify bottlenecks or unresponsive instances without leaving the TUI.
+
+**Implementation Details**: This feature is powered by exposing Spring Boot Actuator endpoints. The `application.properties` file now includes `management.endpoints.web.exposure.include=health,info,metrics`, enabling the TUI client (`tui/client.py`) to fetch `jvm.memory.used`, `system.cpu.usage`, and `process.uptime` data directly from the nodes. A new `measure_latency` method also pings the cluster state endpoint.
+
+### 2. Enhanced Ring Distribution Balance Visualization
+
+The `RingVisualizer` widget now goes beyond just showing partition ownership. It provides statistical details to help assess the balance of data distribution across the cluster:
+
+- **Mean Token Share**: The average share of the token ring that each node is expected to own
+- **Standard Deviation (Std Dev)**: A measure of how dispersed the token shares are around the mean
+- **Coefficient of Variation (CV)**: The standard deviation as a percentage of the mean, providing a normalized measure of dispersion
+- **Per-Node Deviation**: Each node's token share is compared to the mean, showing its percentage deviation
+
+**Why this matters**: A well-balanced ring is critical for optimal performance and even load distribution in a distributed key-value store. High standard deviation or CV can indicate an imbalanced cluster, suggesting potential hotspots or underutilized nodes, which might require rebalancing operations.
+
+**Implementation Details**: The `tui/main.py` now uses the `statistics` module to calculate these values based on the ring data fetched from the cluster.
+
+## Impact for Developers
+
+These enhancements equip developers with a powerful, integrated tool for monitoring and understanding their LimeDB cluster's operational state. You can now quickly diagnose performance issues, identify imbalanced data distribution, and ensure your distributed key-value store is running efficiently, all from a single, intuitive interface.
+
+**Github**: [namanvashistha/limedb](https://github.com/namanvashistha/limedb)

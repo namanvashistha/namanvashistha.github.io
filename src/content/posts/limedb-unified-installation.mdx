@@ -1,9 +1,14 @@
 ---
 title: 'LimeDB: Unifying Installation with a Dedicated Script and Proxmox LXC Refactor'
 description: 'Creating a modular, reusable installation script for LimeDB that works across different environments and simplifies Proxmox LXC deployment'
-date: 2025-11-21
-tags: ['database', 'proxmox', 'lxc', 'systemd']
+image: "../assets/spectre.png"
+createdAt: 11-21-2025
 draft: false
+tags:
+  - database
+  - proxmox
+  - lxc
+  - systemd
 ---
 
 This commit introduces a significant refactor to the LimeDB installation process, primarily by creating a new, dedicated installation script (`proxmox/install.sh`) and adapting the existing Proxmox LXC setup script (`proxmox/limedb_lxc.sh`) to leverage this new unified installer.
