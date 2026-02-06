@@ -1,0 +1,57 @@
+---
+title: LimeDB
+date: 10-12-2024
+description: A highly-scalable distributed key-value store with peer-to-peer architecture, consistent hashing, and custom storage engine. Built to deeply understand distributed systems fundamentals.
+image: ../assets/spectre.png
+info:
+  - text: GitHub
+    link: https://github.com/namanvashistha/limedb
+    icon:
+      type: lucide
+      name: github
+  - text: Tech Stack
+    link: https://github.com/namanvashistha/limedb#-tech-stack
+    icon:
+      type: lucide
+      name: code
+---
+
+LimeDB is a distributed key-value database built from scratch to understand distributed systems, database internals, and horizontal scaling. It implements a peer-to-peer architecture where any node can act as both coordinator and storage.
+
+## Key Features
+
+- **Peer-to-Peer Architecture**: No single point of failure - any node can handle requests
+- **Consistent Hashing**: Hash ring with virtual nodes for optimal load distribution
+- **REST API**: GET/SET/DELETE operations with automatic routing
+- **PostgreSQL Storage**: Transitional storage engine with plans for custom LSM trees
+- **Real-time Monitoring**: Terminal UI for cluster health visualization
+- **Docker Support**: Ultra-lightweight containers (&lt;50MB) with multi-platform releases
+
+## Architecture
+
+LimeDB uses a peer-to-peer coordinator-shard pattern where clients can connect to any node. Each node:
+- Handles requests locally if it owns the data
+- Routes to the correct peer using consistent hashing
+- Shares cluster state via gossip protocol
+
+## Roadmap
+
+**Phase 2 (In Progress)**: Consistent hashing, performance analysis, connection pool optimization
+
+**Phase 3**: Production readiness with gossip protocol, health checks, dynamic rebalancing
+
+**Phase 4**: Custom LSM tree storage engine replacing PostgreSQL
+
+**Phase 5**: Advanced features including compression, caching, and cross-datacenter replication
+
+## Tech Stack
+
+- **Language**: Go 1.21+ with FastHTTP
+- **Database**: PostgreSQL 14+ (transitional)
+- **Routing**: MD5-based consistent hashing with virtual nodes
+- **Communication**: HTTP REST for inter-node communication
+- **Monitoring**: Textual TUI for real-time cluster status
+
+This project represents a deep dive into distributed systems fundamentals - understanding CAP theorem, consensus protocols, and database internals through hands-on implementation.
+
+Spectre is licensed under the MIT license.

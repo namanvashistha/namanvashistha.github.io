@@ -1,0 +1,79 @@
+---
+title: "LimeDB: Architectural Shift to Go with Consistent Hashing"
+description: "A complete rewrite from Java/Spring Boot to Go, focusing on performance, consistent hashing with virtual nodes, and streamlined deployment."
+image: "../assets/spectre.png"
+createdAt: 11-21-2025
+draft: false
+tags:
+  - database
+  - distributed-systems
+  - go
+---
+
+Github: [namanvashistha/limedb](https://github.com/namanvashistha/limedb/commit/4dbdf30cc35b8884f47987ea15d8fa98d8360a4f)
+
+This commit marks a pivotal architectural change for LimeDB, transitioning its core distributed key-value store implementation from a Java/Spring Boot foundation managed by Docker Compose to a new Go-based system. This complete rewrite focuses on performance, efficiency, and a streamlined deployment model.
+
+## What Changed
+
+The primary change is the introduction of a complete Go implementation of LimeDB's distributed key-value store. This necessitated the removal of all previous Java-related Docker infrastructure, including `.dockerignore`, `DOCKER.md`, `docker-compose.yml`, and `docker-compose.prod.yml`. A `.gitignore` update also reflects a new development environment preference.
+
+The new Go codebase introduces several key components:
+
+- **cmd/server/main.go**: The application's entry point, responsible for loading configuration, initializing services, starting the HTTP server, and managing graceful shutdown.
+
+- **internal/config**: A package for parsing command-line arguments to configure node-specific parameters such as `NodeID`, `ServerPort`, a list of `Peers`, and the number of `VirtualNodes`.
+
+- **internal/server**: Implements the HTTP server using `github.com/valyala/fasthttp`. It defines API endpoints for `GET`, `SET`, `DELETE` operations, as well as cluster and ring state monitoring (`/api/v1/cluster/state`, `/api/v1/cluster/ring`).
+
+- **internal/node**: Contains the `NodeService` which orchestrates key-value operations. It manages an in-memory `Store` (based on `sync.Map`) for local data and routes requests to the appropriate node using consistent hashing, forwarding them via an `fasthttp.Client` if the key belongs to a remote peer.
+
+- **internal/ring**: This package provides the `ConsistentHashRing` implementation, which uses MD5 hashing to map keys to `int64` values on the ring. It supports adding and removing physical nodes, each represented by a configurable number of virtual nodes, and efficiently determines the responsible node for a given key.
+
+- **go.mod and go.sum**: These files define the Go module `limedb-go` and its dependencies, primarily `fasthttp`.
+
+- **run_go_cluster.sh**: A shell script facilitating the local setup and execution of a multi-node Go LimeDB cluster, automatically generating the peer list.
+
+- **scripts/bulk_set.py**: The Python testing script was updated to support a higher number of nodes (up to 50) and increased concurrent key operations, reflecting the expected scalability improvements of the Go implementation.
+
+## Why the Change was Needed
+
+The transition from Java/Spring Boot to Go was driven by the pursuit of higher performance, reduced resource consumption, and improved concurrency characteristics. Go's design, with its lightweight goroutines and efficient memory management, offers significant advantages for building high-throughput distributed systems like LimeDB. The aim is to achieve lower latency and higher request per second (RPS) metrics compared to the previous Java-based setup, while also simplifying the deployment footprint by moving to a single-binary model.
+
+## Design Choices Made
+
+1. **Go Language Adoption**: The primary decision was to rewrite the system in Go. This choice aligns with the project's goal of being a lightweight, fast, open-source distributed key-value store for high-performance systems. Go's built-in concurrency model and performance profile are well-suited for this.
+
+2. **fasthttp for HTTP Communication**: `github.com/valyala/fasthttp` was selected over Go's standard `net/http` package for its optimized performance. In a key-value store where network I/O and request handling throughput are critical, `fasthttp` provides a more performant foundation for inter-node communication and client APIs.
+
+3. **Consistent Hashing with Virtual Nodes**: The `ConsistentHashRing` implementation is central to the distributed nature of LimeDB. By employing consistent hashing and distributing virtual nodes across physical nodes, the system achieves even data distribution, minimizes data movement during node additions/removals, and enhances fault tolerance. MD5 hashing to `int64` provides a consistent mapping to the hash space.
+
+4. **In-Memory sync.Map Storage**: For the initial phase of this rewrite, an in-memory `sync.Map` was chosen for local key-value storage. This provides a simple, thread-safe, and highly performant local store, allowing the development focus to remain on the distributed routing and consistent hashing logic.
+
+5. **Command-Line Configuration**: Node configuration is managed via command-line flags. This provides a transparent and explicit way to bootstrap and configure individual nodes, particularly useful in development and for static cluster deployments.
+
+6. **Direct Request Forwarding**: When a request targets a key not owned by the current node, the `NodeService` directly forwards the HTTP request to the responsible peer. This keeps the routing logic within the application layer, leveraging the consistent hash ring.
+
+## Trade-offs and Constraints
+
+- **Persistence (Current Constraint)**: The current `internal/node/store` is an in-memory implementation, meaning data is not durable across restarts. This is a deliberate simplification for the initial Go rewrite phase, prioritizing the core distributed logic. For production readiness, a persistent storage layer will be required (the previous Java version used PostgreSQL, highlighting this need).
+
+- **Static Peer Configuration**: The `node.peers` list is currently static and defined at startup. This approach lacks dynamic cluster membership capabilities, meaning manual intervention is required to update peer lists when nodes join or leave the cluster. This could be a scalability bottleneck in highly elastic environments.
+
+- **fasthttp Ecosystem**: While fast, `fasthttp` has a smaller ecosystem of middleware and integrations compared to the standard `net/http` package. This is an accepted trade-off for the performance gains it provides in a specialized service.
+
+- **Basic API Routing**: The server's `router` uses a basic `switch` statement for URL matching. While functional, it could evolve into a more robust routing framework as the API surface grows.
+
+## Future Implications
+
+This Go-based rewrite provides a strong, high-performance foundation for LimeDB. Future development efforts will likely focus on enhancing its capabilities:
+
+- **Durable Storage**: Implementing a persistent storage layer (e.g., integrating with a local embedded key-value store like BadgerDB or RocksDB, or a custom log-structured approach) to ensure data durability.
+
+- **Replication and Consistency**: Introducing robust data replication strategies (e.g., N-way replication, quorum reads/writes) to ensure high availability and strong consistency guarantees.
+
+- **Dynamic Cluster Membership and Discovery**: Developing mechanisms for nodes to dynamically discover each other, join/leave the cluster, and handle failures gracefully (e.g., using a gossip protocol or integrating with a service discovery system like Consul or etcd).
+
+- **Load Balancing and Client-Side Hashing**: Exploring options for smarter client-side load balancing or direct client integration with the consistent hashing ring to minimize request forwarding overhead.
+
+- **Advanced Observability**: Expanding metrics, logging, and tracing capabilities for better monitoring and debugging in production environments.

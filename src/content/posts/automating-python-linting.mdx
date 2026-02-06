@@ -1,0 +1,89 @@
+---
+title: 'Automating Python Code Linting with GitHub Actions'
+description: 'Set up automated Python code linting in GitHub pull requests using GitHub Actions and pylint to maintain code quality and consistency'
+date: 2025-01-21
+tags: ['python', 'automation', 'devops']
+draft: false
+---
+
+Linting your Python code is crucial to maintaining code quality and consistency across your projects. GitHub Actions provides a powerful way to automate linting processes, ensuring that all code changes meet coding standards before being merged into your repository.
+
+In this article, we will explore how to set up a GitHub Action to lint Python code automatically whenever a pull request is created.
+
+## Prerequisites
+
+To follow along, ensure you have the following:
+
+- A GitHub repository containing Python code
+- Basic knowledge of GitHub Actions and workflows
+
+## Setting Up the GitHub Action Workflow
+
+Below is a GitHub Actions workflow configuration that automatically lints Python code in pull requests.
+
+```yaml
+name: Lint Python Code
+
+on:
+  pull_request:
+    paths:
+      - '**/*.py'  # Trigger workflow only when Python files change
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Get changed Python files
+        id: get_changed_files
+        uses: tj-actions/changed-files@v35
+        with:
+          files: '**/*.py'
+
+      - name: Run pylint
+        if: steps.get_changed_files.outputs.any_changed == 'true'
+        uses: dciborow/action-pylint@0.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          glob_pattern: ${{ steps.get_changed_files.outputs.all_changed_files }}
+          level: warning
+          filter_mode: added
+          fail_on_error: true
+```
+
+## Explanation of the Workflow
+
+### 1. Triggering the workflow
+
+- The workflow runs on `pull_request` events
+- It is triggered only if changes include Python files (`'**/*.py'`)
+
+### 2. Steps in the job
+
+- **Checkout code**: Retrieves the repository code
+- **Identify changed Python files**: Uses `tj-actions/changed-files` to detect which Python files were modified
+- **Run pylint**:
+  - The `dciborow/action-pylint` GitHub Action runs `pylint` on the changed files
+  - It reports warnings directly on the pull request
+  - The workflow fails if pylint finds any errors
+
+## Customization Options
+
+You can customize the workflow based on your needs:
+
+- Modify the `pylint_args` to include or exclude specific checks
+- Change the `fail_on_error` value to `false` if you want warnings but don't want to block merges
+- Use a different pylint reporter such as `github-checks` instead of `github-pr-review`
+
+## Viewing Linting Results
+
+Once the pull request is created, the pylint report will appear as a review comment on the PR, helping developers identify and fix issues efficiently.
+
+## Conclusion
+
+By automating Python code linting with GitHub Actions, you ensure that your codebase remains clean and adheres to coding standards, reducing technical debt and improving maintainability. Try integrating this workflow into your projects today!

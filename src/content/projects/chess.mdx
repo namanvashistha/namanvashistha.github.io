@@ -1,0 +1,55 @@
+---
+title: Chess
+date: 03-15-2024
+description: Real-time multiplayer chess application with bitboard engine, WebSocket support, and Redis caching. Play chess against others with a clean web interface.
+image: ../assets/spectre.png
+info:
+  - text: GitHub
+    link: https://github.com/namanvashistha/chess
+    icon:
+      type: lucide
+      name: github
+  - text: Live Demo
+    link: https://chess.namanvashistha.info
+    icon:
+      type: lucide
+      name: external-link
+---
+
+A real-time multiplayer chess application that allows two players to play chess against each other. Built with Go, PostgreSQL, and Redis, featuring a bitboard chess engine for efficient move validation and game state management.
+
+## Key Features
+
+- **Real-time Gameplay**: WebSocket-based real-time communication between players
+- **Bitboard Engine**: Efficient chess engine using bitboard representation for fast move validation
+- **Game Invites**: Join games using unique invite codes
+- **Redis Caching**: Fast game state retrieval and caching
+- **PostgreSQL Storage**: Persistent game history and user data
+- **Clean UI**: Responsive web interface for seamless gameplay
+
+## Architecture
+
+The application follows a clean architecture pattern with:
+- **API Layer**: RESTful endpoints and WebSocket handlers
+- **Service Layer**: Business logic for game management
+- **Chess Engine**: Bitboard-based move generation and validation
+- **Repository Layer**: Data persistence with PostgreSQL
+- **Real-time**: WebSocket service for live game updates
+
+## Tech Stack
+
+- **Backend**: Go 1.21+
+- **Database**: PostgreSQL for persistence
+- **Cache**: Redis for fast state management
+- **WebSockets**: Real-time bidirectional communication
+- **Frontend**: HTML, CSS, JavaScript
+
+## How It Works
+
+1. Create a new game and receive an invite code
+2. Share the code with an opponent
+3. Opponent joins using the invite code
+4. Play chess in real-time with move validation
+5. Game state syncs instantly via WebSockets
+
+The bitboard chess engine ensures valid moves while maintaining high performance, making the game responsive and enjoyable.
