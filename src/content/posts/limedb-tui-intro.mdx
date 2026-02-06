@@ -1,0 +1,50 @@
+---
+title: 'Introducing the LimeDB TUI: Enhanced Cluster Management from Your Terminal'
+description: 'A new Text User Interface built with Textual for real-time cluster monitoring, ring distribution visualization, and interactive data operations'
+image: "../assets/spectre.png"
+createdAt: 11-19-2025
+draft: false
+tags:
+  - database
+  - distributed-systems
+  - tui
+  - python
+---
+
+We're excited to announce the release of a new Text User Interface (TUI) for LimeDB! This commit introduces a dedicated `tui/` directory with a robust, developer-friendly terminal application designed to simplify interaction and monitoring of your LimeDB clusters.
+
+LimeDB is a lightweight, fast, open-source distributed key-value store built for high-performance systems. Managing and observing distributed systems can be complex, and this TUI aims to provide a clear, real-time overview directly from your terminal.
+
+## Key Features of the LimeDB TUI
+
+### Cluster Status Overview
+
+Get an immediate snapshot of all your LimeDB nodes. See which nodes are active, their ports, node IDs, and peer counts. Errors for inaccessible nodes are clearly displayed.
+
+### Ring Distribution Visualization
+
+Understand how data partitions are distributed across your cluster. The TUI visualizes the ring state, showing token shares and range counts for each node, helping you assess balance and ownership.
+
+### Data Explorer
+
+Interact directly with your key-value store. You can easily perform `GET`, `SET`, and `DELETE` operations on keys, making it convenient for debugging or quick data checks without needing to use raw API calls.
+
+### Built with Textual
+
+The TUI leverages the [Textual](https://textual.io/) framework for rich terminal graphics and interactivity, providing a modern and responsive experience. It uses `aiohttp` for asynchronous communication with LimeDB's API.
+
+## Running the TUI
+
+To run the TUI:
+
+1. Ensure you have `uv` installed (`pip install uv`)
+2. Navigate to the `tui` directory
+3. Run `uv run main.py`
+
+## Why This Matters
+
+This TUI is a significant step towards improving the developer experience for LimeDB users, making it easier to deploy, monitor, and debug your distributed key-value store. Rather than making multiple API calls or parsing JSON responses, you can now visualize your cluster's state and interact with data through an intuitive interface.
+
+We believe this TUI will be an invaluable tool for anyone working with LimeDB.
+
+**Github**: [namanvashistha/limedb](https://github.com/namanvashistha/limedb)
