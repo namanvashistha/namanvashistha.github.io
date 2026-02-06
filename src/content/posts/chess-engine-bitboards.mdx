@@ -1,0 +1,179 @@
+---
+title: "Building a Modern Chess Engine: A Deep Dive into Bitboard-Based Move Generation"
+description: "Exploring efficient chess move generation using bitboards, from basic concepts to complex piece movements and legal move validation."
+image: "../assets/spectre.png"
+createdAt: 01-21-2025
+draft: false
+tags:
+  - chess
+  - go
+---
+
+Repository: [https://github.com/namanvashistha/chess](https://github.com/namanvashistha/chess)
+
+Chess engines have long fascinated programmers and chess enthusiasts alike. In this article, I'll walk you through the implementation of a chess engine focusing on efficient move generation using bitboards. We'll explore how bitboards work, why they're crucial for performance, and how to implement various piece movements.
+
+## What are Bitboards?
+
+Bitboards are a fundamental data structure in modern chess programming. At its core, a bitboard is a 64-bit integer where each bit represents a square on the chess board. This representation allows us to use efficient bitwise operations to manipulate the board state and generate moves.
+
+In our implementation, we use multiple bitboards to represent different aspects of the game:
+
+```go
+type GameState struct {
+    WhiteBitboard  uint64
+    BlackBitboard  uint64
+    PawnBitboard   uint64
+    KnightBitboard uint64
+    BishopBitboard uint64
+    RookBitboard   uint64
+    QueenBitboard  uint64
+    KingBitboard   uint64
+    // ... other state information
+}
+```
+
+## Move Generation Architecture
+
+The move generation system follows a two-step process:
+
+1. Generate pseudo-legal moves
+2. Filter out illegal moves that would leave the king in check
+
+### Step 1: Pseudo-Legal Move Generation
+
+Let's look at how we generate moves for different pieces:
+
+#### Pawn Move Generation
+
+Pawns have the most complex movement rules in chess. Here's how we handle them:
+
+```go
+func generatePawnMoves(gs dao.GameState, pseudo_legal_moves map[uint64]uint64, legal_moves map[uint64]uint64) {
+    // Single and double pushes
+    singleMove := piece << 8
+    doubleMove := piece << 16
+
+    // Diagonal captures and en passant
+    diagonalLeft := (piece &^ 0x0101010101010101) << 7
+    diagonalRight := (piece &^ 0x8080808080808080) << 9
+}
+```
+
+The implementation handles:
+- Single and double forward moves
+- Diagonal captures
+- En passant captures
+- Promotion (handled in move execution)
+
+#### Sliding Piece Movement
+
+For bishops, rooks, and queens, we use ray-tracing to find legal moves:
+
+```go
+func removeBlockedMoves(piece uint64, moves uint64, allOccupied uint64, rayDirections []int) uint64 {
+    blockedMoves := uint64(0)
+    for _, direction := range rayDirections {
+        blockedMoves |= traceRay(piece, direction, allOccupied)
+    }
+    return moves & blockedMoves
+}
+```
+
+This approach:
+- Traces rays in all relevant directions
+- Stops at the first occupied square
+- Handles captures efficiently
+
+## Check Detection and Legal Move Filtering
+
+One of the most critical aspects of move generation is ensuring moves are legal by verifying they don't leave the king in check:
+
+```go
+func filterLegalMoves(gs dao.GameState, legalMoves map[uint64]uint64, pseudoLegalMoves map[uint64]uint64) map[uint64]uint64 {
+    filteredMoves := make(map[uint64]uint64)
+    for piece, moves := range pseudoLegalMoves {
+        // Simulate each move and verify king safety
+        simulatedGameState := simulateMove(gs, piece, movePosition)
+        if !isKingInCheck(simulatedGameState, isWhite) {
+            filteredMoves[piece] |= movePosition
+        }
+    }
+    return filteredMoves
+}
+```
+
+This process:
+1. Simulates each potential move
+2. Checks if the resulting position leaves the king in check
+3. Only keeps moves that maintain king safety
+
+## Special Move Handling
+
+### Castling Rights
+
+Castling requires checking several conditions:
+- King and rook haven't moved
+- No pieces between king and rook
+- King doesn't move through check
+- King isn't in check
+
+```go
+if strings.Contains(gs.CastlingRights, "K") &&
+    gs.WhiteBitboard&(1<<PositionToIndex("f1")) == 0 &&
+    gs.WhiteBitboard&(1<<PositionToIndex("g1")) == 0 &&
+    // ... additional checks
+    {
+    kingMoves |= (1 << PositionToIndex("g1"))
+}
+```
+
+## Performance Considerations
+
+The use of bitboards provides several performance benefits:
+
+1. **Efficient move generation** using bitwise operations
+2. **Quick position evaluation**
+3. **Compact board representation**
+4. **Fast legal move filtering**
+
+## Technical Implementation Highlights
+
+### Bit Manipulation Techniques
+
+The engine makes heavy use of bit manipulation:
+- `piece & -piece`: Isolates the least significant bit
+- `board &= board - 1`: Clears the least significant bit
+- `board << n`: Shifts bits left (used for white piece moves)
+- `board >> n`: Shifts bits right (used for black piece moves)
+
+### Move Generation Optimization
+
+The code uses several optimization techniques:
+- Pre-calculated attack tables for knights and kings
+- Efficient ray tracing for sliding pieces
+- Smart use of bitwise operations to avoid loops
+
+### State Management
+
+The engine maintains game state efficiently:
+- Bitboards for piece positions
+- Castling rights as string flags
+- En passant square tracking
+- Move history for game progression
+
+## Conclusion
+
+Building a chess engine is a fascinating exercise in both chess knowledge and computer science. The bitboard-based approach provides an elegant solution to the complex problem of move generation, offering both performance and maintainability.
+
+Some potential improvements for the future:
+- Implementation of a proper evaluation function
+- Addition of search algorithms (minimax with alpha-beta pruning)
+- Opening book integration
+- Endgame tablebases
+
+The full source code demonstrates how modern programming techniques can be applied to create an efficient chess engine while maintaining readable and maintainable code.
+
+**Note:** This implementation focuses on move generation. For a complete chess engine, you would need to add position evaluation, search algorithms, and other features.
+
+If you're interested in diving deeper, check out the full codebase on [GitHub](https://github.com/namanvashistha/chess).

@@ -1,5 +1,44 @@
 [
 	{
 		"id": "guide"
+	},
+	{
+		"id": "database"
+	},
+	{
+		"id": "distributed-systems"
+	},
+	{
+		"id": "career"
+	},
+	{
+		"id": "chess"
+	},
+	{
+		"id": "go"
+	},
+	{
+		"id": "python"
+	},
+	{
+		"id": "automation"
+	},
+	{
+		"id": "docker"
+	},
+	{
+		"id": "devops"
+	},
+	{
+		"id": "git"
+	},
+	{
+		"id": "proxmox"
+	},
+	{
+		"id": "lxc"
+	},
+	{
+		"id": "systemd"
 	}
 ]

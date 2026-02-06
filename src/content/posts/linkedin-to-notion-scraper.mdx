@@ -1,0 +1,127 @@
+---
+title: "Automated Job Search: LinkedIn Jobs to Notion Board"
+description: "A Python-based job scraping system that pulls LinkedIn listings into a structured Notion database for organized job hunting."
+image: "../assets/spectre.png"
+createdAt: 01-22-2025
+draft: false
+tags:
+  - python
+  - automation
+  - career
+---
+
+A Python-based job scraping system that pulls LinkedIn listings into a structured Notion database. Repository: [jobs-scrape-to-notion](https://github.com/namanvashistha/jobs-scrape-to-notion)
+
+## Setup Steps
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/namanvashistha/jobs-scrape-to-notion
+cd jobs-scrape-to-notion
+```
+
+### 2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure Notion
+
+- Create a Notion integration at [notion.so/my-integrations](https://www.notion.so/my-integrations)
+- Create a new Notion database
+- Share your database with the integration
+- Copy the database ID from its URL
+
+### 4. Set environment variables
+
+```bash
+cp .env.example .env
+```
+
+Update `.env` with your credentials:
+
+```bash
+NOTION_API_KEY=your_integration_token
+NOTION_DATABASE_ID=your_database_id
+```
+
+## Key Features
+
+### Job Scraping
+
+```python
+def fetch_jobs(search_terms, location, results_wanted=20):
+    # Scrapes LinkedIn jobs based on multiple search terms
+    # Returns a pandas DataFrame with job details
+```
+
+### Notion Integration
+
+- Creates structured database entries
+- Handles rich text, URLs, dates, and company logos
+- Prevents duplicate entries
+- Manages API rate limits
+
+### Data Processing
+
+- Sanitizes input data
+- Formats salary ranges for Indian currency
+- Handles company metadata
+- Manages file attachments for logos
+
+## Running the Scraper
+
+```bash
+python main.py
+```
+
+Default configuration:
+
+- Search terms: ["Software Engineer", "Backend", "SDE"]
+- Location: India
+- Results per term: 20
+- Platform: LinkedIn
+
+## Customization
+
+Modify `main()` in `scraper.py`:
+
+```python
+search_terms = ["Your", "Preferred", "Terms"]
+location = "Your Location"
+results_wanted = 30  # Number of results per term
+```
+
+## Error Handling
+
+The system includes:
+
+- Comprehensive logging
+- Rate limit management
+- Duplicate prevention
+- Data validation
+
+## Why This Matters
+
+Job hunting can be overwhelming when you're tracking applications across multiple platforms. This tool helps you:
+
+1. **Centralize Job Listings**: Keep all potential opportunities in one place
+2. **Stay Organized**: Track application status, deadlines, and notes
+3. **Save Time**: Automate the tedious process of copying job details
+4. **Make Better Decisions**: Compare opportunities side-by-side in your Notion board
+
+## Future Enhancements
+
+Potential improvements for this project:
+
+- Support for additional job platforms (Indeed, Glassdoor, etc.)
+- Automatic application status tracking
+- Email notifications for new matches
+- Resume tailoring suggestions based on job descriptions
+- Interview scheduling integration
+
+Visit the [repository](https://github.com/namanvashistha/jobs-scrape-to-notion) for source code and detailed documentation.
+
+This automation demonstrates how a few hundred lines of Python can save hours of manual work during your job search. The structured Notion database gives you a clear overview of all opportunities, making it easier to prioritize and track your applications.

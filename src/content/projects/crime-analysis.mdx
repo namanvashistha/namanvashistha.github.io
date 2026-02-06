@@ -1,0 +1,75 @@
+---
+title: Crime Data Analysis
+date: 11-15-2018
+description: Machine learning project using Self-Organizing Maps (Kohonen Neural Networks) to cluster and visualize crime data patterns on interactive maps.
+image: ../assets/spectre.png
+info:
+  - text: GitHub
+    link: https://github.com/namanvashistha/CRIME-DATA-PATTERN-ANALYSIS-AND-VISUALISATION
+    icon:
+      type: lucide
+      name: github
+  - text: Research
+    link: https://github.com/namanvashistha/CRIME-DATA-PATTERN-ANALYSIS-AND-VISUALISATION/blob/master/minor%20final%20report.pdf
+    icon:
+      type: lucide
+      name: file-text
+---
+
+A machine learning project that analyzes crime data using Self-Organizing Maps (SOM) to identify patterns and visualize crime hotspots on interactive geographical maps.
+
+## Overview
+
+This project processes scattered crime data, clusters it based on geographic density and coordinates, and visualizes the results on an OpenStreetMap interface, making crime patterns easily interpretable.
+
+## Key Features
+
+- **SOM Clustering**: Uses Kohonen Neural Networks to cluster crime data intelligently
+- **Density Analysis**: Groups crimes based on geographical proximity and frequency
+- **Interactive Visualization**: Displays clusters and centroids on OpenStreetMap
+- **Pattern Recognition**: Identifies crime hotspots and patterns automatically
+- **Heatmap Generation**: Visual representation of crime intensity across regions
+
+## Algorithm
+
+### Self-Organizing Map (Kohonen Network)
+
+The SOM algorithm is an unsupervised learning technique that:
+1. Takes raw crime coordinates and metadata
+2. Discovers natural groupings in the data
+3. Preserves topological properties of the input space
+4. Produces intuitive cluster centroids
+
+This approach is ideal for geographical data as it maintains spatial relationships while reducing complexity.
+
+## Implementation
+
+- **Data Processing**: Python for data cleaning and preprocessing
+- **Clustering**: Custom SOM implementation with adjustable parameters
+- **Visualization**: OpenStreetMap integration with heatmap overlays
+- **Analysis**: Statistical analysis of cluster characteristics
+
+## Tech Stack
+
+- **Language**: Python
+- **ML**: Custom SOM/Kohonen Network implementation
+- **Visualization**: Jupyter Notebook, Matplotlib, Folium
+- **Mapping**: OpenStreetMap API
+- **Data**: CSV crime datasets with coordinates
+
+## Applications
+
+- **Law Enforcement**: Identify high-crime areas for patrol allocation
+- **Urban Planning**: Inform safety infrastructure decisions
+- **Research**: Understand crime distribution patterns
+- **Policy Making**: Data-driven crime prevention strategies
+
+## Results
+
+The system successfully:
+- Clusters thousands of crime incidents into meaningful geographic regions
+- Identifies crime hotspots with centroid accuracy
+- Provides interactive visualizations for stakeholder analysis
+- Reduces complex crime data into actionable insights
+
+This project demonstrates the application of neural networks to real-world geographical problems, combining machine learning with spatial analysis.

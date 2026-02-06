@@ -1,0 +1,84 @@
+---
+title: iTalk Messenger
+date: 08-25-2017
+description: Real-time web messenger built with PHP and AJAX. Features instant messaging, user authentication, and live message updates without page refreshes.
+image: ../assets/spectre.png
+info:
+  - text: GitHub
+    link: https://github.com/namanvashistha/messenger
+    icon:
+      type: lucide
+      name: github
+  - text: Features
+    link: https://github.com/namanvashistha/messenger#prerequisites
+    icon:
+      type: lucide
+      name: message-circle
+---
+
+iTalk is a real-time messaging application that enables instant communication between users through a web interface. Built with PHP and AJAX for seamless, real-time chat experiences.
+
+## Key Features
+
+- **Real-time Messaging**: Instant message delivery using AJAX polling
+- **User Authentication**: Secure login and signup system
+- **Chat History**: Persistent message storage in MySQL
+- **Multiple Conversations**: Chat with different users simultaneously
+- **Live Status**: See message delivery and read status
+- **Clean Interface**: Minimal, user-friendly design focused on communication
+
+## How It Works
+
+### Real-time Updates
+The application uses AJAX to continuously check for new messages without refreshing the page, creating a smooth chat experience similar to modern messaging apps.
+
+### Message Flow
+1. User sends a message via the interface
+2. AJAX POST request sends message to server
+3. PHP stores message in MySQL database
+4. AJAX polling retrieves new messages every few seconds
+5. Messages appear instantly in the chat interface
+
+### User Management
+- **Sign Up**: Create account with username and password
+- **Login**: Secure authentication with session management
+- **Chat Selection**: Choose from list of available users
+- **Logout**: Clean session termination
+
+## Tech Stack
+
+- **Frontend**: HTML, CSS, JavaScript, AJAX
+- **Backend**: PHP
+- **Database**: MySQL
+- **Server**: XAMPP (Apache + MySQL)
+
+## Architecture
+
+### Frontend (Client-side)
+- `index.php`: Login/Signup interface
+- `message.php`: Main chat interface with message display
+- `styling.css` & `styling-msg.css`: UI styling
+
+### Backend (Server-side)
+- `sign_login_add.php`: User registration and authentication
+- `send.php`: Handle outgoing messages
+- `fetch.php`: Retrieve new messages
+- `validate.php`: Session management
+- `connection.php`: Database configuration
+
+### Database Schema
+- **users**: User credentials and profiles
+- **messages**: Message content, sender, receiver, timestamps
+
+## Features in Detail
+
+### AJAX Polling
+Implements efficient polling mechanism to fetch new messages at regular intervals without overwhelming the server.
+
+### Session Management
+Maintains user sessions securely, preventing unauthorized access and ensuring conversation privacy.
+
+### Message Persistence
+All conversations are stored in the database, allowing users to view message history across sessions.
+
+This project demonstrates full-stack web development with emphasis on real-time communication, AJAX implementation, and database-driven applications.

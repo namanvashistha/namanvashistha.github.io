@@ -1,0 +1,211 @@
+---
+title: "Why I'm Building My Own Distributed Database"
+description: "Join me on my journey building LimeDB - a distributed key-value store built from scratch to deeply understand distributed systems, database internals, and horizontal scaling."
+image: "../assets/spectre.png"
+createdAt: 10-12-2024
+draft: false
+tags:
+  - database
+  - distributed-systems
+---
+
+As a backend developer, I've worked with Redis, PostgreSQL, MongoDB, and countless other databases. But I always felt like there was something missing – a deeper understanding of how these systems actually work under the hood. So I decided to embark on a journey to build my own distributed key-value database from scratch.
+
+Meet **LimeDB** – a distributed key-value store I'm currently building with Java 21 and Spring Boot. My goal is to create a truly custom database system that starts with PostgreSQL as a foundation but evolves into something much more ambitious, all wrapped in a horizontally scalable coordinator-shard architecture.
+
+**GitHub:** [namanvashistha/limedb](https://github.com/namanvashistha/limedb)
+
+## 🤔 Why Build Another Database?
+
+You might be thinking: "Why reinvent the wheel? Redis and PostgreSQL already exist!" And you're absolutely right. But here's the thing – as backend developers, we often treat databases as black boxes. We know how to use them, but not how they work.
+
+Building LimeDB is already teaching me more about distributed systems, consistency, partitioning, and database internals than years of just using existing solutions. It's like the difference between driving a car and understanding how the engine works.
+
+## 🎯 The Learning Goals
+
+When I started this project, I had several learning objectives:
+
+1. **Understand Distributed System Patterns** - How do you route requests across multiple nodes?
+2. **Grasp Database Internals** - What happens when you store and retrieve data?
+3. **Learn About Horizontal Scaling** - How do systems like Redis Cluster actually work?
+4. **Master Modern Java** - Put Java 21 features and Spring Boot to real use
+5. **Build Something Production-Adjacent** - Not just a toy, but something that could theoretically scale
+
+## 🏗️ Architecture Decisions
+
+### The Coordinator-Shard Pattern
+
+Instead of a peer-to-peer system (like Cassandra) or a single-node system (like Redis), I chose a coordinator-shard architecture:
+
+```
+Client → Coordinator → Shard 1, 2, 3...
+```
+
+Why this pattern?
+
+- **Simplicity:** Clients only need to know about one endpoint
+- **Routing Logic:** Centralized decision-making about where data lives
+- **Operational Ease:** Easy to monitor and debug
+- **Familiar:** Similar to how many real systems work (think MongoDB's router)
+
+### Hash-Based Routing (For Now)
+
+```java
+// Simple but effective
+int shardIndex = Math.abs(key.hashCode()) % numberOfShards;
+```
+
+This is deliberately simple. I know consistent hashing is "better" for rebalancing, but I wanted to start with something I could fully understand and implement correctly. You can see this decision in the `ShardRegistryService`:
+
+```java
+public String getShardByKey(String key) {
+    int index = Math.abs(key.hashCode()) % shards.size();
+    return shards.get(index);
+}
+```
+
+Perfect? No. Educational? Absolutely.
+
+### PostgreSQL as a Starting Point
+
+Each shard currently uses its own PostgreSQL database (`limedb_shard_1`, `limedb_shard_2`, etc.). But here's the key - PostgreSQL is just my Phase 1 storage engine, not the final destination.
+
+Why start with PostgreSQL?
+
+- **Quick Validation:** Get the distributed architecture working first
+- **ACID Guarantees:** Data survives restarts while I focus on routing logic
+- **Familiar Tooling:** Easy to inspect and debug during development
+- **Stepping Stone:** Proven foundation before building custom storage
+
+The plan is to eventually replace PostgreSQL with custom storage engines optimized for key-value workloads. Think LSM trees, custom file formats, and memory-mapped storage - but PostgreSQL lets me focus on the distributed systems challenges first.
+
+## 💡 What I'm Learning Building This
+
+### 1. Distributed Systems Are Hard
+
+Even with this simple architecture, I'm already running into fascinating problems:
+
+- What happens when a shard goes down?
+- How do you handle network timeouts?
+- What about data consistency across shards?
+
+These aren't academic questions anymore – they're real problems I need to solve as I build this system.
+
+### 2. The Power of Good Abstractions
+
+The Spring Boot framework is letting me focus on the distributed systems logic rather than HTTP parsing and dependency injection. My controllers are staying clean:
+
+```java
+@GetMapping("/get/{key}")
+public ResponseEntity<String> get(@PathVariable String key) {
+    String value = routingService.get(key);
+    return value != null ? ResponseEntity.ok(value) : ResponseEntity.notFound().build();
+}
+```
+
+### 3. Testing Distributed Systems is Different
+
+You can't just unit test individual methods. You need to:
+
+- Start multiple services
+- Test network failures
+- Verify data consistency
+- Check routing logic
+
+```python
+def set_values():
+    for i in range(1_000):
+        payload = {"key": f"key_{i}", "value": f"value_{i}"}
+        response = requests.post("http://localhost:8080/api/v1/set", json=payload)
+```
+
+### 4. Configuration Management is Crucial
+
+With multiple nodes, configuration becomes complex. Each shard needs to know:
+
+- Which database to connect to
+- What port to run on
+- Its shard ID
+
+```bash
+./gradlew bootRun --args='--node.type=shard --server.port=7001 --shard.id=1'
+```
+
+## 🚀 Current Progress
+
+LimeDB currently supports:
+
+- ✅ GET/SET/DELETE operations (Redis-like API)
+- ✅ Hash-based routing across 3 shards
+- ✅ PostgreSQL persistence per shard
+- ✅ REST API with proper error handling
+- ✅ Health monitoring endpoints
+
+Performance? It's not going to beat Redis. But it's already handling operations smoothly and teaching me why Redis is so fast.
+
+## 🎯 What's Next?
+
+The roadmap is ambitious and includes features I'm excited to tackle:
+
+### Phase 2: Better Distribution
+
+- **Consistent Hashing:** Replace modulo with a proper hash ring
+- **Health Checks:** Automatic failover when shards go down
+- **Replication:** Primary-replica setup for high availability
+- **Metrics:** Monitoring and observability
+
+### Phase 3: Custom Storage Engine
+
+- **LSM Trees:** Replace PostgreSQL with custom key-value storage
+- **Memory-Mapped Files:** Direct file system control
+- **Custom Serialization:** Optimized data formats
+- **WAL Implementation:** Write-ahead logging from scratch
+
+### Phase 4: Advanced Features
+
+- **Custom Binary Protocol:** Move beyond HTTP/REST
+- **Compression:** Custom compression algorithms
+- **Cache Layers:** Multi-level caching strategies
+- **Transaction Support:** ACID across multiple shards
+
+Each phase represents deeper database internals knowledge - PostgreSQL is just the beginning!
+
+## 💭 Why You Should Build One Too
+
+Building your own database isn't about competing with PostgreSQL or Redis. It's about:
+
+1. **Deep Learning:** Understanding systems from the ground up
+2. **Interview Prep:** Nothing impresses like saying "I built a distributed database"
+3. **Problem-Solving Skills:** Real distributed systems problems
+4. **Technology Mastery:** Push your programming language skills
+5. **Portfolio Project:** Something unique that stands out
+
+## 🛠️ Getting Started
+
+If this inspired you to build your own database, here's my advice:
+
+1. **Start Simple:** Don't try to build Redis on day one
+2. **Pick Your Language:** Use something you're comfortable with
+3. **Choose One Feature:** GET/SET is enough to start
+4. **Add Gradually:** Persistence, then distribution, then optimizations
+5. **Document Everything:** Future you will thank you
+
+## 🔗 Follow the Journey
+
+Want to see the code as I build it? It's all open source:
+
+- **GitHub:** [namanvashistha/limedb](https://github.com/namanvashistha/limedb)
+- **Tech Stack:** Java 21, Spring Boot, PostgreSQL
+- **Current Status:** Basic coordinator-shard architecture working
+
+The README has setup instructions, and I'm trying to make the code as readable as possible for learning purposes. Feel free to star the repo and follow along as I tackle more distributed systems challenges!
+
+## 🎉 Final Thoughts
+
+Building LimeDB is turning out to be one of the most educational projects I've undertaken as a backend developer. It's not going to be the fastest database, or the most feature-complete, but it's mine. I understand every line of code, every architectural decision, and every trade-off I'm making along the way.
+
+In a world of microservices and cloud abstractions, there's something deeply satisfying about building a system from first principles. I'm already looking at Redis, PostgreSQL, and MongoDB differently after just starting this journey.
+
+So grab your favorite programming language, pick a simple data structure, and start building. The distributed systems knowledge you'll gain is worth its weight in gold.
+
+What do you think? Have you ever built your own database or distributed system? What did you learn? Drop a comment below!
