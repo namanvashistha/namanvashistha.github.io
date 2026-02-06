@@ -104,14 +104,14 @@ ol li a.active {
 .article-h1 {
 	margin-bottom: 0;
 	font-size: 2em;
-	background: #ffffff;
+	background: #1a1a1a;
 	padding: 0.25rem 0.675rem;
 	box-decoration-break: clone;
 	-webkit-box-decoration-break: clone;
 	position: relative;
 	line-height: 1.2;
 	display: inline;
-	color: #000000;
+	color: #ffffff;
 }
 
 .article-info {
@@ -119,8 +119,8 @@ ol li a.active {
 	flex-direction: row;
 	gap: 0.5rem;
 	font-family: "Geist Mono", "Courier New", Courier, monospace;
-	background: #ffffff;
-	color: #000000;
+	background: #1a1a1a;
+	color: #ffffff;
 	box-decoration-break: clone;
 	-webkit-box-decoration-break: clone;
 	padding: 0 0.75rem;
