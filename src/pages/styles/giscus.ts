@@ -1,8 +1,6 @@
-export const prerender = false;
-
 import css from '../../styles/giscus.css?raw';
 
-export async function ALL() {
+export async function GET() {
 	const res = new Response(css);
 
 	res.headers.set('Content-Type', 'text/css');
