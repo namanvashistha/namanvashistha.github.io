@@ -5,7 +5,7 @@
 			"type": "lucide",
 			"name": "map-pin"
 		},
-		"text": "Based in India"
+		"text": "Bengaluru, India"
 	},
 	{
 		"id": 2,
@@ -14,5 +14,23 @@
 			"name": "briefcase"
 		},
 		"text": "Software Engineer"
+	},
+	{
+		"id": 3,
+		"icon": {
+			"type": "lucide",
+			"name": "mail"
+		},
+		"text": "namanvashistha15@gmail.com",
+		"link": "mailto:namanvashistha15@gmail.com"
+	},
+	{
+		"id": 4,
+		"icon": {
+			"type": "lucide",
+			"name": "phone"
+		},
+		"text": "(+91) 99712 20867",
+		"link": "tel:+919971220867"
 	}
 ]

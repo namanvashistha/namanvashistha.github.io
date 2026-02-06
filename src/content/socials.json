@@ -16,5 +16,23 @@
 		},
 		"text": "LinkedIn",
 		"link": "https://linkedin.com/in/namanvashistha"
+	},
+	{
+		"id": 3,
+		"icon": {
+			"type": "lucide",
+			"name": "code-2"
+		},
+		"text": "LeetCode",
+		"link": "https://leetcode.com/namanvashistha15"
+	},
+	{
+		"id": 4,
+		"icon": {
+			"type": "lucide",
+			"name": "globe"
+		},
+		"text": "Website",
+		"link": "https://namanvashistha.github.io"
 	}
 ]
