@@ -6,10 +6,9 @@
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
-		"start": "node dist/server/entry.mjs",
 		"preview": "astro preview",
 		"astro": "astro",
-		"postbuild": "pagefind --site dist/client",
+		"postbuild": "pagefind --site dist",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write ."
 	},
