@@ -25,13 +25,9 @@ import Layout from '../layouts/Layout.astro';
   </div>
   <div class="layout-grid-right" slot="right">
     <Card>
-      <div class="pdf-container">
-        <iframe 
-          src="/resume.pdf#toolbar=0&navpanes=0&scrollbar=0&view=Fit" 
-          title="Resume Preview"
-          class="pdf-viewer"
-          scrolling="no"
-        ></iframe>
+      <div class="pdf-container" id="pdf-container">
+        <canvas id="pdf-canvas"></canvas>
+        <div class="pdf-loading">Loading resume...</div>
       </div>
     </Card>
   </div>
@@ -100,29 +96,123 @@ import Layout from '../layouts/Layout.astro';
 
   .pdf-container {
     width: 100%;
-    height: calc(100vh - 200px);
-    min-height: 1000px;
     border: 1px solid #353535;
     background: #1a1a1a;
     position: relative;
-  }
-
-  .pdf-viewer {
-    width: 100%;
-    height: 100%;
-    border: none;
     overflow: hidden;
   }
 
+  #pdf-canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+    z-index: 2;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .pdf-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary);
+    font-size: 1.1rem;
+    z-index: 1;
+  }
+
   @media screen and (max-width: 640px) {
-    .pdf-container {
-      height: 700px;
-      min-height: 700px;
-    }
-    
     .download-btn {
       font-size: 0.95rem;
       padding: 0.875rem 1.25rem;
     }
   }
 </style>
+
+<script>
+  // Load PDF.js from CDN
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  script.async = true;
+  document.head.appendChild(script);
+
+  script.onload = () => {
+    const pdfjsLib = (window as any).pdfjsLib;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const canvas = document.getElementById('pdf-canvas') as HTMLCanvasElement;
+    const container = document.getElementById('pdf-container') as HTMLElement;
+    const loadingElement = document.querySelector('.pdf-loading') as HTMLElement;
+
+    async function renderPDF() {
+      try {
+        const loadingTask = pdfjsLib.getDocument('/resume.pdf');
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1);
+
+        // Get container width
+        const containerWidth = container.clientWidth;
+        
+        // Get PDF viewport at scale 1
+        const viewport = page.getViewport({ scale: 1 });
+        
+        // Calculate scale to fit width
+        const scale = containerWidth / viewport.width;
+        
+        // Calculate height based on PDF aspect ratio
+        const scaledViewport = page.getViewport({ scale });
+        const pdfHeight = scaledViewport.height;
+        
+        // Set container height to match PDF height
+        container.style.height = `${pdfHeight}px`;
+
+        // Use device pixel ratio for sharp rendering
+        const pixelRatio = window.devicePixelRatio || 1;
+        const finalViewport = page.getViewport({ scale: scale * pixelRatio });
+
+        // Set canvas size
+        canvas.width = finalViewport.width;
+        canvas.height = finalViewport.height;
+        
+        // Set display size
+        canvas.style.width = `${containerWidth}px`;
+        canvas.style.height = `${pdfHeight}px`;
+
+        const context = canvas.getContext('2d');
+        const renderContext = {
+          canvasContext: context!,
+          viewport: finalViewport,
+        };
+
+        await page.render(renderContext).promise;
+        
+        // Hide loading indicator after PDF is rendered
+        if (loadingElement) {
+          loadingElement.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error rendering PDF:', error);
+      }
+    }
+
+    renderPDF();
+
+    // Re-render on window resize with better debouncing
+    let resizeTimeout: number;
+    let lastWidth = container.clientWidth;
+    
+    window.addEventListener('resize', () => {
+      const currentWidth = container.clientWidth;
+      // Only re-render if width actually changed
+      if (currentWidth !== lastWidth) {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          lastWidth = currentWidth;
+          requestAnimationFrame(renderPDF);
+        }, 300);
+      }
+    });
+  };
+</script>
