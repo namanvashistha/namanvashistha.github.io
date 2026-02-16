@@ -1,0 +1,21 @@
+---
+title: 'New blow with github ui'
+description: 'new blow'
+image: "../assets/default.png"
+createdAt: 01-21-2024
+draft: false
+tags:
+  - python
+  - automation
+  - devops
+---
+
+This commit introduces a significant enhancement to LimeDB's deployment and management within Proxmox LXC containers by adding a new, self-contained shell script: `proxmox/limedb_simple.sh`.
+
+## What Changed
+
+A new script, `proxmox/limedb_simple.sh`, has been added. This script provides a comprehensive solution for installing and updating LimeDB instances within Proxmox LXC environments. Concurrently, the `proxmox/limedb_lxc.sh` script was refactored, specifically removing previously overridden installation functions (`unset var_install`, `install_script()`) and the custom MOTD setup. This change signifies a shift towards `limedb_simple.sh` as the primary, fully integrated tool for LimeDB deployments on Proxmox.
+
+## Why the Change Was Needed
+
+The primary motivation was to establish a dedicated, reliable, and straightforward mechanism for deploying and managing LimeDB in Proxmox LXC. Previously, installation methods might have been less standardized or relied on generic framework behaviors that required overrides. This new script centralizes all necessary logic, ensuring consistent setups, simplified updates, and a reduced margin for error during deployment.
