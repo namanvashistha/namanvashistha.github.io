@@ -14,6 +14,8 @@ collections:
     folder: "src/content/posts"
     public_folder: "../assets"
     create: true
+    extension: "mdx"
+    format: "frontmatter"
     slug: "{{slug}}"
     fields:
       - {label: "Title", name: "title", widget: "string"}
@@ -30,6 +32,8 @@ collections:
     folder: "src/content/projects"
     public_folder: "../assets"
     create: true
+    extension: "mdx"
+    format: "frontmatter"
     slug: "{{slug}}"
     fields:
       - {label: "Title", name: "title", widget: "string"}

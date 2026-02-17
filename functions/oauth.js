@@ -12,7 +12,7 @@ export default {
 
       const githubUrl = new URL("https://github.com/login/oauth/authorize");
       githubUrl.searchParams.set("client_id", env.GITHUB_CLIENT_ID);
-      githubUrl.searchParams.set("scope", "repo,user:email");
+      githubUrl.searchParams.set("scope", "public_repo,user:email");
       githubUrl.searchParams.set("state", crypto.randomUUID());
 
       return Response.redirect(githubUrl.toString(), 302);
