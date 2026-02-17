@@ -109,6 +109,12 @@ collections:
                   {label: "Name", name: "name", widget: "string"}
                 ]}
 
+      - name: "about" 
+        label: "About Me"
+        file: "src/content/other/about.mdx"
+        fields:
+          - {label: "Body", name: "body", widget: "markdown"}
+
   - name: "resume"
     label: "Resume Profiles"
     folder: "resume/profiles"
