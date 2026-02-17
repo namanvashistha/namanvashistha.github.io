@@ -41,8 +41,8 @@
       "text": "X",
       "link": "https://x.com/naman_vash9166",
       "icon": {
-        "type": "simple-icons",
-        "name": "x-twitter"
+        "type": "lucide",
+        "name": "twitter"
       }
     }
   ]
