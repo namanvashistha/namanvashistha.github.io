@@ -12,7 +12,7 @@ import Layout from '../layouts/Layout.astro';
 const [posts, projects, about, workExperience, quickInfo, socials] = await Promise.all([
 	getCollection('posts', (post) => post.data.draft !== true),
 	getCollection('projects'),
-	getEntry('other', 'about'),
+	getEntry('about', 'about'),
 	getCollection('workExperience'),
 	getCollection('quickInfo'),
 	getCollection('socials'),

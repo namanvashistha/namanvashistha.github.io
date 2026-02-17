@@ -111,7 +111,7 @@ collections:
 
       - name: "about"
         label: "About Me"
-        file: "src/content/other/about.mdx"
+        file: "src/content/about.mdx"
         format: "frontmatter"
         fields:
           - {label: "Body", name: "body", widget: "markdown"}
