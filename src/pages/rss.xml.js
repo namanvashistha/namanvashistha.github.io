@@ -20,11 +20,22 @@ export async function GET(context) {
         description: post.data.description,
         link: `/blog/${post.id}/`,
         content: sanitizeHtml(
-          (post.data.image ? `<img src="${context.site + post.data.image.src.replace(/^\//, '')}" />` : '') + 
           parser.render(post.body), {
           allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img'])
         }),
+        categories: post.data.tags.map((tag) => tag.id),
+        customData: post.data.image
+          ? `<media:content
+              type="image/${post.data.image.format == 'jpg' ? 'jpeg' : post.data.image.format}"
+              width="${post.data.image.width}"
+              height="${post.data.image.height}"
+              medium="image"
+              url="${context.site + post.data.image.src.replace(/^\//, '')}" />`
+          : undefined,
       })),
     customData: `<language>en-us</language>`,
+    xmlns: {
+      media: 'http://search.yahoo.com/mrss/',
+    },
   });
 }
