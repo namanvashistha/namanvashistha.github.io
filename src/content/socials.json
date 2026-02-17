@@ -1,47 +1,49 @@
-[
-	{
-		"id": 1,
-		"icon": {
-			"type": "lucide",
-			"name": "github"
+{
+	"socials": [
+		{
+			"id": 1,
+			"icon": {
+				"type": "lucide",
+				"name": "github"
+			},
+			"text": "GitHub",
+			"link": "https://github.com/namanvashistha"
 		},
-		"text": "GitHub",
-		"link": "https://github.com/namanvashistha"
-	},
-	{
-		"id": 2,
-		"icon": {
-			"type": "lucide",
-			"name": "linkedin"
+		{
+			"id": 2,
+			"icon": {
+				"type": "lucide",
+				"name": "linkedin"
+			},
+			"text": "LinkedIn",
+			"link": "https://linkedin.com/in/namanvashistha"
 		},
-		"text": "LinkedIn",
-		"link": "https://linkedin.com/in/namanvashistha"
-	},
-	{
-		"id": 3,
-		"icon": {
-			"type": "lucide",
-			"name": "code-2"
+		{
+			"id": 3,
+			"icon": {
+				"type": "lucide",
+				"name": "code-2"
+			},
+			"text": "LeetCode",
+			"link": "https://leetcode.com/namanvashistha15"
 		},
-		"text": "LeetCode",
-		"link": "https://leetcode.com/namanvashistha15"
-	},
-	{
-		"id": 4,
-		"icon": {
-			"type": "lucide",
-			"name": "globe"
+		{
+			"id": 4,
+			"icon": {
+				"type": "lucide",
+				"name": "globe"
+			},
+			"text": "Website",
+			"link": "https://namanvashistha.com"
 		},
-		"text": "Website",
-		"link": "https://namanvashistha.com"
-	},
-	{
-		"id": 5,
-		"icon": {
-			"type": "lucide",
-			"name": "book-open"
-		},
-		"text": "Dev.to",
-		"link": "https://dev.to/namanvashistha"
-	}
-]
+		{
+			"id": 5,
+			"icon": {
+				"type": "lucide",
+				"name": "book-open"
+			},
+			"text": "Dev.to",
+			"link": "https://dev.to/namanvashistha"
+		}
+	]
+}

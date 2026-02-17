@@ -1,7 +1,38 @@
 import { defineCollection, reference, z } from 'astro:content';
 import type { icons as lucideIcons } from '@iconify-json/lucide/icons.json';
 import type { icons as simpleIcons } from '@iconify-json/simple-icons/icons.json';
-import { file, glob } from 'astro/loaders';
+import { glob } from 'astro/loaders';
+import { promises as fs } from 'node:fs';
+
+// Helper loader to read a specific key from a JSON file
+const jsonListLoader = (path: string, key: string) => {
+	return {
+		name: `json-list-${key}`,
+		load: async ({ store, logger, parseData }: any) => {
+			logger.info(`Loading ${key} from ${path}`);
+			try {
+				const content = await fs.readFile(path, 'utf-8');
+				const data = JSON.parse(content);
+				const items = data[key];
+				
+				if (!Array.isArray(items)) {
+					logger.warn(`Expected array at key '${key}' in ${path}, got ${typeof items}`);
+					return;
+				}
+
+				for (const item of items) {
+					// Ensure ID is string for store
+					const id = String(item.id);
+					// Validate/Parse data if needed, or just set it
+					// content layer store.set expects { id, data }
+					store.set({ id, data: item });
+				}
+			} catch (e: any) {
+				logger.error(`Failed to load ${path}: ${e.message}`);
+			}
+		}
+	};
+};
 
 const other = defineCollection({
 	loader: glob({ base: 'src/content/other', pattern: '**/*.{md,mdx}' }),
@@ -18,7 +49,7 @@ const simpleIconSchema = z.object({
 });
 
 const quickInfo = defineCollection({
-	loader: file('src/content/info.json'),
+	loader: jsonListLoader('src/content/info.json', 'info'),
 	schema: z.object({
 		id: z.number(),
 		icon: z.union([lucideIconSchema, simpleIconSchema]),
@@ -27,7 +58,7 @@ const quickInfo = defineCollection({
 });
 
 const socials = defineCollection({
-	loader: file('src/content/socials.json'),
+	loader: jsonListLoader('src/content/socials.json', 'socials'),
 	schema: z.object({
 		id: z.number(),
 		icon: z.union([lucideIconSchema, simpleIconSchema]),
@@ -37,7 +68,7 @@ const socials = defineCollection({
 });
 
 const workExperience = defineCollection({
-	loader: file('src/content/work.json'),
+	loader: jsonListLoader('src/content/work.json', 'work'),
 	schema: z.object({
 		id: z.number(),
 		title: z.string(),
@@ -48,7 +79,7 @@ const workExperience = defineCollection({
 });
 
 const tags = defineCollection({
-	loader: file('src/content/tags.json'),
+	loader: jsonListLoader('src/content/tags.json', 'tags'),
 	schema: z.object({
 		id: z.string(),
 	}),

@@ -1,36 +1,38 @@
-[
-	{
-		"id": 1,
-		"icon": {
-			"type": "lucide",
-			"name": "map-pin"
+{
+	"info": [
+		{
+			"id": 1,
+			"icon": {
+				"type": "lucide",
+				"name": "map-pin"
+			},
+			"text": "Bengaluru, India"
 		},
-		"text": "Bengaluru, India"
-	},
-	{
-		"id": 2,
-		"icon": {
-			"type": "lucide",
-			"name": "briefcase"
+		{
+			"id": 2,
+			"icon": {
+				"type": "lucide",
+				"name": "briefcase"
+			},
+			"text": "Software Engineer"
 		},
-		"text": "Software Engineer"
-	},
-	{
-		"id": 3,
-		"icon": {
-			"type": "lucide",
-			"name": "mail"
+		{
+			"id": 3,
+			"icon": {
+				"type": "lucide",
+				"name": "mail"
+			},
+			"text": "namanvashistha15@gmail.com",
+			"link": "mailto:namanvashistha15@gmail.com"
 		},
-		"text": "namanvashistha15@gmail.com",
-		"link": "mailto:namanvashistha15@gmail.com"
-	},
-	{
-		"id": 4,
-		"icon": {
-			"type": "lucide",
-			"name": "phone"
-		},
-		"text": "(+91) 99712 20867",
-		"link": "tel:+919971220867"
-	}
-]
+		{
+			"id": 4,
+			"icon": {
+				"type": "lucide",
+				"name": "phone"
+			},
+			"text": "(+91) 99712 20867",
+			"link": "tel:+919971220867"
+		}
+	]
+}

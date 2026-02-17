@@ -1,9 +1,11 @@
-[
-	{
-		"id": 1,
-		"duration": "2023 - present",
-		"company": "Marrow",
-		"title": "Software Development Engineer - II",
-		"description": "Building scalable backend systems for high-impact products. Experienced in payment systems, distributed architectures, and developer tooling."
-	}
-]
+{
+	"work": [
+		{
+			"id": 1,
+			"duration": "2023 - present",
+			"company": "Marrow",
+			"title": "Software Development Engineer - II",
+			"description": "Building scalable backend systems for high-impact products. Experienced in payment systems, distributed architectures, and developer tooling."
+		}
+	]
+}
