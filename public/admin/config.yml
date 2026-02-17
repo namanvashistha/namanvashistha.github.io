@@ -109,14 +109,18 @@ collections:
                   {label: "Name", name: "name", widget: "string"}
                 ]}
 
-      - name: "about"
-        label: "About Me"
-        file: "src/content/about.mdx"
-        extension: "mdx"
-        format: "frontmatter"
-        fields:
-          - {label: "Title", name: "title", widget: "hidden", default: "About Me"}
-          - {label: "Body", name: "body", widget: "markdown"}
+  - name: "about"
+    label: "About Me"
+    folder: "src/content/about"
+    public_folder: "/src/content/assets"
+    extension: "mdx"
+    format: "frontmatter"
+    create: false
+    delete: false
+    identifier_field: "title"
+    fields:
+      - {label: "Title", name: "title", widget: "hidden", default: "About Me"}
+      - {label: "Body", name: "body", widget: "markdown"}
 
   - name: "resume"
     label: "Resume Profiles"
