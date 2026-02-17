@@ -48,12 +48,7 @@ jobs:
               if: steps.resume_check.outputs.changed == 'true'
               run: |
                   sudo apt-get update -qq
-                  sudo apt-get install -y --no-install-recommends \
-                    texlive-latex-base \
-                    texlive-fonts-recommended \
-                    texlive-latex-extra \
-                    texlive-fonts-extra \
-                    texlive-plain-generic
+                  sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v1
