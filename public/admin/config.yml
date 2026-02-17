@@ -110,7 +110,7 @@ collections:
                 ]}
 
   - name: "about"
-    label: "Site Data"
+    label: "About Me"
     folder: "src/content/about"
     public_folder: "/src/content/assets"
     extension: "mdx"
