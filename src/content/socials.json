@@ -35,6 +35,15 @@
       },
       "text": "Dev.to",
       "link": "https://dev.to/namanvashistha"
+    },
+    {
+      "id": 6,
+      "text": "X",
+      "link": "https://x.com/naman_vash9166",
+      "icon": {
+        "type": "lucide",
+        "name": "x-twitter"
+      }
     }
   ]
 }
