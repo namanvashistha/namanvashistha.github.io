@@ -64,17 +64,17 @@ collections:
         label: "Social Links"
         file: "src/content/socials.json"
         fields:
-      - name: "socials"
-        label: "Social Links"
-        widget: "list"
-        fields:
-          - {label: "ID", name: "id", widget: "number"}
-          - {label: "Text", name: "text", widget: "string"}
-          - {label: "Link", name: "link", widget: "string"}
-          - {label: "Icon", name: "icon", widget: "object", fields: [
-              {label: "Type", name: "type", widget: "select", options: ["lucide", "simple-icons"]},
-              {label: "Name", name: "name", widget: "string"}
-            ]}
+          - name: "socials"
+            label: "Social Links"
+            widget: "list"
+            fields:
+              - {label: "ID", name: "id", widget: "number"}
+              - {label: "Text", name: "text", widget: "string"}
+              - {label: "Link", name: "link", widget: "string"}
+              - {label: "Icon", name: "icon", widget: "object", fields: [
+                  {label: "Type", name: "type", widget: "select", options: ["lucide", "simple-icons"]},
+                  {label: "Name", name: "name", widget: "string"}
+                ]}
 
       - name: "work"
         label: "Work Experience"
