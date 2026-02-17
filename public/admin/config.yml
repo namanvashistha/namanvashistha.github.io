@@ -23,7 +23,7 @@ collections:
       - {label: "Publish Date", name: "createdAt", widget: "datetime"}
       - {label: "Updated Date", name: "updatedAt", widget: "datetime", required: false}
       - {label: "Draft", name: "draft", widget: "boolean", default: false}
-      - {label: "Tags", name: "tags", widget: "relation", collection: "data", file: "tags", search_fields: ["tags.id"], value_field: "tags.id", multiple: true}
+      - {label: "Tags", name: "tags", widget: "relation", collection: "data", file: "tags", search_fields: ["tags.*.id"], display_fields: ["tags.*.id"], value_field: "tags.*.id", multiple: true}
       - {label: "Cover Image", name: "image", widget: "image"}
       - {label: "Body", name: "body", widget: "markdown"}
 
