@@ -5,31 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
     <title>Content Manager</title>
-    <style>
-      /* Custom font styling for Decap CMS */
-      :root {
-        --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        --font-family-mono: "JetBrains Mono", "Fira Code", Consolas, Monaco, monospace;
-      }
-      
-      body {
-        font-family: var(--font-family) !important;
-      }
-      
-      /* Editor text */
-      .nc-controlPane-control textarea,
-      .nc-controlPane-control input,
-      .nc-markdownControl-editor {
-        font-family: var(--font-family) !important;
-      }
-      
-      /* Code blocks */
-      code, pre {
-        font-family: var(--font-family-mono) !important;
-      }
-    </style>
   </head>
   <body>
     <script src="https://unpkg.com/decap-cms@^3.10.0/dist/decap-cms.js"></script>
+    <script>
+      // @ts-ignore - CMS is loaded from CDN
+      CMS.registerPreviewStyle('/styles/globals.css');
+      // @ts-ignore
+      CMS.registerPreviewStyle('/styles/article.css');
+    </script>
   </body>
 </html>
