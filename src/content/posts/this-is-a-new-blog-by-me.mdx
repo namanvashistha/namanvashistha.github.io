@@ -1,0 +1,97 @@
+---
+title: this is a new blog by me
+description: A single-command automation script for deploying LimeDB in Proxmox
+  LXC containers with complete configuration and systemd integration
+createdAt: 11-21-2025
+draft: false
+tags:
+  - database
+  - proxmox
+  - lxc
+  - automation
+image: ../assets/default.png
+---
+
+This commit introduces a new bash script, `proxmox/limedb_lxc.sh`, designed to automate the provisioning and setup of a LimeDB instance within an LXC container on a Proxmox VE host.
+
+## What Changed
+
+A new executable bash script (`limedb_lxc.sh`) has been added to the repository's `proxmox/` directory. This script provides a single-command solution for deploying a fully functional LimeDB server in a containerized environment on Proxmox.
+
+## Why the Change Was Needed
+
+Deploying a distributed key-value store like LimeDB often involves repetitive setup steps, especially when provisioning multiple instances for a cluster or for development/testing environments. Manually creating LXC containers, configuring their resources, installing dependencies, downloading and setting up LimeDB, and configuring its systemd service can be time-consuming and prone to human error. This script aims to reduce operational overhead, ensure consistency across deployments, and lower the barrier for users to quickly get LimeDB running on Proxmox.
+
+## Design Choices Made
+
+### 1. Proxmox `pct` Utility
+
+The script heavily relies on the `pct` command-line interface provided by Proxmox for all container management operations, including creation, starting, and executing commands within the container.
+
+### 2. Unprivileged LXC
+
+It creates an unprivileged container by default (`--unprivileged 1`), which is a security best practice as it isolates the container processes more effectively from the host kernel.
+
+### 3. Debian 12 Base
+
+A Debian 12 standard template (`debian-12-standard_12.2-1_amd64.tar.zst`) is chosen as the default operating system for the container, offering a stable and widely-used base.
+
+### 4. Resource Configuration
+
+Default parameters for CPU cores (`1`), RAM (`512MB`), swap (`512MB`), and disk size (`2GB`) are set, providing a lightweight yet functional setup suitable for initial deployments or development.
+
+### 5. DHCP Networking
+
+The container's network is configured to use DHCP on `vmbr0`, simplifying network setup in most standard Proxmox environments.
+
+### 6. Nesting Support
+
+The `--features nesting=1` flag is included, which can be beneficial for running certain nested virtualization or containerization technologies within the LXC, though not strictly required for LimeDB itself.
+
+### 7. Binary Installation
+
+LimeDB is installed by directly downloading a pre-compiled binary from its GitHub releases (`v0.0.2`) into `/usr/local/bin` inside the container. This avoids the need for a full build environment within the LXC.
+
+### 8. Systemd Service Management
+
+A `systemd` unit file (`limedb.service`) is dynamically created and enabled within the container. This ensures LimeDB starts automatically on boot and is managed robustly by the system's init system.
+
+### 9. Basic Error Handling and Feedback
+
+The script includes functions for informative messages, success indicators, and error reporting, with checks for root execution and successful container creation.
+
+## Trade-offs and Constraints
+
+### Proxmox-Specific
+
+The script is tightly coupled to the Proxmox VE environment and cannot be used for deploying LimeDB on other virtualization platforms without significant modifications.
+
+### Default Parameters
+
+It uses hardcoded default values for container ID (`105`), password, storage pool (`local-lvm`), and OS template. Users need to ensure these defaults are appropriate for their specific Proxmox setup or modify the script variables directly.
+
+### Root Privileges
+
+The script itself must be run as root on the Proxmox host. Commands executed within the container (e.g., `apt-get`, `wget`, `systemctl`) are also run as the root user.
+
+### Network Assumptions
+
+It assumes the presence of a network bridge named `vmbr0` and a DHCP server on that network. Static IP configuration is not an option within the current script implementation.
+
+### External Dependency
+
+The LimeDB binary is fetched directly from GitHub releases. This implies a dependency on GitHub's availability and the persistence of the specific release version.
+
+### Limited Customization
+
+While essential parameters are configured, more advanced LXC settings (e.g., CPU limits, IOPS limits, specific static IP addresses, custom bind mounts) are not exposed for easy modification.
+
+### Security Post-Setup
+
+The use of a default container password and root installation inside the container means that for production deployments, additional security hardening (e.g., changing passwords, creating dedicated unprivileged users for LimeDB) would be necessary.
+
+## Future Implications
+
+This script serves as a foundational automation tool for LimeDB on Proxmox. It significantly simplifies the initial deployment phase, making it easier for users to experiment with, test, and potentially scale LimeDB instances. Future enhancements could include making more parameters configurable via command-line arguments, supporting different OS templates, enabling static IP configuration, or integrating with configuration management systems for more advanced fleet management.
+
+**Github**: [namanvashistha/limedb](https://github.com/namanvashistha/limedb)
