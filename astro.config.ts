@@ -20,7 +20,7 @@ const {
 
 // https://astro.build/config
 const config = defineConfig({
-	site: 'https://namanvashistha.github.io',
+	site: 'https://namanvashistha.com',
 	output: 'static',
 	integrations: [
 		expressiveCode({

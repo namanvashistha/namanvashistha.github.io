@@ -78,7 +78,7 @@ The site uses CSS variables for easy theming. Current color scheme is a vibrant 
 
 ## 🌐 Live Site
 
-Check it out at [namanvashistha.github.io](https://namanvashistha.github.io)
+Check it out at [namanvashistha.com](https://namanvashistha.com)
 
 ## 📝 Adding Content
 
