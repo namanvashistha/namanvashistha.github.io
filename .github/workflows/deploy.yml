@@ -52,7 +52,8 @@ jobs:
                     texlive-latex-base \
                     texlive-fonts-recommended \
                     texlive-latex-extra \
-                    texlive-fonts-extra
+                    texlive-fonts-extra \
+                    texlive-plain-generic
 
             - name: Setup Bun
               uses: oven-sh/setup-bun@v1

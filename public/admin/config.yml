@@ -115,11 +115,10 @@ collections:
     create: true
     extension: "json"
     format: "json"
-    slug: "{{fields.id}}_{{slug}}"
+    slug: "{{slug}}"
     identifier_field: "profile_name"
     fields:
-      - {label: "Profile Name", name: "profile_name", widget: "string", hint: "e.g., 'Backend Developer' or 'Full Stack'"}
-      - {label: "Profile ID", name: "id", widget: "string", hint: "e.g., 'base', '1', '2', etc.", required: false}
+      - {label: "Profile Name", name: "profile_name", widget: "string", hint: "e.g., '1_Backend Developer' or '2_Full Stack'"}
       
       # Basics Section
       - label: "Basic Information"
