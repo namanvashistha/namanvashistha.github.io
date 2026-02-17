@@ -108,3 +108,86 @@ collections:
                   {label: "Type", name: "type", widget: "select", options: ["lucide", "simple-icons"]},
                   {label: "Name", name: "name", widget: "string"}
                 ]}
+
+  - name: "resume"
+    label: "Resume Profiles"
+    folder: "resume/profiles"
+    create: true
+    extension: "json"
+    format: "json"
+    slug: "{{fields.id}}_{{slug}}"
+    identifier_field: "profile_name"
+    fields:
+      - {label: "Profile Name", name: "profile_name", widget: "string", hint: "e.g., 'Backend Developer' or 'Full Stack'"}
+      - {label: "Profile ID", name: "id", widget: "string", hint: "e.g., 'base', '1', '2', etc.", required: false}
+      
+      # Basics Section
+      - label: "Basic Information"
+        name: "basics"
+        widget: "object"
+        fields:
+          - {label: "Name", name: "name", widget: "string"}
+          - {label: "Label/Title", name: "label", widget: "string"}
+          - {label: "Email", name: "email", widget: "string"}
+          - {label: "Phone", name: "phone", widget: "string"}
+          - {label: "Location", name: "location", widget: "string"}
+          - label: "Profiles"
+            name: "profiles"
+            widget: "list"
+            fields:
+              - {label: "Network", name: "network", widget: "string"}
+              - {label: "Username", name: "username", widget: "string"}
+              - {label: "URL", name: "url", widget: "string"}
+      
+      # Education Section
+      - label: "Education"
+        name: "education"
+        widget: "list"
+        fields:
+          - {label: "Institution", name: "institution", widget: "string"}
+          - {label: "Location", name: "location", widget: "string"}
+          - {label: "Area/Major", name: "area", widget: "string"}
+          - {label: "Study Type", name: "studyType", widget: "string"}
+          - {label: "Start Date", name: "startDate", widget: "string"}
+          - {label: "End Date", name: "endDate", widget: "string"}
+          - {label: "Courses", name: "courses", widget: "list", required: false}
+      
+      # Work Experience Section
+      - label: "Work Experience"
+        name: "work"
+        widget: "list"
+        fields:
+          - {label: "Company", name: "name", widget: "string"}
+          - {label: "Position", name: "position", widget: "string"}
+          - {label: "Location", name: "location", widget: "string"}
+          - {label: "Start Date", name: "startDate", widget: "string"}
+          - {label: "End Date", name: "endDate", widget: "string"}
+          - {label: "Summary", name: "summary", widget: "text"}
+          - label: "Highlights"
+            name: "highlights"
+            widget: "list"
+            field: {label: "Highlight", name: "item", widget: "text"}
+      
+      # Projects Section
+      - label: "Projects"
+        name: "projects"
+        widget: "list"
+        fields:
+          - {label: "Project Name", name: "name", widget: "string"}
+          - {label: "Dates", name: "dates", widget: "string", required: false}
+          - {label: "Description", name: "description", widget: "text"}
+          - label: "Highlights"
+            name: "highlights"
+            widget: "list"
+            field: {label: "Highlight", name: "item", widget: "text"}
+      
+      # Skills Section
+      - label: "Skills"
+        name: "skills"
+        widget: "list"
+        fields:
+          - {label: "Category", name: "name", widget: "string"}
+          - label: "Keywords"
+            name: "keywords"
+            widget: "list"
+            field: {label: "Keyword", name: "item", widget: "string"}

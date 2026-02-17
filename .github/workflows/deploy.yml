@@ -21,6 +21,16 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
+            - name: Setup uv
+              uses: astral-sh/setup-uv@v5
+              with:
+                  enable-cache: true
+
+            - name: Install LaTeX
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended
+
             - name: Setup Bun
               uses: oven-sh/setup-bun@v1
               with:
@@ -31,6 +41,16 @@ jobs:
 
             - name: Build site
               run: bun run build
+
+            - name: Generate Resume PDFs directly to dist
+              run: |
+                  cd resume
+                  for profile in profiles/*.json; do
+                      echo "Generating PDF for $(basename $profile)"
+                      uv run generate.py "$profile"
+                  done
+                  echo "PDFs in dist/:"
+                  ls -lh ../dist/resume*.pdf 2>/dev/null || echo "No PDFs generated"
 
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
