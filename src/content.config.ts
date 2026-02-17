@@ -40,7 +40,9 @@ const other = defineCollection({
 
 const about = defineCollection({
 	loader: glob({ base: 'src/content', pattern: 'about.{md,mdx}' }),
-	schema: z.object({}),
+	schema: z.object({
+		title: z.string().optional(),
+	}),
 });
 
 const lucideIconSchema = z.object({

@@ -112,8 +112,10 @@ collections:
       - name: "about"
         label: "About Me"
         file: "src/content/about.mdx"
+        extension: "mdx"
         format: "frontmatter"
         fields:
+          - {label: "Title", name: "title", widget: "hidden", default: "About Me"}
           - {label: "Body", name: "body", widget: "markdown"}
 
   - name: "resume"
