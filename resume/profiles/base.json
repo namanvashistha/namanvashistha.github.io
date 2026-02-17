@@ -64,10 +64,10 @@
       "endDate": "July 2022",
       "summary": "Worked on multiple products including Farcommerce and MamaEarth.",
       "highlights": [
-        "**Farcommerce**: Architected an ecommerce platform with GraphQL APIs.",
+        "Farcommerce: Architected an ecommerce platform with GraphQL APIs.",
         "Enabled multitenancy for diverse client use cases (BoAt, Wow Skin, etc).",
         "Built and deployed CI/CD pipelines with Docker and Kubernetes.",
-        "**MamaEarth**: Transitioned systems to headless architecture for mobile apps.",
+        "MamaEarth: Transitioned systems to headless architecture for mobile apps.",
         "Integrated Payment Gateways and optimized API response times using AWS Lambda.",
         "Migrated infrastructure with zero downtime."
       ]
