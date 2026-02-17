@@ -64,63 +64,17 @@ collections:
         label: "Social Links"
         file: "src/content/socials.json"
         fields:
-          - name: "socials" # Root field is implicit for JSON array? No, Astro content loader uses direct array for JSON list, but Decap usually expects object unless root list...
-          # Wait, Astro loader file('src/content/socials.json') expects array if JSON is array.
-          # Decap for JSON usually wraps in object unless format: json-array?
-          # Actually, default JSON widget might wrap.
-          # But let's check the current content.
-          # The current content is just a JSON array.
-          # If I define fields directly on file, it usually assumes an object map.
-          # If the file is an array at root, Decap might struggle without a custom editor component or specific config.
-          # However, simpler: let's stick to the previous field definition which had a "socials" list wrapper.
-          # Wait, the previous config had `name: "socials", widget: "list"`. This implies the file content is `{ "socials": [...] }`.
-          # BUT the actual file content (step 237) is `[...]` (array at root).
-          # Astro content collections handle array-at-root fine.
-          # Decap CMS with JSON usually expects an object.
-          # If I use `widget: list` at the top level field, it expects a key.
-          # To edit a root array, I might need `list` widget with name matching something?
-          # Actually, if the file is just an array, Decap might overwrite it with `{ "some_key": [...] }`.
-          # This would break the Astro site if it expects an array.
-          # Let's check if I can use extension: json and format: json-array?
-          # Or just `widget: list` with no name? No, name is required.
-
-          # Let's try to simulate the array structure.
-          # If I use a list widget, it creates a list.
-          # If I name it "items", the JSON becomes `{ "items": [...] }`.
-          # To keep it as `[...]`, I might need to configure the collection/file specifically.
-          
-          # WORKAROUND:
-          # Given I cannot easily change the JSON structure without breaking the site (Astro content collections),
-          # I should check if Decap supports root arrays. 
-          # It does not natively support root arrays well for JSON.
-          # It usually serializes to an object.
-          
-          # PROPOSAL:
-          # I will define them as they are, but perhaps the user is okay with the structure change?
-          # If the user's Astro code expects an array (it does: `loader: file(...)`), it handles array-at-root.
-          # If Decap wraps it in an object, Astro loader might need to change to `loader: file(..., { parser: ... })` or manual parsing.
-          
-          # Actually, let's look at `socials` collection definition again.
-          # `loader: file('src/content/socials.json')`
-          # Content config says: `schema: z.object(...)`.
-          # This means the loader returns a collection where each ITEM in the array is an entry.
-          
-          # If Decap saves it as `{ "socials": [...] }`, then the file loader will fail because it expects an array.
-          
-          # However, for now, the error is simply the configuration structure (file vs files).
-          # I will fix the structure first.
-          # I will leave the field names as they were, but put them under `files`.
-          
-          label: "Social Links"
-          widget: "list"
-          fields:
-            - {label: "ID", name: "id", widget: "number"}
-            - {label: "Text", name: "text", widget: "string"}
-            - {label: "Link", name: "link", widget: "string"}
-            - {label: "Icon", name: "icon", widget: "object", fields: [
-                {label: "Type", name: "type", widget: "select", options: ["lucide", "simple-icons"]},
-                {label: "Name", name: "name", widget: "string"}
-              ]}
+      - name: "socials"
+        label: "Social Links"
+        widget: "list"
+        fields:
+          - {label: "ID", name: "id", widget: "number"}
+          - {label: "Text", name: "text", widget: "string"}
+          - {label: "Link", name: "link", widget: "string"}
+          - {label: "Icon", name: "icon", widget: "object", fields: [
+              {label: "Type", name: "type", widget: "select", options: ["lucide", "simple-icons"]},
+              {label: "Name", name: "name", widget: "string"}
+            ]}
 
       - name: "work"
         label: "Work Experience"
