@@ -6,7 +6,7 @@ on:
     workflow_dispatch:
 
 permissions:
-    contents: read
+    contents: write  # Need write permission to commit PDFs
     pages: write
     id-token: write
 
@@ -24,6 +24,8 @@ jobs:
               uses: actions/checkout@v4
               with:
                   fetch-depth: 2  # Need history to check for changes
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  persist-credentials: true
 
             - name: Check for resume changes
               id: resume_check
