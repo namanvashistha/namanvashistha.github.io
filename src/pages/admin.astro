@@ -7,12 +7,6 @@
     <title>Content Manager</title>
   </head>
   <body>
-    <script src="https://unpkg.com/decap-cms@^3.10.0/dist/decap-cms.js"></script>
-    <script>
-      // @ts-ignore - CMS is loaded from CDN
-      CMS.registerPreviewStyle('/styles/globals.css');
-      // @ts-ignore
-      CMS.registerPreviewStyle('/styles/article.css');
-    </script>
+    <script src="https://unpkg.com/decap-cms@^3.10.0/dist/decap-cms.js" onload="window.CMS && window.CMS.registerPreviewStyle && (CMS.registerPreviewStyle('/styles/globals.css'), CMS.registerPreviewStyle('/styles/article.css'))"></script>
   </body>
 </html>
