@@ -19,7 +19,9 @@ export async function GET(context) {
         pubDate: post.data.createdAt,
         description: post.data.description,
         link: `/blog/${post.id}/`,
-        content: sanitizeHtml(parser.render(post.body), {
+        content: sanitizeHtml(
+          (post.data.image ? `<img src="${context.site + post.data.image.src.replace(/^\//, '')}" />` : '') + 
+          parser.render(post.body), {
           allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img'])
         }),
       })),
