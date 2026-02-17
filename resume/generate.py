@@ -11,7 +11,7 @@ from jinja2 import Environment, FileSystemLoader
 BASE_DIR = Path(__file__).parent
 PROFILES_DIR = BASE_DIR / "profiles"
 OUTPUT_DIR = BASE_DIR / "output"  # Intermediate files (.tex, .aux, .log)
-PUBLIC_DIR = BASE_DIR.parent / "dist"  # Final PDFs go directly to dist/
+PUBLIC_DIR = BASE_DIR.parent / "public"  # Final PDFs in public/ (committed to git)
 TEMPLATE_FILE = "template.tex.j2"
 
 
@@ -152,11 +152,18 @@ def generate_resume(profile_path: Path):
         )
         print(f"PDF generated: {output_pdf}")
         
-        # 7. Copy PDF to public directory for web access
+        # 7. Copy PDF to public directory (for git commit)
         PUBLIC_DIR.mkdir(exist_ok=True)
         public_pdf = PUBLIC_DIR / output_pdf_name
         shutil.copy2(output_pdf, public_pdf)
-        print(f"Copied to: {public_pdf}")
+        print(f"Copied to public/: {public_pdf}")
+        
+        # 8. Copy PDF to dist directory if it exists (for deployment)
+        DIST_DIR = BASE_DIR.parent / "dist"
+        if DIST_DIR.exists():
+            dist_pdf = DIST_DIR / output_pdf_name
+            shutil.copy2(output_pdf, dist_pdf)
+            print(f"Copied to dist/: {dist_pdf}")
         
         return output_pdf
     except subprocess.CalledProcessError as e:
