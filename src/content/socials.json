@@ -34,5 +34,14 @@
 		},
 		"text": "Website",
 		"link": "https://namanvashistha.com"
+	},
+	{
+		"id": 5,
+		"icon": {
+			"type": "lucide",
+			"name": "book-open"
+		},
+		"text": "Dev.to",
+		"link": "https://dev.to/namanvashistha"
 	}
 ]
