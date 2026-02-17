@@ -16,7 +16,7 @@ TEMPLATE_FILE = "template.tex.j2"
 
 
 def latex_escape(text: str) -> str:
-    """
+    r"""
     Escape special LaTeX characters in a string.
     
     This function handles all special LaTeX characters that would otherwise
