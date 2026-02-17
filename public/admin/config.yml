@@ -1,0 +1,101 @@
+backend:
+  name: github
+  repo: namanvashistha/namanvashistha.github.io
+  branch: main
+  base_url: https://github-oauth.namanvashistha15.workers.dev
+  auth_endpoint: /api/auth
+
+media_folder: "src/assets/uploads"
+public_folder: "/src/assets/uploads"
+
+collections:
+  - name: "posts"
+    label: "Blog Posts"
+    folder: "src/content/posts"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Publish Date", name: "createdAt", widget: "datetime"}
+      - {label: "Updated Date", name: "updatedAt", widget: "datetime", required: false}
+      - {label: "Draft", name: "draft", widget: "boolean", default: false}
+      - {label: "Tags", name: "tags", widget: "relation", collection: "tags", search_fields: ["id"], value_field: "id", multiple: true}
+      - {label: "Cover Image", name: "image", widget: "image"}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "projects"
+    label: "Projects"
+    folder: "src/content/projects"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Date", name: "date", widget: "datetime"}
+      - {label: "Cover Image", name: "image", widget: "image"}
+      - {label: "Project Link", name: "link", widget: "string", required: false}
+      - {label: "Info", name: "info", widget: "list", fields: [
+          {label: "Text", name: "text", widget: "string"},
+          {label: "Icon Type", name: "icon", widget: "object", fields: [
+            {label: "Type", name: "type", widget: "select", options: ["lucide", "simple-icons"]},
+            {label: "Name", name: "name", widget: "string"}
+          ]},
+          {label: "Link", name: "link", widget: "string", required: false}
+        ]}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "tags"
+    label: "Tags"
+    file: "src/content/tags.json"
+    fields:
+      - name: "tags"
+        label: "Tags"
+        widget: "list"
+        fields:
+          - {label: "ID", name: "id", widget: "string"}
+
+  - name: "socials"
+    label: "Social Links"
+    file: "src/content/socials.json"
+    fields:
+      - name: "socials"
+        label: "Links"
+        widget: "list"
+        fields:
+          - {label: "ID", name: "id", widget: "number"}
+          - {label: "Text", name: "text", widget: "string"}
+          - {label: "Link", name: "link", widget: "string"}
+          - {label: "Icon", name: "icon", widget: "object", fields: [
+              {label: "Type", name: "type", widget: "select", options: ["lucide", "simple-icons"]},
+              {label: "Name", name: "name", widget: "string"}
+            ]}
+
+  - name: "work"
+    label: "Work Experience"
+    file: "src/content/work.json"
+    fields:
+      - name: "work"
+        label: "Experience"
+        widget: "list"
+        fields:
+          - {label: "ID", name: "id", widget: "number"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Company", name: "company", widget: "string"}
+          - {label: "Duration", name: "duration", widget: "string"}
+          - {label: "Description", name: "description", widget: "text"}
+
+  - name: "info"
+    label: "Quick Info"
+    file: "src/content/info.json"
+    fields:
+      - name: "info"
+        label: "Items"
+        widget: "list"
+        fields:
+          - {label: "ID", name: "id", widget: "number"}
+          - {label: "Text", name: "text", widget: "string"}
+          - {label: "Icon", name: "icon", widget: "object", fields: [
+              {label: "Type", name: "type", widget: "select", options: ["lucide", "simple-icons"]},
+              {label: "Name", name: "name", widget: "string"}
+            ]}
