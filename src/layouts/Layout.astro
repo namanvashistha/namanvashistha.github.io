@@ -33,15 +33,15 @@ const { title, description, image, pagefindIgnore, article } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 
 		<title>{title}</title>
-		{description && <meta name="description" content={description} />}
+		{description && <meta name="description" content={description.length > 160 ? description.slice(0, 157) + '...' : description} />}
 		<meta name="theme-color" content={themeColor}>
 
 		<link rel="canonical" href={Astro.url} />
 
 		<meta name="og:title" content={title} />
-		{description && <meta name="og:description" content={description} />}
+		{description && <meta name="og:description" content={description.length > 160 ? description.slice(0, 157) + '...' : description} />}
 		<meta name="og:image" content={image?.src || '/img/og.png'} />
-		<meta name="og:url" content={Astro.site} />
+		<meta name="og:url" content={Astro.url} />
 		{!article && <meta name="og:type" content="website" />}
 		<meta name="og:locale" content="en" />
 
@@ -61,7 +61,7 @@ const { title, description, image, pagefindIgnore, article } = Astro.props;
 			<meta name="twitter:creator" content={twitterHandle} />
 		)}
 		<meta name="twitter:title" content={title} />
-		{description && <meta name="twitter:description" content={description} />}
+		{description && <meta name="twitter:description" content={description.length > 160 ? description.slice(0, 157) + '...' : description} />}
 		<meta name="twitter:image" content={image?.src || '/img/og.png'} />
 	</head>
 	<body>
