@@ -60,6 +60,16 @@ jobs:
 
             - name: Build site
               run: bun run build
+              env:
+                GISCUS_REPO: namanvashistha/namanvashistha.github.io
+                GISCUS_REPO_ID: MDEwOlJlcG9zaXRvcnkxMjYxOTIwNjc=
+                GISCUS_CATEGORY: Comments
+                GISCUS_CATEGORY_ID: DIC_kwDOB4WJw84C2tvv
+                GISCUS_MAPPING: pathname
+                GISCUS_STRICT: "false"
+                GISCUS_REACTIONS_ENABLED: "true"
+                GISCUS_EMIT_METADATA: "false"
+                GISCUS_LANG: en
 
             - name: Generate Resume PDFs (to public/ and dist/)
               if: steps.resume_check.outputs.changed == 'true'
