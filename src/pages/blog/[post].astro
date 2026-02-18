@@ -83,6 +83,14 @@ const { Content, headings } = await render(post);
             <span>/</span>
             <span>Tags: {post.data.tags.map((tag) => tag.id).join(", ")}</span>
           </div>
+          <div class="hits-counter" data-pagefind-ignore>
+            <img
+              src={`https://hits.sh/namanvashistha.com/blog/${post.id}.svg?style=flat&label=views&color=8c5cf5&labelColor=1e1e2e&extraCount=0`}
+              alt="view count"
+              loading="lazy"
+              height="18"
+            />
+          </div>
         </div>
       </div>
       <Content />
@@ -163,6 +171,16 @@ const { Content, headings } = await render(post);
 
   .comments * {
     border-color: #353535 !important;
+  }
+
+  .hits-counter {
+    margin-top: 0.4rem;
+    min-height: 18px;
+  }
+
+  .hits-counter img {
+    opacity: 0.75;
+    border-radius: 4px;
   }
 
   @media screen and (max-width: 640px) {
