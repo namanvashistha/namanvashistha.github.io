@@ -79,16 +79,16 @@ const { Content, headings } = await render(post);
           <div class="article-info">
             <span>{post.data.createdAt.toLocaleDateString()}</span>
             <span>/</span>
-            <span>{timeToRead(post)} minute{timeToRead(post) === 1 ? "" : "s"} to read</span>
+            <span>{timeToRead(post)} minute{timeToRead(post) === 1 ? "" : "s"} read</span>
             <span>/</span>
             <span>Tags: {post.data.tags.map((tag) => tag.id).join(", ")}</span>
-          </div>
-          <div class="hits-counter" data-pagefind-ignore>
+            <span>/</span>
+            <span class="hits-label">Views:</span>
             <img
-              src={`https://hits.sh/namanvashistha.com/blog/${post.id}.svg?style=flat&label=views&color=8c5cf5&labelColor=1e1e2e&extraCount=0`}
+              src={`https://hits.sh/namanvashistha.com/blog/${post.id}.svg?style=flat-square&label=&#8203;&color=8c5cf5&labelColor=1a1a1a&extraCount=100`}
               alt="view count"
-              loading="lazy"
               height="18"
+              class="hits-badge"
             />
           </div>
         </div>
@@ -173,15 +173,7 @@ const { Content, headings } = await render(post);
     border-color: #353535 !important;
   }
 
-  .hits-counter {
-    margin-top: 0.4rem;
-    min-height: 18px;
-  }
 
-  .hits-counter img {
-    opacity: 0.75;
-    border-radius: 4px;
-  }
 
   @media screen and (max-width: 640px) {
     article {
