@@ -1,0 +1,19 @@
+{
+    "name": "Naman's CMS",
+    "short_name": "CMS",
+    "description": "Content Manager for namanvashistha.com",
+    "start_url": "/admin/",
+    "scope": "/admin/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#0f0f0f",
+    "theme_color": "#0f0f0f",
+    "icons": [
+        {
+            "src": "/favicon.png",
+            "sizes": "any",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
