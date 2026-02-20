@@ -38,3 +38,27 @@
 .blog-tag.active {
 	background: var(--primary);
 }
+
+.post-cover-image {
+	width: 120px;
+	height: 80px;
+	min-width: 120px;
+	object-fit: cover;
+	border-radius: 4px;
+	opacity: 0.85;
+	transition: opacity 0.2s ease;
+}
+
+.post-container:hover .post-cover-image,
+.post-container:focus-visible .post-cover-image {
+	opacity: 1;
+}
+
+@media screen and (max-width: 640px) {
+	.post-cover-image {
+		width: 100%;
+		height: 140px;
+		min-width: unset;
+		border-radius: 4px;
+	}
+}

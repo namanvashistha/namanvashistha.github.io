@@ -91,7 +91,8 @@ main {
 
 .post-container {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	align-items: center;
 	gap: 1rem;
 	padding: 1rem;
 	border: 1px solid #353535;
@@ -100,6 +101,14 @@ main {
 	transition:
 		background-color 0.15s ease,
 		border 0.15s ease;
+}
+
+.post-text-content {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	min-width: 0;
+	flex: 1;
 }
 
 .post-container:hover,
@@ -165,6 +174,11 @@ main {
 	.post-header {
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+
+	.post-container {
+		flex-direction: column;
+		align-items: stretch;
 	}
 }
 

@@ -1,6 +1,7 @@
 ---
 import '../styles/article-list.css';
 
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { openGraph } from 'spectre:globals';
 import Card from '../components/Card.astro';
@@ -44,11 +45,20 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
 			<div class="content-container">
 				{posts.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime()).map((post) => (
 					<a href={`/blog/${post.id}`} class="post-container" data-tags={post.data.tags.map((tag) => tag.id).join(",")}>
-						<div class="post-header">
-							<h3>{post.data.title}</h3>
-							<span class="post-date">{post.data.createdAt.toLocaleDateString()}</span>
+						<Image
+							src={post.data.image}
+							alt={post.data.title}
+							width={240}
+							class="post-cover-image"
+							loading="lazy"
+						/>
+						<div class="post-text-content">
+							<div class="post-header">
+								<h3>{post.data.title}</h3>
+								<span class="post-date">{post.data.createdAt.toLocaleDateString()}</span>
+							</div>
+							<span>{post.data.description}</span>
 						</div>
-						<span>{post.data.description}</span>
 					</a>
 				))}
 			</div>

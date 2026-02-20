@@ -1,6 +1,7 @@
 ---
 import '../styles/index.css';
 
+import { Image } from 'astro:assets';
 import { getCollection, getEntry, render } from 'astro:content';
 import { name, openGraph } from 'spectre:globals';
 import ProfilePicture from '../assets/pfp.png';
@@ -71,11 +72,20 @@ const { Content: About } = await render(about!);
 			<div class="content-container">
 				{posts.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime()).slice(0, 2).map((post) => (
 					<a href={`/blog/${post.id}`} class="post-container">
-						<div class="post-header">
-							<h3>{post.data.title}</h3>
-							<span class="post-date">{post.data.createdAt.toLocaleDateString()}</span>
+						<Image
+							src={post.data.image}
+							alt={post.data.title}
+							width={240}
+							class="post-cover-image"
+							loading="lazy"
+						/>
+						<div class="post-text-content">
+							<div class="post-header">
+								<h3>{post.data.title}</h3>
+								<span class="post-date">{post.data.createdAt.toLocaleDateString()}</span>
+							</div>
+							<span>{post.data.description}</span>
 						</div>
-						<span>{post.data.description}</span>
 					</a>
 				))}
 			</div>
@@ -88,11 +98,20 @@ const { Content: About } = await render(about!);
 			<div class="content-container">
 				{projects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 2).map((project) => (
 					<a href={`/projects/${project.id}`} class="post-container">
-						<div class="post-header">
-							<h3>{project.data.title}</h3>
-							<span class="post-date">{project.data.date.toLocaleDateString()}</span>
+						<Image
+							src={project.data.image}
+							alt={project.data.title}
+							width={240}
+							class="post-cover-image"
+							loading="lazy"
+						/>
+						<div class="post-text-content">
+							<div class="post-header">
+								<h3>{project.data.title}</h3>
+								<span class="post-date">{project.data.date.toLocaleDateString()}</span>
+							</div>
+							<span>{project.data.description}</span>
 						</div>
-						<span>{project.data.description}</span>
 					</a>
 				))}
 			</div>
