@@ -46,12 +46,14 @@
 	object-fit: cover;
 	border-radius: 4px;
 	opacity: 0.85;
-	transition: opacity 0.2s ease;
+	transition: opacity 0.2s ease, box-shadow 0.2s ease;
+	box-shadow: 0 0 12px 2px rgba(var(--primary-rgb), 0.2);
 }
 
 .post-container:hover .post-cover-image,
 .post-container:focus-visible .post-cover-image {
 	opacity: 1;
+	box-shadow: 0 0 16px 4px rgba(var(--primary-rgb), 0.35);
 }
 
 @media screen and (max-width: 640px) {
