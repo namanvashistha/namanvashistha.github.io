@@ -1,11 +1,3 @@
 {
-  "work": [
-    {
-      "id": 1,
-      "title": "title",
-      "company": "company",
-      "duration": "duration",
-      "description": "description"
-    }
-  ]
+  "work": []
 }
