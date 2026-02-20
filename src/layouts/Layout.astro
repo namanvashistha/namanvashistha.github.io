@@ -6,6 +6,9 @@ import { name, themeColor, twitterHandle } from 'spectre:globals';
 import Background from '../components/Background.astro';
 import LayoutGrid from '../components/LayoutGrid.astro';
 import Navbar from '../components/Navbar.astro';
+import { loadEnv } from 'vite';
+
+const { UMAMI_WEBSITE_ID } = loadEnv(process.env.NODE_ENV!, process.cwd(), '');
 
 interface Props {
 	title: string;
@@ -63,6 +66,14 @@ const { title, description, image, pagefindIgnore, article } = Astro.props;
 		<meta name="twitter:title" content={title} />
 		{description && <meta name="twitter:description" content={description.length > 160 ? description.slice(0, 157) + '...' : description} />}
 		<meta name="twitter:image" content={image?.src || '/img/og.png'} />
+
+		{UMAMI_WEBSITE_ID && (
+			<script
+				defer
+				src="https://cloud.umami.is/script.js"
+				data-website-id={UMAMI_WEBSITE_ID}
+			/>
+		)}
 	</head>
 	<body>
 		<main data-pagefind-ignore={pagefindIgnore}>

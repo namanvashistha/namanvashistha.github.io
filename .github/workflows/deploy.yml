@@ -70,6 +70,7 @@ jobs:
                 GISCUS_REACTIONS_ENABLED: "true"
                 GISCUS_EMIT_METADATA: "false"
                 GISCUS_LANG: en
+                UMAMI_WEBSITE_ID:"7fbb5129-4232-411d-aa56-d577f6d182de"
 
             - name: Generate Resume PDFs (to public/ and dist/)
               if: steps.resume_check.outputs.changed == 'true'
