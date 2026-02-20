@@ -62,6 +62,93 @@
     },
     {
       "id": "engineering"
+    },
+    {
+      "id": "backend"
+    },
+    {
+      "id": "api"
+    },
+    {
+      "id": "microservices"
+    },
+    {
+      "id": "performance"
+    },
+    {
+      "id": "concurrency"
+    },
+    {
+      "id": "caching"
+    },
+    {
+      "id": "testing"
+    },
+    {
+      "id": "architecture"
+    },
+    {
+      "id": "system-design"
+    },
+    {
+      "id": "javascript"
+    },
+    {
+      "id": "rust"
+    },
+    {
+      "id": "linux"
+    },
+    {
+      "id": "redis"
+    },
+    {
+      "id": "postgres"
+    },
+    {
+      "id": "kafka"
+    },
+    {
+      "id": "aws"
+    },
+    {
+      "id": "ci-cd"
+    },
+    {
+      "id": "open-source"
+    },
+    {
+      "id": "tutorial"
+    },
+    {
+      "id": "til"
+    },
+    {
+      "id": "deep-dive"
+    },
+    {
+      "id": "productivity"
+    },
+    {
+      "id": "learning"
+    },
+    {
+      "id": "growth"
+    },
+    {
+      "id": "payments"
+    },
+    {
+      "id": "security"
+    },
+    {
+      "id": "networking"
+    },
+    {
+      "id": "algorithms"
+    },
+    {
+      "id": "data-structures"
     }
   ]
 }
