@@ -55,6 +55,7 @@ const { Content, headings } = await render(post);
 >
   <div class="left" slot="left">
     <Card class="toc-card">
+      <nav aria-label="Table of contents">
       <h2 class="no-mt">Table of contents</h2>
       <ol>
         <li class="toc-li">
@@ -66,6 +67,7 @@ const { Content, headings } = await render(post);
           </li>
         ))}
       </ol>
+      </nav>
     </Card>
   </div>
   <article slot="right" data-pagefind-body>

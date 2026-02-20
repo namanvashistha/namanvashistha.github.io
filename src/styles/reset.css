@@ -25,11 +25,38 @@
 html {
 	color-scheme: dark;
 	background-color: #0b0b0b;
+	scroll-behavior: smooth;
 }
 
 html,
 body {
 	margin: 0;
+}
+
+/* Keyboard focus indicator */
+*:focus-visible {
+	outline: 2px solid var(--primary, #8c5cf5);
+	outline-offset: 2px;
+}
+
+/* Skip to content link */
+.skip-to-content {
+	position: absolute;
+	top: -100%;
+	left: 0;
+	right: 0;
+	background: var(--primary, #8c5cf5);
+	color: #fff;
+	text-align: center;
+	padding: 0.75rem;
+	z-index: 100;
+	font-weight: 600;
+	text-decoration: none;
+	transition: top 0.15s ease;
+}
+
+.skip-to-content:focus {
+	top: 0;
 }
 
 body {

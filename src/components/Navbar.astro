@@ -4,26 +4,26 @@ import Icon from './Icon.astro';
 
 const path = Astro.url.pathname;
 ---
-<nav>
+<nav aria-label="Main navigation">
   <a class="site-title" href="/">{name}</a>
   <ul>
     <li>
       <a href="/" class:list={{ active: path === '/' }}>Home</a>
     </li>
-    <li class="nav-separator">/</li>
+    <li class="nav-separator" aria-hidden="true">/</li>
     <li>
       <a href="/blog" class:list={{ active: path.startsWith('/blog') }}>Blog</a>
     </li>
-    <li class="nav-separator">/</li>
+    <li class="nav-separator" aria-hidden="true">/</li>
     <li>
       <a href="/projects" class:list={{ active: path.startsWith('/projects') }}>Projects</a>
     </li>
-    <li class="nav-separator">/</li>
+    <li class="nav-separator" aria-hidden="true">/</li>
     <li>
       <a href="/resume" class:list={{ active: path.startsWith('/resume') }}>Resume</a>
     </li>
   </ul>
-  <button class="mobile-nav-toggle" aria-label="Mobile menu trigger">
+  <button class="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
     <Icon type="lucide" name="menu" width={24} height={24} class="menu-closed" />
     <Icon type="lucide" name="x" width={24} height={24} class="menu-open" />
   </button>
@@ -34,6 +34,8 @@ const path = Astro.url.pathname;
   navToggle?.addEventListener('click', () => {
     navToggle.classList.toggle('active');
     document.querySelector('nav').classList.toggle('active');
+    const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', String(!isExpanded));
   });
 </script>
 <style>

@@ -18,13 +18,15 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
   <div class="layout-grid-left" slot="left">
     <Card class="flex-col-card">
       <h2 class="no-mt">Filter</h2>
-      <ul class="tags-list">
+      <ul class="tags-list" role="group" aria-label="Filter posts by tag">
         {Array.from(new Set(tags)).map((tag) => (
           <li>
             <a
               class="blog-tag"
               href="/blog"
               data-tag={tag}
+              role="button"
+              aria-pressed="false"
             >
               {tag}
             </a>
@@ -94,8 +96,10 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
 
       if (selectedTags.has(tagValue)) {
         selectedTags.delete(tagValue);
+        tag.setAttribute('aria-pressed', 'false');
       } else {
         selectedTags.add(tagValue);
+        tag.setAttribute('aria-pressed', 'true');
       }
 
       updatePostsVisibility();
