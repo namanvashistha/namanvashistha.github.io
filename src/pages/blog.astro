@@ -73,56 +73,58 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
   </div>
 </Layout>
 <script>
-  const tags = document.querySelectorAll<HTMLAnchorElement>('.blog-tag');
-  const posts = document.querySelectorAll<HTMLAnchorElement>('.post-container');
-  const url = new URL(window.location.href);
-  const initialTags = url.searchParams.get('tags')?.split(',').filter((tag) => tag.length > 0) || [];
-  const selectedTags = new Set(initialTags);
+  document.addEventListener('astro:page-load', () => {
+    const tags = document.querySelectorAll<HTMLAnchorElement>('.blog-tag');
+    const posts = document.querySelectorAll<HTMLAnchorElement>('.post-container');
+    const url = new URL(window.location.href);
+    const initialTags = url.searchParams.get('tags')?.split(',').filter((tag) => tag.length > 0) || [];
+    const selectedTags = new Set(initialTags);
 
-  function updatePostsVisibility() {
-    posts.forEach((post) => {
-      const postTags = post.dataset.tags!.split(',');
-      // if there are selected tags and the post does not have all of them, hide the post
-      if (selectedTags.size > 0 && ![...selectedTags].every((tag) => postTags.includes(tag))) {
-        post.style.display = 'none';
-      } else {
-        post.style.display = '';
+    function updatePostsVisibility() {
+      posts.forEach((post) => {
+        const postTags = post.dataset.tags!.split(',');
+        // if there are selected tags and the post does not have all of them, hide the post
+        if (selectedTags.size > 0 && ![...selectedTags].every((tag) => postTags.includes(tag))) {
+          post.style.display = 'none';
+        } else {
+          post.style.display = '';
+        }
+      });
+    }
+
+    function updateURL() {
+      // create a "clean" URL for the current page before adding the new query parameters
+      const newUrl = new URL(window.location.pathname, window.location.origin);
+      if (selectedTags.size > 0) {
+        newUrl.searchParams.set('tags', [...selectedTags].join(','));
       }
-    });
-  }
-
-  function updateURL() {
-    // create a "clean" URL for the current page before adding the new query parameters
-    const newUrl = new URL(window.location.pathname, window.location.origin);
-    if (selectedTags.size > 0) {
-      newUrl.searchParams.set('tags', [...selectedTags].join(','));
-    }
-    history.pushState({ tags: [...selectedTags] }, '', newUrl);
-  }
-
-  tags.forEach((tag) => {
-    const tagValue = tag.dataset.tag!;
-    if (selectedTags.has(tagValue)) {
-      tag.classList.add('active');
+      history.pushState({ tags: [...selectedTags] }, '', newUrl);
     }
 
-    tag.addEventListener('click', (event) => {
-      event.preventDefault();
-
-      tag.classList.toggle('active');
-
+    tags.forEach((tag) => {
+      const tagValue = tag.dataset.tag!;
       if (selectedTags.has(tagValue)) {
-        selectedTags.delete(tagValue);
-        tag.setAttribute('aria-pressed', 'false');
-      } else {
-        selectedTags.add(tagValue);
-        tag.setAttribute('aria-pressed', 'true');
+        tag.classList.add('active');
       }
 
-      updatePostsVisibility();
-      updateURL();
-    });
-  });
+      tag.addEventListener('click', (event) => {
+        event.preventDefault();
 
-  updatePostsVisibility();
+        tag.classList.toggle('active');
+
+        if (selectedTags.has(tagValue)) {
+          selectedTags.delete(tagValue);
+          tag.setAttribute('aria-pressed', 'false');
+        } else {
+          selectedTags.add(tagValue);
+          tag.setAttribute('aria-pressed', 'true');
+        }
+
+        updatePostsVisibility();
+        updateURL();
+      });
+    });
+
+    updatePostsVisibility();
+  });
 </script>

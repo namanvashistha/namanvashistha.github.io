@@ -1,17 +1,4 @@
-.layout-grid-left,
-.layout-grid-right {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	gap: 2rem;
-}
 
-@media screen and (max-width: 640px) {
-	.layout-grid-left,
-	.layout-grid-right {
-		gap: 1rem;
-	}
-}
 
 .flex-col-card {
 	display: flex;

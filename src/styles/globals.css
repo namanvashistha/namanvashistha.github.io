@@ -59,6 +59,14 @@ main {
 	margin-top: 1rem;
 }
 
+.layout-grid-left,
+.layout-grid-right {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	gap: 2rem;
+}
+
 .expressive-code figure {
 	box-shadow: none !important;
 }
@@ -174,6 +182,11 @@ main {
 	.post-header {
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+
+	.layout-grid-left,
+	.layout-grid-right {
+		gap: 1rem;
 	}
 
 	.post-container {
