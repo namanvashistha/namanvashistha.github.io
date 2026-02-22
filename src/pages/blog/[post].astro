@@ -79,7 +79,7 @@ const { Content, headings } = await render(post);
             <h1 class="no-mt article-h1">{post.data.title}</h1>
           </div>
           <div class="article-info">
-            <span>{post.data.createdAt.toLocaleDateString()}</span>
+            <span>{post.data.createdAt.toLocaleDateString('en-GB')}</span>
             <span>/</span>
             <span>{timeToRead(post)} minute{timeToRead(post) === 1 ? "" : "s"} read</span>
             <span>/</span>
