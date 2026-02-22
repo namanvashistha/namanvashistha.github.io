@@ -34,137 +34,140 @@ const path = Astro.url.pathname;
   </button>
 </nav>
 <script is:inline>
-  const searchElement = document.querySelector('#search');
-  const results = document.querySelector('#search-results');
-  const navToggle = document.querySelector('.mobile-nav-toggle');
-
+  let pagefindInitialized = false;
+  let globalListenersAdded = false;
   let focusIndex = -1;
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'k' && e.ctrlKey) {
-      searchElement.focus();
+  const initNavbar = () => {
+    const searchElement = document.querySelector('#search');
+    const results = document.querySelector('#search-results');
+    const navToggle = document.querySelector('.mobile-nav-toggle');
+
+    if (!searchElement || !results || !navToggle) return;
+
+    if (!globalListenersAdded) {
+      document.addEventListener('keydown', (e) => {
+        const currentSearch = document.querySelector('#search');
+        const currentResults = document.querySelector('#search-results');
+        if (!currentSearch || !currentResults) return;
+
+        if (e.key === 'k' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          currentSearch.focus();
+        }
+
+        if (e.key === 'Escape') {
+          currentSearch.blur();
+          currentResults.classList.remove('active');
+          focusIndex = -1;
+        }
+
+        if (e.key === 'ArrowDown') {
+          const resultLinks = document.querySelectorAll('#search-results a');
+          if (resultLinks.length > 0) {
+            e.preventDefault();
+            focusIndex++;
+            if (focusIndex >= resultLinks.length) focusIndex = 0;
+            resultLinks[focusIndex]?.focus();
+          }
+        }
+
+        if (e.key === 'ArrowUp') {
+          const resultLinks = document.querySelectorAll('#search-results a');
+          if (resultLinks.length > 0) {
+            e.preventDefault();
+            focusIndex--;
+            if (focusIndex < 0) focusIndex = resultLinks.length - 1;
+            resultLinks[focusIndex]?.focus();
+          }
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        const currentSearch = document.querySelector('#search');
+        if (currentSearch) {
+          currentSearch.placeholder = 'Search';
+        }
+      });
+
+      globalListenersAdded = true;
     }
 
-    if (e.key === 'Escape') {
-      searchElement.blur();
-      results.classList.remove('active');
-      focusIndex = -1;
-    }
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-
-      focusIndex++;
-      const results = document.querySelectorAll('#search-results a');
-
-      if (focusIndex >= results.length) {
-        focusIndex = 0;
+    searchElement.addEventListener('focus', async () => {
+      searchElement.placeholder = '';
+      results.classList.add('active');
+      
+      if (!pagefindInitialized) {
+        try {
+          // Check if window.pagefind is already loaded (it might be since we use View Transitions)
+          if (!window.pagefind) {
+            window.pagefind = await import("/pagefind/pagefind.js");
+            await window.pagefind.init();
+          }
+          pagefindInitialized = true;
+        } catch (error) {
+          console.error('Failed to initialize Pagefind:', error);
+        }
       }
-
-      results[focusIndex]?.focus();
-    }
-
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-
-      focusIndex--;
-      const results = document.querySelectorAll('#search-results a');
-
-      if (focusIndex < 0) {
-        focusIndex = results.length - 1;
-      }
-
-      results[focusIndex]?.focus();
-    }
-  });
-
-  let pagefindInitialized = false;
-
-  searchElement?.addEventListener('focus', async () => {
-    searchElement.placeholder = '';
-    results.classList.add('active');
+    });
     
-    // initialize pagefind on first focus
-    if (!pagefindInitialized) {
-      try {
-        window.pagefind = await import("/pagefind/pagefind.js");
-        await window.pagefind.init();
-        pagefindInitialized = true;
-      } catch (error) {
-        console.error('Failed to initialize Pagefind:', error);
-      }
-    }
-  });
-  
-  searchElement?.addEventListener('blur', () => {
-    handleTabletChange();
-    setTimeout(() => {
-      if (!document.activeElement?.closest('#search-results')) {
+    searchElement.addEventListener('blur', () => {
+      searchElement.placeholder = 'Search';
+      setTimeout(() => {
+        if (!document.activeElement?.closest('#search-results')) {
+          results.classList.remove('active');
+          focusIndex = -1;
+        }
+      }, 1);
+    });
+
+    results.addEventListener('focusout', (e) => {
+      if (!e.relatedTarget?.closest('#search-results')) {
         results.classList.remove('active');
         focusIndex = -1;
       }
-    }, 1);
-  });
+    });
 
-  results?.addEventListener('focusout', (e) => {
-    if (!e.relatedTarget?.closest('#search-results')) {
-      results.classList.remove('active');
-      focusIndex = -1;
-    }
-  });
+    searchElement.addEventListener('input', async (e) => {
+      if (!pagefindInitialized || !window.pagefind) return;
 
-  searchElement?.addEventListener('input', async (e) => {
-    // only search if Pagefind is ready
-    if (!pagefindInitialized) {
-      return;
-    }
+      results.innerHTML = '';
+      let searchResultHtml = '';
+      const search = await window.pagefind.search(e.target.value);
 
-    results.innerHTML = '';
-    let searchResultHtml = '';
+      let i = 0;
+      for (const result of search.results) {
+        i++;
+        const data = await result.data();
+        searchResultHtml += `
+          <a href="${data.url}">
+            <h3 class="no-mt">${data.meta.title}</h3>
+            <p>${data.excerpt}</p>
+          </a>
+          ${i < search.results.length ? '<hr class="separator">' : ''}
+        `;
+      }
 
-    const search = await window.pagefind.search(e.target.value);
+      if (search.results.length === 0 && e.target.value.length > 0) {
+        results.innerHTML = '<p style="margin-top: 0;">No results found</p>';
+      } else {
+        results.innerHTML = searchResultHtml;
+      }
+      results.classList.add('active');
+    });
 
-    let i = 0;
-    for (const result of search.results) {
-      i++;
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('active');
+      document.querySelector('nav')?.classList.toggle('active');
+      const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+      navToggle.setAttribute('aria-expanded', String(!isExpanded));
+    });
 
-      const data = await result.data();
-      
-      searchResultHtml += `
-        <a href="${data.url}">
-          <h3 class="no-mt">${data.meta.title}</h3>
-          <p>${data.excerpt}</p>
-        </a>
-        ${i < search.results.length ? '<hr class="separator">' : ''}
-      `;
-    }
+    // Reset placeholder on load
+    searchElement.placeholder = 'Search';
+  };
 
-    if (search.results.length === 0 && e.target.value.length > 0) {
-      results.innerHTML = '<p style="margin-top: 0;">No results found</p>';
-    } else {
-      results.innerHTML = searchResultHtml;
-    }
-
-    results.classList.add('active');
-  });
-
-  navToggle?.addEventListener('click', () => {
-    navToggle.classList.toggle('active');
-    document.querySelector('nav').classList.toggle('active');
-    const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
-    navToggle.setAttribute('aria-expanded', String(!isExpanded));
-  });
-
-  const handleTabletChange = () => {
-    if (window.matchMedia('(max-width: 640px)').matches) {
-      searchElement.placeholder = 'Search';
-    } else {
-      searchElement.placeholder = 'Search';
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', handleTabletChange);
-  document.addEventListener('resize', handleTabletChange);
+  document.addEventListener('astro:page-load', initNavbar);
 </script>
 <style>
   nav {

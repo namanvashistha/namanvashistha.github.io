@@ -7,6 +7,7 @@ import Background from '../components/Background.astro';
 import LayoutGrid from '../components/LayoutGrid.astro';
 import Navbar from '../components/Navbar.astro';
 import { loadEnv } from 'vite';
+import { ClientRouter } from 'astro:transitions';
 
 const { UMAMI_WEBSITE_ID } = loadEnv(process.env.NODE_ENV!, process.cwd(), '');
 
@@ -41,6 +42,7 @@ const shortDescription = description ? (description.length > 160 ? description.s
 		<meta name="theme-color" content={themeColor} />
 
 		<link rel="canonical" href={Astro.url} />
+		<ClientRouter />
 
 		<meta name="og:title" content={title === name ? title : `${title} - ${name}`} />
 		{shortDescription && <meta name="og:description" content={shortDescription} />}
