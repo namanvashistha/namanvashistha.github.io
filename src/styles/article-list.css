@@ -21,7 +21,8 @@
 	gap: 1rem;
 }
 
-.blog-tag {
+.blog-tag,
+.project-tag {
 	padding: 0.25rem 0.5rem;
 	background: #252525;
 	color: white;
@@ -29,13 +30,16 @@
 }
 
 .blog-tag:hover,
-.blog-tag:focus-visible {
+.blog-tag:focus-visible,
+.project-tag:hover,
+.project-tag:focus-visible {
 	background: #353535;
 	color: white;
 	text-decoration: none;
 }
 
-.blog-tag.active {
+.blog-tag.active,
+.project-tag.active {
 	background: var(--primary);
 }
 

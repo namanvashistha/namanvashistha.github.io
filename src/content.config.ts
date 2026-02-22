@@ -114,6 +114,7 @@ const projects = defineCollection({
 			description: z.string(),
 			date: z.coerce.date(),
 			image: image(),
+			tags: z.array(reference('tags')).optional().default([]),
 			link: z.string().url().optional(),
 			info: z.array(
 				z.object({
@@ -121,7 +122,7 @@ const projects = defineCollection({
 					icon: z.union([lucideIconSchema, simpleIconSchema]),
 					link: z.string().url().optional(),
 				})
-			),
+			).optional(),
 		}),
 });
 

@@ -39,6 +39,7 @@ collections:
       - {label: "Title", name: "title", widget: "string"}
       - {label: "Description", name: "description", widget: "text"}
       - {label: "Date", name: "date", widget: "datetime"}
+      - {label: "Tags", name: "tags", widget: "relation", collection: "data", file: "tags", search_fields: ["tags.*.id"], display_fields: ["tags.*.id"], value_field: "tags.*.id", multiple: true, required: false}
       - {label: "Cover Image", name: "image", widget: "image"}
       - {label: "Project Link", name: "link", widget: "string", required: false}
       - {label: "Info", name: "info", widget: "list", fields: [

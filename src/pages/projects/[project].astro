@@ -37,7 +37,7 @@ const { Content } = await render(project);
     <Card class="toc-card">
       <h2 class="no-mt">Info</h2>
       <ul class="overview-list">
-        {project.data.info.map((info) => {
+        {project.data.info && project.data.info.map((info) => {
           const Tag = info.link ? 'a' : 'div';
           return (
             <li>
@@ -61,6 +61,12 @@ const { Content } = await render(project);
           </div>
           <div class="article-info">
             <span>{project.data.date.toLocaleDateString()}</span>
+            {project.data.tags && project.data.tags.length > 0 && (
+              <>
+                <span>/</span>
+                <span>Tags: {project.data.tags.map((tag: any) => tag.id).join(", ")}</span>
+              </>
+            )}
           </div>
         </div>
       </div>
