@@ -78,8 +78,5 @@
 .inline-tag {
 	font-size: 0.95rem !important;
 	padding: 0.2rem 0.6rem !important;
-	background: rgba(var(--primary-rgb), 0.1) !important;
-	color: #d1baff !important;
-	border: 1px solid rgba(var(--primary-rgb), 0.3) !important;
-	white-space: nowrap;
+	background: #252525 !important;
 }
