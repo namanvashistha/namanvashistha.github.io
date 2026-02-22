@@ -76,7 +76,7 @@ const { Content, headings } = await render(post);
         <ImageGlow quality={100} class="article-image" src={post.data.image} alt={post.data.title} />
         <div class="header">
           <div>
-            <h1 class="no-mt article-h1">{post.data.title}</h1>
+            <h1 class="no-mt article-h1" data-pagefind-weight="10">{post.data.title}</h1>
           </div>
           <div class="article-info">
             <span>{post.data.createdAt.toLocaleDateString('en-GB')}</span>

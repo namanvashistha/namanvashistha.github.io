@@ -57,7 +57,7 @@ const { Content } = await render(project);
         {project.data.image && <ImageGlow quality={100} class="article-image" src={project.data.image} alt={project.data.title} />}
         <div class="header">
           <div>
-            <h1 class="no-mt article-h1">{project.data.title}</h1>
+            <h1 class="no-mt article-h1" data-pagefind-weight="10">{project.data.title}</h1>
           </div>
           <div class="article-info">
             <span>{project.data.date.getFullYear()}</span>
