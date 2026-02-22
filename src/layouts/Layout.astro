@@ -6,6 +6,7 @@ import { name, themeColor, twitterHandle } from 'spectre:globals';
 import Background from '../components/Background.astro';
 import LayoutGrid from '../components/LayoutGrid.astro';
 import Navbar from '../components/Navbar.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
 import { loadEnv } from 'vite';
 import { ClientRouter } from 'astro:transitions';
 
@@ -79,6 +80,7 @@ const shortDescription = description ? (description.length > 160 ? description.s
 		)}
 	</head>
 	<body>
+		<ReadingProgress />
 		<a href="#main-content" class="skip-to-content">Skip to content</a>
 		<main id="main-content" data-pagefind-ignore={pagefindIgnore}>
 			<Navbar />
