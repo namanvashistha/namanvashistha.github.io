@@ -193,6 +193,9 @@ class PageBackground {
 	 * Redraws the overlay canvas and animates the letters.
 	 */
 	private redrawBackground = () => {
+		// Stop the animation loop if the canvas is no longer in the DOM (e.g. after a view transition)
+		if (!document.body.contains(this.overlayCanvas)) return;
+
 		// Clear the overlay canvas
 		this.overlayCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
 
@@ -274,11 +277,20 @@ async function initializeBackground() {
 	const canvas = document.getElementById('bg-canvas') as HTMLCanvasElement;
 	const overlayCanvas = document.getElementById('overlay-canvas') as HTMLCanvasElement;
 
+	if (!canvas || !overlayCanvas) return;
+
 	const background = new PageBackground(canvas, overlayCanvas);
 
-	window.addEventListener('resize', () => {
+	const handleResize = () => {
 		background.resizeBackground();
-	});
+	};
+
+	window.addEventListener('resize', handleResize);
+
+    // Clean up event listener when element is destroyed
+    document.addEventListener('astro:before-swap', () => {
+        window.removeEventListener('resize', handleResize);
+    }, { once: true });
 }
 
-initializeBackground();
+document.addEventListener('astro:page-load', initializeBackground);
