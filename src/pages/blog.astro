@@ -58,6 +58,13 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
 								<span class="post-date">{post.data.createdAt.toLocaleDateString()}</span>
 							</div>
 							<span>{post.data.description}</span>
+							{post.data.tags && post.data.tags.length > 0 && (
+								<ul class="tags-list inline-tags">
+									{post.data.tags.map((tag: any) => (
+										<li><span class="inline-tag">{tag.id}</span></li>
+									))}
+								</ul>
+							)}
 						</div>
 					</a>
 				))}
