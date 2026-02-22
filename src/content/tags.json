@@ -149,6 +149,63 @@
     },
     {
       "id": "data-structures"
+    },
+    {
+      "id": "ajax"
+    },
+    {
+      "id": "chat"
+    },
+    {
+      "id": "cpp"
+    },
+    {
+      "id": "custom-language"
+    },
+    {
+      "id": "hashing"
+    },
+    {
+      "id": "html-css"
+    },
+    {
+      "id": "ide"
+    },
+    {
+      "id": "interpreters"
+    },
+    {
+      "id": "jupyter"
+    },
+    {
+      "id": "machine-learning"
+    },
+    {
+      "id": "map-apis"
+    },
+    {
+      "id": "mysql"
+    },
+    {
+      "id": "neural-networks"
+    },
+    {
+      "id": "p2p"
+    },
+    {
+      "id": "php"
+    },
+    {
+      "id": "postgresql"
+    },
+    {
+      "id": "real-time"
+    },
+    {
+      "id": "syntax-parsers"
+    },
+    {
+      "id": "websockets"
     }
   ]
 }
