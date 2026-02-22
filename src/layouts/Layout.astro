@@ -22,6 +22,7 @@ interface Props {
 }
 
 const { title, description, image, pagefindIgnore, article } = Astro.props;
+const shortDescription = description ? (description.length > 160 ? description.slice(0, 157) + "..." : description) : undefined;
 ---
 
 <!DOCTYPE html>
@@ -35,14 +36,14 @@ const { title, description, image, pagefindIgnore, article } = Astro.props;
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
 
-		<title>{title}</title>
-		{description && <meta name="description" content={description.length > 160 ? description.slice(0, 157) + '...' : description} />}
-		<meta name="theme-color" content={themeColor}>
+		<title>{title === name ? title : `${title} - ${name}`}</title>
+		{shortDescription && <meta name="description" content={shortDescription} />}
+		<meta name="theme-color" content={themeColor} />
 
 		<link rel="canonical" href={Astro.url} />
 
-		<meta name="og:title" content={title} />
-		{description && <meta name="og:description" content={description.length > 160 ? description.slice(0, 157) + '...' : description} />}
+		<meta name="og:title" content={title === name ? title : `${title} - ${name}`} />
+		{shortDescription && <meta name="og:description" content={shortDescription} />}
 		<meta name="og:image" content={image?.src || '/img/og.png'} />
 		<meta name="og:url" content={Astro.url} />
 		{!article && <meta name="og:type" content="website" />}
@@ -63,8 +64,8 @@ const { title, description, image, pagefindIgnore, article } = Astro.props;
 			<meta name="twitter:site" content={twitterHandle} />
 			<meta name="twitter:creator" content={twitterHandle} />
 		)}
-		<meta name="twitter:title" content={title} />
-		{description && <meta name="twitter:description" content={description.length > 160 ? description.slice(0, 157) + '...' : description} />}
+		<meta name="twitter:title" content={title === name ? title : `${title} - ${name}`} />
+		{shortDescription && <meta name="twitter:description" content={shortDescription} />}
 		<meta name="twitter:image" content={image?.src || '/img/og.png'} />
 
 		{UMAMI_WEBSITE_ID && (
