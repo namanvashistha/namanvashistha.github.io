@@ -22,6 +22,11 @@ const path = Astro.url.pathname;
     <li>
       <a href="/resume" class:list={{ active: path.startsWith('/resume') }}>Resume</a>
     </li>
+    <li class="nav-separator" aria-hidden="true">/</li>
+    <li>
+      <input id="search" type="text" placeholder="Search (Ctrl+K)" />
+      <div id="search-results"></div>
+    </li>
   </ul>
   <button class="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
     <Icon type="lucide" name="menu" width={24} height={24} class="menu-closed" />
@@ -29,7 +34,119 @@ const path = Astro.url.pathname;
   </button>
 </nav>
 <script is:inline>
+  const searchElement = document.querySelector('#search');
+  const results = document.querySelector('#search-results');
   const navToggle = document.querySelector('.mobile-nav-toggle');
+
+  let focusIndex = -1;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'k' && e.ctrlKey) {
+      searchElement.focus();
+    }
+
+    if (e.key === 'Escape') {
+      searchElement.blur();
+      results.classList.remove('active');
+      focusIndex = -1;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+
+      focusIndex++;
+      const results = document.querySelectorAll('#search-results a');
+
+      if (focusIndex >= results.length) {
+        focusIndex = 0;
+      }
+
+      results[focusIndex]?.focus();
+    }
+
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+
+      focusIndex--;
+      const results = document.querySelectorAll('#search-results a');
+
+      if (focusIndex < 0) {
+        focusIndex = results.length - 1;
+      }
+
+      results[focusIndex]?.focus();
+    }
+  });
+
+  let pagefindInitialized = false;
+
+  searchElement?.addEventListener('focus', async () => {
+    searchElement.placeholder = '';
+    results.classList.add('active');
+    
+    // initialize pagefind on first focus
+    if (!pagefindInitialized) {
+      try {
+        window.pagefind = await import("/pagefind/pagefind.js");
+        await window.pagefind.init();
+        pagefindInitialized = true;
+      } catch (error) {
+        console.error('Failed to initialize Pagefind:', error);
+      }
+    }
+  });
+  
+  searchElement?.addEventListener('blur', () => {
+    handleTabletChange();
+    setTimeout(() => {
+      if (!document.activeElement?.closest('#search-results')) {
+        results.classList.remove('active');
+        focusIndex = -1;
+      }
+    }, 1);
+  });
+
+  results?.addEventListener('focusout', (e) => {
+    if (!e.relatedTarget?.closest('#search-results')) {
+      results.classList.remove('active');
+      focusIndex = -1;
+    }
+  });
+
+  searchElement?.addEventListener('input', async (e) => {
+    // only search if Pagefind is ready
+    if (!pagefindInitialized) {
+      return;
+    }
+
+    results.innerHTML = '';
+    let searchResultHtml = '';
+
+    const search = await window.pagefind.search(e.target.value);
+
+    let i = 0;
+    for (const result of search.results) {
+      i++;
+
+      const data = await result.data();
+      
+      searchResultHtml += `
+        <a href="${data.url}">
+          <h3 class="no-mt">${data.meta.title}</h3>
+          <p>${data.excerpt}</p>
+        </a>
+        ${i < search.results.length ? '<hr class="separator">' : ''}
+      `;
+    }
+
+    if (search.results.length === 0 && e.target.value.length > 0) {
+      results.innerHTML = '<p style="margin-top: 0;">No results found</p>';
+    } else {
+      results.innerHTML = searchResultHtml;
+    }
+
+    results.classList.add('active');
+  });
 
   navToggle?.addEventListener('click', () => {
     navToggle.classList.toggle('active');
@@ -37,6 +154,17 @@ const path = Astro.url.pathname;
     const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
     navToggle.setAttribute('aria-expanded', String(!isExpanded));
   });
+
+  const handleTabletChange = () => {
+    if (window.matchMedia('(max-width: 640px)').matches) {
+      searchElement.placeholder = 'Search';
+    } else {
+      searchElement.placeholder = 'Search (Ctrl+K)';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', handleTabletChange);
+  document.addEventListener('resize', handleTabletChange);
 </script>
 <style>
   nav {
@@ -76,6 +204,38 @@ const path = Astro.url.pathname;
   nav a:hover, nav a:focus-visible, nav a.active {
     background-color: var(--primary);
     outline: none;
+  }
+
+  #search {
+    background: none;
+    border: none;
+    outline: none;
+    padding: .25rem .5rem;
+    width: 160px;
+  }
+
+  #search::placeholder {
+    color: white;
+  }
+
+  #search:focus {
+    background-color: var(--primary);
+  }
+
+  #search-results {
+    position: absolute;
+    top: calc(100% + .5rem);
+    right: 0;
+    background-color: #252525;
+    border: 1px solid var(--primary);
+    display: none;
+    width: 200%;
+    z-index: 10;
+    padding: .5rem;
+  }
+
+  #search-results.active:has(*) {
+    display: block;
   }
 
   .mobile-nav-toggle {
@@ -175,9 +335,54 @@ const path = Astro.url.pathname;
     nav.active ul li {
       top: 0;
     }
+
+    #search {
+      width: 100%;
+      max-width: none;
+      padding: .75rem 1rem;
+    }
+
+    #search-results {
+      width: 100%;
+      top: 100%;
+      font-size: 0.875em;
+    }
   }
 </style>
 <style is:global>
+  #search-results a {
+    display: block;
+    text-decoration: none;
+    color: white !important;
+    padding: .5rem;
+  }
+
+  #search-results a:hover, #search-results a:focus-visible {
+    background-color: var(--primary);
+    outline: none;
+  }
+
+  #search-results a:hover mark, #search-results a:focus-visible mark {
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  #search-results a h3 {
+    margin-bottom: .5rem;
+  }
+
+  #search-results a p {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  #search-results mark {
+    background-color: var(--primary);
+    color: white;
+  }
+
   .separator {
     margin: .5rem .5rem;
     border: none;
