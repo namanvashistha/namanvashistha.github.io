@@ -59,6 +59,16 @@ main {
 	margin-top: 1rem;
 }
 
+.layout-grid {
+	position: relative;
+	align-items: start;
+	align-content: stretch;
+	display: grid;
+	gap: 2rem;
+	grid-template-columns: 2fr 5fr;
+	grid-template-rows: auto;
+}
+
 .layout-grid-left,
 .layout-grid-right {
 	display: flex;
@@ -167,6 +177,9 @@ main {
 	body {
 		padding: 0 2rem;
 	}
+	.layout-grid {
+		grid-template-columns: 1fr;
+	}
 }
 
 @media screen and (max-width: 640px) {
@@ -186,6 +199,11 @@ main {
 
 	.layout-grid-left,
 	.layout-grid-right {
+		gap: 1rem;
+	}
+
+	.layout-grid {
+		margin: 0 1rem;
 		gap: 1rem;
 	}
 
