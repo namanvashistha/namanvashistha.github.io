@@ -132,87 +132,159 @@ import Layout from '../layouts/Layout.astro';
 </style>
 
 <script>
-  // Load PDF.js from CDN
-  const script = document.createElement('script');
-  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-  script.async = true;
-  document.head.appendChild(script);
+  let pdfjsLoaded = false;
 
-  script.onload = () => {
-    const pdfjsLib = (window as any).pdfjsLib;
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
+  const initPDF = () => {
     const canvas = document.getElementById('pdf-canvas') as HTMLCanvasElement;
     const container = document.getElementById('pdf-container') as HTMLElement;
     const loadingElement = document.querySelector('.pdf-loading') as HTMLElement;
 
-    async function renderPDF() {
-      try {
-        const loadingTask = pdfjsLib.getDocument('/resume.pdf');
-        const pdf = await loadingTask.promise;
-        const page = await pdf.getPage(1);
+    if (!canvas || !container) return;
 
-        // Get container width
-        const containerWidth = container.clientWidth;
-        
-        // Get PDF viewport at scale 1
-        const viewport = page.getViewport({ scale: 1 });
-        
-        // Calculate scale to fit width
-        const scale = containerWidth / viewport.width;
-        
-        // Calculate height based on PDF aspect ratio
-        const scaledViewport = page.getViewport({ scale });
-        const pdfHeight = scaledViewport.height;
-        
-        // Set container height to match PDF height
-        container.style.height = `${pdfHeight}px`;
+    const render = () => {
+      const pdfjsLib = (window as any).pdfjsLib;
+      if (!pdfjsLib) return;
+      
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // Use device pixel ratio for sharp rendering
-        const pixelRatio = window.devicePixelRatio || 1;
-        const finalViewport = page.getViewport({ scale: scale * pixelRatio });
+      let renderTask: any = null;
+      let activePdfPromise: any = null;
 
-        // Set canvas size
-        canvas.width = finalViewport.width;
-        canvas.height = finalViewport.height;
-        
-        // Set display size
-        canvas.style.width = `${containerWidth}px`;
-        canvas.style.height = `${pdfHeight}px`;
+      async function renderPDF() {
+        try {
+          const container = document.getElementById('pdf-container');
+          if (!container) return;
+          
+          let canvas = document.getElementById('pdf-canvas') as HTMLCanvasElement;
+          const loadingElement = document.querySelector('.pdf-loading') as HTMLElement;
 
-        const context = canvas.getContext('2d');
-        const renderContext = {
-          canvasContext: context!,
-          viewport: finalViewport,
-        };
+          // If a render is already in progress, cancel it and recreate canvas
+          // to prevent "Cannot use same canvas" errors.
+          if (renderTask) {
+            await renderTask.cancel();
+            renderTask = null;
+            
+            // Recreate canvas to cleanly reset state
+            const oldCanvas = canvas;
+            canvas = document.createElement('canvas');
+            canvas.id = 'pdf-canvas';
+            oldCanvas.parentNode?.replaceChild(canvas, oldCanvas);
+          }
 
-        await page.render(renderContext).promise;
-        
-        // Hide loading indicator after PDF is rendered
-        if (loadingElement) {
-          loadingElement.style.display = 'none';
+          if (!activePdfPromise) {
+            const loadingTask = pdfjsLib.getDocument('/resume.pdf');
+            activePdfPromise = loadingTask.promise;
+          }
+          
+          const pdf = await activePdfPromise;
+          const page = await pdf.getPage(1);
+
+          // Give the DOM a tiny bit of time to paint the new layout during View Transitions
+          setTimeout(async () => {
+            // Get container width
+            const containerWidth = container.clientWidth;
+            
+            // Get PDF viewport at scale 1
+            const viewport = page.getViewport({ scale: 1 });
+            
+            // Calculate scale to fit width
+            const scale = containerWidth / viewport.width;
+            
+            // Calculate height based on PDF aspect ratio
+            const scaledViewport = page.getViewport({ scale });
+            const pdfHeight = scaledViewport.height;
+            
+            // Set container height to match PDF height
+            container.style.height = `${pdfHeight}px`;
+
+            // Use device pixel ratio for sharp rendering
+            const pixelRatio = window.devicePixelRatio || 1;
+            const finalViewport = page.getViewport({ scale: scale * pixelRatio });
+
+            // Set canvas size
+            canvas.width = finalViewport.width;
+            canvas.height = finalViewport.height;
+            
+            // Set display size
+            canvas.style.width = `${containerWidth}px`;
+            canvas.style.height = `${pdfHeight}px`;
+
+            const context = canvas.getContext('2d');
+            const renderContext = {
+              canvasContext: context!,
+              viewport: finalViewport,
+            };
+
+            renderTask = page.render(renderContext);
+            try {
+              await renderTask.promise;
+              // Hide loading indicator after PDF is rendered successfully
+              if (loadingElement) {
+                loadingElement.style.display = 'none';
+              }
+            } catch (err: any) {
+              if (err.name !== 'RenderingCancelledException') {
+                console.error('Error rendering PDF canvas:', err);
+              }
+            } finally {
+              renderTask = null;
+            }
+          }, 50);
+        } catch (error: any) {
+          console.error('Error loading PDF:', error);
         }
-      } catch (error) {
-        console.error('Error rendering PDF:', error);
       }
+
+      renderPDF();
+
+      // Re-render on width changes efficiently
+      let resizeTimeout: ReturnType<typeof setTimeout>;
+      let lastWidth = container.clientWidth;
+
+      // Clean up previous observer if it exists
+      if ((window as any)._pdfResizeObserver) {
+        (window as any)._pdfResizeObserver.disconnect();
+      }
+
+      const observer = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          const currentWidth = entry.contentRect.width;
+          if (Math.abs(currentWidth - lastWidth) > 5) { // Only re-render if width changed significantly
+            lastWidth = currentWidth;
+            clearTimeout(resizeTimeout);
+            // Use requestAnimationFrame for smoother performance during fast resizing
+            resizeTimeout = setTimeout(() => {
+              requestAnimationFrame(renderPDF);
+            }, 100);
+          }
+        }
+      });
+
+      observer.observe(container);
+      (window as any)._pdfResizeObserver = observer;
+    };
+
+    if (!pdfjsLoaded) {
+      // Check if script is already present in document
+      const existingScript = document.querySelector('script[src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"]');
+      
+      if (existingScript) {
+        pdfjsLoaded = true;
+        render();
+      } else {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        script.async = true;
+        document.head.appendChild(script);
+        script.onload = () => {
+          pdfjsLoaded = true;
+          render();
+        };
+      }
+    } else {
+      render();
     }
-
-    renderPDF();
-
-    // Re-render on window resize with better debouncing
-    let resizeTimeout: number;
-    let lastWidth = container.clientWidth;
-    
-    window.addEventListener('resize', () => {
-      const currentWidth = container.clientWidth;
-      // Only re-render if width actually changed
-      if (currentWidth !== lastWidth) {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          lastWidth = currentWidth;
-          requestAnimationFrame(renderPDF);
-        }, 300);
-      }
-    });
   };
+
+  document.addEventListener('astro:page-load', initPDF);
 </script>
