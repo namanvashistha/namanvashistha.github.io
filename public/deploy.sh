@@ -152,6 +152,12 @@ setup_caddy() {
         container_name="${container_name:-$repo_name}"
         internal_port="${internal_port:-80}"
         
+        # Bridge the independent docker-compose container to the shared Caddy network
+        # This keeps the repo's docker-compose completely unmodified and independent,
+        # but allows Caddy to see it.
+        log "Bridging $container_name to $DOCKER_NETWORK..."
+        docker network connect "$DOCKER_NETWORK" "$container_name" >> "$LOG_FILE" 2>&1 || true
+        
         # If ENABLE_TLS is true, Caddy handles Let's Encrypt SSL automatically (good for EC2).
         # If false, we explicitly tell Caddy to serve HTTP since Cloudflare handles HTTPS.
         if [ "$ENABLE_TLS" = "true" ]; then
