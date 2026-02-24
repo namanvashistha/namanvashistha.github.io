@@ -71,7 +71,12 @@ install_docker() {
     echo "Installing / Upgrading Docker..."
     curl -fsSL https://get.docker.com | sh
     systemctl enable docker
-    systemctl start docker
+    systemctl restart docker
+
+    if ! command -v docker &> /dev/null; then
+        echo "Failed to install Docker."
+        exit 1
+    fi
 }
 
 # ==============================================================================
