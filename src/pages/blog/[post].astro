@@ -101,26 +101,39 @@ const { Content, headings } = await render(post);
     </Card>
     {giscus && (
       <Card>
-        <div class="comments" data-pagefind-ignore>
-          <script
-            is:inline
-            src="https://giscus.app/client.js"
-            data-repo={giscus.repository}
-            data-repo-id={giscus.repositoryId}
-            data-category={giscus.category}
-            data-category-id={giscus.categoryId}
-            data-mapping={giscus.mapping}
-            data-strict={giscus.strict === true ? "1" : "0"}
-            data-reactions-enabled={giscus.reactionsEnabled === true ? "1" : "0"}
-            data-emit-metadata={giscus.emitMetadata === true ? "1" : "0"}
-            data-input-position={giscus.commentsInput}
-            data-theme={giscus.theme || "https://spectre.lou.gg/styles/giscus"}
-            data-lang={giscus.lang}
-            data-loading="lazy"
-            crossorigin="anonymous"
-            async
-          />
+        <div class="comments" id="giscus-container" data-pagefind-ignore>
+          {/* Giscus will be injected here dynamically */}
         </div>
+        <script is:inline define:vars={{ giscus }}>
+          function loadGiscus() {
+            const container = document.getElementById('giscus-container');
+            if (!container) return;
+            
+            // Clear any existing comments to prevent duplicates
+            container.innerHTML = '';
+            
+            const script = document.createElement('script');
+            script.src = 'https://giscus.app/client.js';
+            script.setAttribute('data-repo', giscus.repository);
+            script.setAttribute('data-repo-id', giscus.repositoryId);
+            script.setAttribute('data-category', giscus.category);
+            script.setAttribute('data-category-id', giscus.categoryId);
+            script.setAttribute('data-mapping', giscus.mapping);
+            script.setAttribute('data-strict', giscus.strict === true ? "1" : "0");
+            script.setAttribute('data-reactions-enabled', giscus.reactionsEnabled === true ? "1" : "0");
+            script.setAttribute('data-emit-metadata', giscus.emitMetadata === true ? "1" : "0");
+            script.setAttribute('data-input-position', giscus.commentsInput);
+            script.setAttribute('data-theme', giscus.theme || "https://spectre.lou.gg/styles/giscus");
+            script.setAttribute('data-lang', giscus.lang);
+            script.setAttribute('crossorigin', 'anonymous');
+            script.async = true;
+            
+            container.appendChild(script);
+          }
+
+          // Load on first visit and subsequent View Transitions navigations
+          document.addEventListener('astro:page-load', loadGiscus);
+        </script>
       </Card>
     )}
   </article>
