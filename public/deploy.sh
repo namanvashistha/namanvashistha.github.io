@@ -243,7 +243,8 @@ deploy_repo() {
     
     # Use modern `docker compose` if available, fallback to `docker-compose`
     if docker compose version &> /dev/null; then
-        if ! docker compose up -d --build >> "$LOG_FILE" 2>&1; then
+        docker compose up -d --build 2>&1 | tee -a "$LOG_FILE"
+        if [ ${PIPESTATUS[0]} -ne 0 ]; then
             error "Docker compose failed for $repo_name."
             return 1
         fi
@@ -251,7 +252,8 @@ deploy_repo() {
         # Ensure containers restart on machine reboot
         docker compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1
     elif command -v docker-compose &> /dev/null; then
-        if ! docker-compose up -d --build >> "$LOG_FILE" 2>&1; then
+        docker-compose up -d --build 2>&1 | tee -a "$LOG_FILE"
+        if [ ${PIPESTATUS[0]} -ne 0 ]; then
             error "Docker-compose failed for $repo_name."
             return 1
         fi
