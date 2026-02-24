@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
-
-# Exit on undefined variables, but we handle command errors per repo manually
 set -u
 
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
-# 1. Global variable: Repo list
-# Format: "repo_name|git_url|container_name|internal_port"
+# Format: "repo_name|git_url|internal_port"
 REPOS=(
-    "chess|https://github.com/namanvashistha/chess.git|go-app|9000"
-    "foodly|https://github.com/namanvashistha/foodly.git|app|80"
-    "hyperbole|https://github.com/namanvashistha/hyperbole.git|hyperbole|8080"
-    "limedb|https://github.com/namanvashistha/limedb.git|web|3000"
+    "chess|https://github.com/namanvashistha/chess.git|9000"
+    "foodly|https://github.com/namanvashistha/foodly.git|80"
+    "hyperbole|https://github.com/namanvashistha/hyperbole.git|8080"
+    "limedb|https://github.com/namanvashistha/limedb.git|3000"
 )
+ROOT_DOMAIN="namanvashistha.com"
 
 # Determine the appropriate home directory, even if run with sudo
 if [ -n "${SUDO_USER:-}" ]; then
@@ -22,181 +20,39 @@ else
     TARGET_HOME="$HOME"
 fi
 
-# 2. Global variable: Machine config
 BASE_DIR="$TARGET_HOME/namanvashistha"
 LOG_FILE="$BASE_DIR/deploy.log"
 LOCK_FILE="$BASE_DIR/.deploy.lock"
 CADDY_DIR="$BASE_DIR/caddy"
-ROOT_DOMAIN="namanvashistha.com"
 DOCKER_NETWORK="naman_shared_net"
-DOCKER_USER_GROUP="docker"
 
 # ==============================================================================
 # LOGGING AND LOCKING
 # ==============================================================================
-# 10. Log output safely
-log() {
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "[$timestamp] $1" | tee -a "$LOG_FILE"
-}
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"; }
+error() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1" >&2 | tee -a "$LOG_FILE"; }
 
-error() {
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "[$timestamp] ERROR: $1" >&2 | tee -a "$LOG_FILE"
-}
-
-# 9. File locking to prevent concurrent runs
 acquire_lock() {
-    # Using mkdir as a highly portable atomic locking mechanism
-    # If flock is available (Linux), it can also be used, but mkdir works perfectly across unix systems.
     if ! mkdir "$LOCK_FILE.dir" 2>/dev/null; then
-        error "Another instance of the deployment script is already running (lock directory exists). Exiting."
+        error "Deployment already running (lock directory exists)."
         exit 1
     fi
-    # Ensure lock is removed on exit
     trap 'rm -rf "$LOCK_FILE.dir"' EXIT
-    log "Acquired lock."
 }
 
 # ==============================================================================
 # DEPENDENCIES
 # ==============================================================================
-# 3. Install Docker if not present
 install_docker() {
     if command -v docker &> /dev/null && docker compose version &> /dev/null; then
-        echo "Docker with Compose V2 already installed."
         return
     fi
-
-    echo "Installing / Upgrading Docker..."
+    log "Installing Docker..."
     curl -fsSL https://get.docker.com | sh
     systemctl enable docker
     systemctl restart docker
-
     if ! command -v docker &> /dev/null; then
-        echo "Failed to install Docker."
-        exit 1
-    fi
-}
-
-# ==============================================================================
-# DOCKER NETWORK
-# ==============================================================================
-# 4. Create shared Docker network (idempotent)
-create_network() {
-    if ! docker network ls | grep -qw "$DOCKER_NETWORK"; then
-        log "Creating shared Docker network: $DOCKER_NETWORK..."
-        docker network create "$DOCKER_NETWORK" || { error "Failed to create Docker network."; exit 1; }
-    else
-        log "Shared Docker network $DOCKER_NETWORK already exists."
-    fi
-}
-
-# ==============================================================================
-# CADDY REVERSE PROXY
-# ==============================================================================
-setup_caddy() {
-    log "Configuring Caddy Reverse Proxy..."
-    mkdir -p "$CADDY_DIR"
-    local caddyfile="$CADDY_DIR/Caddyfile"
-    
-    # -------------------------------------------------------------
-    # AUTO-DETECT TLS REQUIREMENT
-    # -------------------------------------------------------------
-    # If the domain's DNS points directly to THIS machine's public IP (e.g., EC2/VPS),
-    # Caddy should provision Let's Encrypt TLS.
-    # If it points elsewhere (e.g., Cloudflare Tunnel / Proxy), Cloudflare handles TLS,
-    # so Caddy should just serve over HTTP internally.
-    
-    local public_ip=$(curl -s --max-time 5 ifconfig.me || echo "unknown")
-    
-    # Use the first repo's subdomain for the IP check, since the root domain might point elsewhere (e.g., GitHub Pages)
-    local first_repo_info="${REPOS[0]}"
-    local first_repo_name="${first_repo_info%%|*}"
-    local check_domain="${first_repo_name}.${ROOT_DOMAIN}"
-
-    # Use dig/getent to resolve the domain to an IP securely
-    local domain_ip=""
-    if command -v dig >/dev/null 2>&1; then
-        domain_ip=$(dig +short "$check_domain" | tail -n1)
-    elif command -v getent >/dev/null 2>&1; then
-        domain_ip=$(getent ahostsv4 "$check_domain" | awk '{ print $1 }' | head -n1)
-    else
-        domain_ip=$(ping -c 1 "$check_domain" | grep PING | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
-    fi
-
-    local ENABLE_TLS="false"
-    if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
-        log "Detected Public IP match for $check_domain. Enabling automatic Let's Encrypt TLS in Caddy."
-        ENABLE_TLS="true"
-    else
-        log "Domain $check_domain does not resolve directly to this machine's public IP ($public_ip != $domain_ip)."
-        log "Assuming Cloudflare Tunnel / External Proxy. Disabling Let's Encrypt in Caddy (serving HTTP internally)."
-    fi
-    # -------------------------------------------------------------
-
-    # Start fresh Caddyfile
-    > "$caddyfile"
-
-    for repo_info in "${REPOS[@]}"; do
-        # Parse the string: "repo|url|service_name|port"
-        IFS='|' read -r repo_name repo_url service_name internal_port <<< "$repo_info"
-        
-        # Set defaults if not provided in the array
-        service_name="${service_name:-$repo_name}"
-        internal_port="${internal_port:-80}"
-        
-        # Dynamically discover the container name for this compose service
-        local target_dir="$BASE_DIR/$repo_name"
-        local live_container="$service_name"
-        if [ -d "$target_dir" ] && [ -f "$target_dir/docker-compose.yml" ] || [ -f "$target_dir/docker-compose.yaml" ]; then
-            cd "$target_dir" || true
-            # Get the exact container name created by Compose V2
-            discovered_container=$(docker compose ps -q "$service_name" 2>/dev/null | xargs docker inspect --format '{{.Name}}' 2>/dev/null | sed 's/^\///' | head -n 1)
-            if [ -n "$discovered_container" ]; then
-                live_container="$discovered_container"
-                log "Discovered container '$live_container' for service '$service_name' in $repo_name"
-            fi
-            cd - > /dev/null || true
-        fi
-        
-        # Bridge the independent docker-compose container to the shared Caddy network
-        # This keeps the repo's docker-compose completely unmodified and independent,
-        # but allows Caddy to see it.
-        log "Bridging $live_container to $DOCKER_NETWORK..."
-        docker network connect "$DOCKER_NETWORK" "$live_container" >> "$LOG_FILE" 2>&1 || true
-        
-        # If ENABLE_TLS is true, Caddy handles Let's Encrypt SSL automatically (good for EC2).
-        # If false, we explicitly tell Caddy to serve HTTP since Cloudflare handles HTTPS.
-        if [ "$ENABLE_TLS" = "true" ]; then
-            echo "${repo_name}.${ROOT_DOMAIN} {" >> "$caddyfile"
-        else
-            echo "http://${repo_name}.${ROOT_DOMAIN} {" >> "$caddyfile"
-        fi
-        
-        echo "    reverse_proxy ${live_container}:${internal_port}" >> "$caddyfile"
-        echo "}" >> "$caddyfile"
-        echo "" >> "$caddyfile"
-    done
-
-    # Remove existing Caddy container if it exists
-    if docker ps -a --format '{{.Names}}' | grep -Eq "^caddy_proxy$"; then
-        log "Removing existing Caddy container..."
-        docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1
-    fi
-
-    log "Starting Caddy container..."
-    if ! docker run -d \
-        --name caddy_proxy \
-        --network "$DOCKER_NETWORK" \
-        --restart unless-stopped \
-        -p 80:80 \
-        -p 443:443 \
-        -v "$caddyfile:/etc/caddy/Caddyfile" \
-        -v caddy_data:/data \
-        -v caddy_config:/config \
-        caddy:latest >> "$LOG_FILE" 2>&1; then
-        error "Failed to start Caddy container."
+        error "Failed to install Docker."
         exit 1
     fi
 }
@@ -205,104 +61,112 @@ setup_caddy() {
 # REPOSITORY DEPLOYMENT
 # ==============================================================================
 deploy_repo() {
-    local repo_info="$1"
-    local repo_name="${repo_info%%|*}"
-    local repo_url="${repo_info##*|}"
+    IFS='|' read -r repo_name repo_url internal_port <<< "$1"
+    internal_port="${internal_port:-80}"
     local target_dir="$BASE_DIR/$repo_name"
 
-    log "--------------------------------------------------"
-    log "Starting deployment for: $repo_name"
+    log "--- Deploying: $repo_name ---"
 
-    # 5. Clone repos if missing, otherwise git pull
+    # Git Clone / Pull
     if [ ! -d "$target_dir" ]; then
-        log "Cloning $repo_name from $repo_url..."
-        if ! git clone "$repo_url" "$target_dir" >> "$LOG_FILE" 2>&1; then
-            error "Failed to clone $repo_name. Skipping."
-            return 1
-        fi
+        git clone "$repo_url" "$target_dir" >> "$LOG_FILE" 2>&1 || { error "Clone failed."; return 1; }
     else
-        log "Directory exists. Pulling latest changes for $repo_name..."
-        cd "$target_dir" || { error "Failed to cd into $target_dir."; return 1; }
-        
-        # Stash any local changes to ensure clean pull, then pull
-        git stash >> "$LOG_FILE" 2>&1 || true
-        if ! git pull origin main >> "$LOG_FILE" 2>&1; then
-            log "Failed to pull main, trying master..."
-            if ! git pull origin master >> "$LOG_FILE" 2>&1; then
-                error "Failed to pull latest changes for $repo_name. Skipping."
-                return 1
-            fi
-        fi
+        cd "$target_dir" || return 1
+        git stash -q >> "$LOG_FILE" 2>&1 || true
+        git pull -q origin main >> "$LOG_FILE" 2>&1 || git pull -q origin master >> "$LOG_FILE" 2>&1 || { error "Pull failed."; return 1; }
     fi
 
-    # Navigate to repo directory
-    cd "$target_dir" || { error "Failed to cd into $target_dir."; return 1; }
+    cd "$target_dir" || return 1
 
-    # 8. Assume each repo has its own docker-compose.yml
     if [ ! -f "docker-compose.yml" ] && [ ! -f "docker-compose.yaml" ]; then
-        error "No docker-compose.yml found in $repo_name. Skipping."
+        error "No docker-compose file found."
         return 1
     fi
 
-    # 6. Run docker compose up -d --build in each repo
-    # 12. Fail fast on errors but continue to next repo if one fails
-    # NOTE: Since each repo is run in its own directory, Docker automatically assigns isolated 
-    # projects per repo, preventing shared services (like Redis) from overlapping unexpectedly.
-    # 7. NOT exposing DB ports should be handled naturally inside the individual docker-compose.yamls 
-    # by NOT mapping local ports (e.g., omitting 'ports: - "5432:5432"').
-    
-    log "Building and starting containers for $repo_name..."
-    
-    # 6. Run modern Docker Compose V2 to build and start containers
-    docker compose up -d --build --remove-orphans 2>&1 | tee -a "$LOG_FILE"
-    if [ ${PIPESTATUS[0]} -ne 0 ]; then
-        error "Docker compose failed for $repo_name."
-        return 1
-    fi
-    
-    # Ensure containers restart on machine reboot
-    docker compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1
+    # Docker Compose Up
+    docker compose up -d --build --remove-orphans >> "$LOG_FILE" 2>&1 || { error "Compose failed."; return 1; }
+    docker compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1 || true
 
-    log "Successfully deployed $repo_name."
-}
-
-# ==============================================================================
-# MAIN EXECUTION
-# ==============================================================================
-main() {
-    # Ensure Base Directory and Log file exist
-    # NOTE: Run script with sudo if creating directories in /opt & /var/log
-    mkdir -p "$BASE_DIR" || { echo "Failed to create base directory $BASE_DIR"; exit 1; }
-    touch "$LOG_FILE" || { echo "Failed to create log file $LOG_FILE"; exit 1; }
-
-    log "Starting deployment script..."
-
-    acquire_lock
-    install_docker
-    create_network
-
-    # Iterate over repositories and deploy
-    local failed_repos=0
-    for repo in "${REPOS[@]}"; do
-        # 12. Fail fast on errors but continue to next repo if one fails
-        if ! deploy_repo "$repo"; then
-            failed_repos=$((failed_repos + 1))
-            error "Deployment failed for repo: ${repo%%|*}. Proceeding to the next repo."
+    # Container Discovery & Proxy Config
+    local live_container=""
+    for cid in $(docker compose ps -q 2>/dev/null); do
+        if docker inspect "$cid" --format '{{json .NetworkSettings.Ports}} {{json .Config.ExposedPorts}}' | grep -q "${internal_port}/tcp"; then
+            live_container=$(docker inspect "$cid" --format '{{.Name}}' | sed 's/^\///')
+            break
         fi
     done
 
-    # Set up Caddy and bridge the newly created containers to the shared network
-    setup_caddy
+
+    if [ -n "$live_container" ]; then
+        log "Bridging $live_container to Caddy via port $internal_port"
+        docker network connect "$DOCKER_NETWORK" "$live_container" >> "$LOG_FILE" 2>&1 || true
+        
+        local caddy_scheme="http://"
+        [ "$ENABLE_TLS" = "true" ] && caddy_scheme=""
+        echo "${caddy_scheme}${repo_name}.${ROOT_DOMAIN} {
+    reverse_proxy ${live_container}:${internal_port}
+}
+" >> "$CADDY_DIR/Caddyfile"
+    fi
+    log "Success: $repo_name"
+}
+
+# ==============================================================================
+# MAIN
+# ==============================================================================
+main() {
+    mkdir -p "$BASE_DIR" "$CADDY_DIR"
+    touch "$LOG_FILE"
+    
+    acquire_lock
+    install_docker
+
+    if ! docker network ls | grep -qw "$DOCKER_NETWORK"; then
+        docker network create "$DOCKER_NETWORK" > /dev/null
+    fi
+
+    # Auto-detect TLS
+    local public_ip
+    public_ip=$(curl -s --max-time 3 ifconfig.me || echo "unknown")
+    local domain_ip
+    domain_ip=$(ping -c 1 "${REPOS[0]%%|*}.${ROOT_DOMAIN}" 2>/dev/null | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n 1 || echo "")
+    
+    ENABLE_TLS="false"
+    if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
+        ENABLE_TLS="true"
+    fi
+
+    # Initialize Caddyfile
+    > "$CADDY_DIR/Caddyfile"
+
+    local failed_repos=0
+    for repo in "${REPOS[@]}"; do
+        if ! deploy_repo "$repo"; then
+            failed_repos=$((failed_repos + 1))
+        fi
+    done
+
+    # Start Caddy
+    docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
+    docker run -d \
+        --name caddy_proxy \
+        --network "$DOCKER_NETWORK" \
+        --restart unless-stopped \
+        -p 80:80 \
+        -p 443:443 \
+        -v "$CADDY_DIR/Caddyfile:/etc/caddy/Caddyfile" \
+        -v caddy_data:/data \
+        -v caddy_config:/config \
+        caddy:latest >> "$LOG_FILE" 2>&1 || { error "Failed to start Caddy."; exit 1; }
 
     log "--------------------------------------------------"
     if [ "$failed_repos" -gt 0 ]; then
-        log "Deployment completed with $failed_repos repository failures. Check logs for details."
-        exit 0 # Keep exit 0 if cron doesn't need to alert on partial failures, or change if preferred.
+        log "Completed with $failed_repos failures. See $LOG_FILE"
+        exit 0
     else
-        log "Deployment completed successfully for all repositories."
+        log "Deployment completed successfully!"
         exit 0
     fi
 }
 
-# Execute main function
 main "$@"
