@@ -94,21 +94,21 @@ deploy_repo() {
 setup_caddy() {
     log "Setting up Caddy Docker Proxy..."
 
-    # Auto-detect TLS: if subdomain resolves to this machine's IP → EC2 (Let's Encrypt).
-    # Otherwise → Cloudflare Tunnel (disable auto HTTPS to prevent redirect loops).
+    # Auto-detect TLS mode based on IP
     local public_ip
     public_ip=$(curl -s --max-time 3 ifconfig.me || echo "unknown")
     local first_repo="${REPOS[0]%%|*}"
     local domain_ip
     domain_ip=$(dig +short "${first_repo}.${ROOT_DOMAIN}" 2>/dev/null | tail -n1 || echo "")
 
-    local tls_labels=""
+    local port_args="-p 80:80"
+    local extra_args=""
     if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
-        log "Direct IP match → Caddy will provision Let's Encrypt TLS."
+        log "Direct IP match → EC2 mode: Caddy will provision Let's Encrypt."
+        port_args="-p 80:80 -p 443:443"
     else
-        log "Behind Cloudflare/Tunnel → Disabling Caddy auto-HTTPS redirects."
-        # caddy-docker-proxy requires an EMPTY 'caddy' label for global options
-        tls_labels="--label caddy= --label caddy.auto_https=disable_redirects"
+        log "Behind Cloudflare/Tunnel → HTTP-only mode: only port 80 exposed."
+        extra_args="--label caddy= --label caddy.auto_https=disable_redirects"
     fi
 
     docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
@@ -116,11 +116,10 @@ setup_caddy() {
         --name caddy_proxy \
         --network "$CADDY_NETWORK" \
         --restart unless-stopped \
-        -p 80:80 \
-        -p 443:443 \
+        $port_args \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v caddy_data:/data \
-        $tls_labels \
+        $extra_args \
         lucaslorentz/caddy-docker-proxy:ci-alpine >> "$LOG_FILE" 2>&1 || { error "Failed to start Caddy."; exit 1; }
 
     log "Caddy Docker Proxy is running."
