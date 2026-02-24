@@ -7,12 +7,12 @@ set -u
 # CONFIGURATION
 # ==============================================================================
 # 1. Global variable: Repo list
-# Format: "repo_name|git_url"
+# Format: "repo_name|git_url|container_name|internal_port"
 REPOS=(
-    "chess|https://github.com/namanvashistha/chess.git"
-    "foodly|https://github.com/namanvashistha/foodly.git"
-    "hyperbole|https://github.com/namanvashistha/hyperbole.git"
-    "limedb|https://github.com/namanvashistha/limedb.git"
+    "chess|https://github.com/namanvashistha/chess.git|chess_go-app_1|9000"
+    "foodly|https://github.com/namanvashistha/foodly.git|foodly_app_1|80"
+    "hyperbole|https://github.com/namanvashistha/hyperbole.git|hyperbole-web|8080"
+    "limedb|https://github.com/namanvashistha/limedb.git|limedb_web_1|3000"
 )
 
 # Determine the appropriate home directory, even if run with sudo
@@ -145,14 +145,12 @@ setup_caddy() {
     > "$caddyfile"
 
     for repo_info in "${REPOS[@]}"; do
-        local repo_name="${repo_info%%|*}"
+        # Parse the string using Bash string manipulation or IFS
+        IFS='|' read -r repo_name repo_url container_name internal_port <<< "$repo_info"
         
-        # We assume the main web service in the repo's docker-compose is either named exactly
-        # like the repo or it's simply exposed on port 80/3000 inside the docker network.
-        # Since we don't know the exact internal port each app uses, the safest default standard is port 80.
-        # NOTE: If an app uses a different port (e.g. 3000), you'll need to define it or route it correctly.
-        # For zero-config, we route domain -> container_name:80. The docker-compose MUST name the web service
-        # the same as the repo name, or at least have a container named $repo_name for this to route automatically.
+        # Set defaults if not provided in the array
+        container_name="${container_name:-$repo_name}"
+        internal_port="${internal_port:-80}"
         
         # If ENABLE_TLS is true, Caddy handles Let's Encrypt SSL automatically (good for EC2).
         # If false, we explicitly tell Caddy to serve HTTP since Cloudflare handles HTTPS.
@@ -162,7 +160,7 @@ setup_caddy() {
             echo "http://${repo_name}.${ROOT_DOMAIN} {" >> "$caddyfile"
         fi
         
-        echo "    reverse_proxy ${repo_name}:80" >> "$caddyfile"
+        echo "    reverse_proxy ${container_name}:${internal_port}" >> "$caddyfile"
         echo "}" >> "$caddyfile"
         echo "" >> "$caddyfile"
     done
