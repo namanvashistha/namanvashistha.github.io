@@ -78,6 +78,19 @@ install_docker() {
         log "Docker is already installed."
     fi
 
+    # Upgrade to modern Docker Compose V2 and Buildx if missing
+    if ! docker compose version &> /dev/null || ! docker buildx version &> /dev/null; then
+        log "Modern Docker plugins missing. Attempting to install docker-compose-plugin and docker-buildx-plugin..."
+        if command -v apt-get &> /dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update -yqq > /dev/null 2>&1
+            apt-get install -yqq docker-compose-plugin docker-buildx-plugin > /dev/null 2>&1
+            log "Docker plugins installed via apt-get."
+        else
+            log "apt-get not found. Skipping automatic plugin installation. Please install docker-compose-plugin manually if builds fail."
+        fi
+    fi
+
     # Verify Docker Compose is available
     if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
         error "Docker Compose not found. Please ensure Docker Compose plugin is installed."
