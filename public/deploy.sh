@@ -108,7 +108,7 @@ setup_caddy() {
     else
         log "Behind Cloudflare/Tunnel → Disabling Caddy auto-HTTPS redirects."
         # caddy-docker-proxy requires an EMPTY 'caddy' label for global options
-        tls_labels="--label caddy= --label caddy.auto_https=disable_redirects"
+        tls_labels="--label caddy= --label caddy.auto_https=off"
     fi
 
     docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
