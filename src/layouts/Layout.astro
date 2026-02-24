@@ -30,8 +30,8 @@ const shortDescription = description ? (description.length > 160 ? description.s
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<link rel="preload" href="/fonts/Geist.woff2" as="font" type="font/woff2" crossorigin="">
-		<link rel="preload" href="/fonts/GeistMono.woff2" as="font" type="font/woff2" crossorigin="">
+		<link rel="preload" href="/fonts/Geist.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+		<link rel="preload" href="/fonts/GeistMono.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -73,7 +73,7 @@ const shortDescription = description ? (description.length > 160 ? description.s
 
 		{UMAMI_WEBSITE_ID && (
 			<script
-				defer
+				async
 				src="https://cloud.umami.is/script.js"
 				data-website-id={UMAMI_WEBSITE_ID}
 			/>

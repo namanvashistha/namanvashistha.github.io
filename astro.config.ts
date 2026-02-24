@@ -22,6 +22,9 @@ const {
 const config = defineConfig({
 	site: 'https://namanvashistha.com',
 	output: 'static',
+	build: {
+		inlineStylesheets: 'always',
+	},
 	integrations: [
 		expressiveCode({
 			themes: [spectreDark],
