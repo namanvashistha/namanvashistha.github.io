@@ -15,10 +15,19 @@ REPOS=(
     "limedb|https://github.com/namanvashistha/limedb.git"
 )
 
+# Determine the appropriate home directory, even if run with sudo
+if [ -n "${SUDO_USER:-}" ]; then
+    TARGET_HOME=$(eval echo "~${SUDO_USER}")
+else
+    TARGET_HOME="$HOME"
+fi
+
 # 2. Global variable: Machine config
-BASE_DIR="/opt/namanvashistha_deploy"
-LOG_FILE="/var/log/namanvashistha_deploy.log"
-LOCK_FILE="/tmp/namanvashistha_deploy.lock"
+BASE_DIR="$TARGET_HOME/namanvashistha"
+LOG_FILE="$BASE_DIR/deploy.log"
+LOCK_FILE="$BASE_DIR/.deploy.lock"
+CADDY_DIR="$BASE_DIR/caddy"
+ROOT_DOMAIN="namanvashistha.com"
 DOCKER_NETWORK="naman_shared_net"
 DOCKER_USER_GROUP="docker"
 
@@ -90,6 +99,59 @@ create_network() {
 }
 
 # ==============================================================================
+# CADDY REVERSE PROXY
+# ==============================================================================
+setup_caddy() {
+    log "Configuring Caddy Reverse Proxy..."
+    mkdir -p "$CADDY_DIR"
+    local caddyfile="$CADDY_DIR/Caddyfile"
+
+    # Start fresh Caddyfile
+    > "$caddyfile"
+
+    for repo_info in "${REPOS[@]}"; do
+        local repo_name="${repo_info%%|*}"
+        
+        # We assume the main web service in the repo's docker-compose is either named exactly
+        # like the repo or it's simply exposed on port 80/3000 inside the docker network.
+        # Since we don't know the exact internal port each app uses, the safest default standard is port 80.
+        # NOTE: If an app uses a different port (e.g. 3000), you'll need to define it or route it correctly.
+        # For zero-config, we route domain -> container_name:80. The docker-compose MUST name the web service
+        # the same as the repo name, or at least have a container named $repo_name for this to route automatically.
+        
+        # Example format:
+        # chess.namanvashistha.com {
+        #     reverse_proxy chess:80
+        # }
+        echo "${repo_name}.${ROOT_DOMAIN} {" >> "$caddyfile"
+        echo "    reverse_proxy ${repo_name}:80" >> "$caddyfile"
+        echo "}" >> "$caddyfile"
+        echo "" >> "$caddyfile"
+    done
+
+    # Remove existing Caddy container if it exists
+    if docker ps -a --format '{{.Names}}' | grep -Eq "^caddy_proxy$"; then
+        log "Removing existing Caddy container..."
+        docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1
+    fi
+
+    log "Starting Caddy container..."
+    if ! docker run -d \
+        --name caddy_proxy \
+        --network "$DOCKER_NETWORK" \
+        --restart unless-stopped \
+        -p 80:80 \
+        -p 443:443 \
+        -v "$caddyfile:/etc/caddy/Caddyfile" \
+        -v caddy_data:/data \
+        -v caddy_config:/config \
+        caddy:latest >> "$LOG_FILE" 2>&1; then
+        error "Failed to start Caddy container."
+        exit 1
+    fi
+}
+
+# ==============================================================================
 # REPOSITORY DEPLOYMENT
 # ==============================================================================
 deploy_repo() {
@@ -147,11 +209,17 @@ deploy_repo() {
             error "Docker compose failed for $repo_name."
             return 1
         fi
+        
+        # Ensure containers restart on machine reboot
+        docker compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1
     elif command -v docker-compose &> /dev/null; then
         if ! docker-compose up -d --build >> "$LOG_FILE" 2>&1; then
             error "Docker-compose failed for $repo_name."
             return 1
         fi
+        
+        # Ensure containers restart on machine reboot
+        docker-compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1
     else
         error "No docker compose command available."
         return 1
@@ -174,6 +242,7 @@ main() {
     acquire_lock
     install_docker
     create_network
+    setup_caddy
 
     # Iterate over repositories and deploy
     local failed_repos=0
