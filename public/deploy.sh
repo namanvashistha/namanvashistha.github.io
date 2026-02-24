@@ -286,7 +286,6 @@ main() {
     acquire_lock
     install_docker
     create_network
-    setup_caddy
 
     # Iterate over repositories and deploy
     local failed_repos=0
@@ -297,6 +296,9 @@ main() {
             error "Deployment failed for repo: ${repo%%|*}. Proceeding to the next repo."
         fi
     done
+
+    # Set up Caddy and bridge the newly created containers to the shared network
+    setup_caddy
 
     log "--------------------------------------------------"
     if [ "$failed_repos" -gt 0 ]; then
