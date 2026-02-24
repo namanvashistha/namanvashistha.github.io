@@ -142,13 +142,18 @@ deploy_repo() {
     log "Building and starting containers for $repo_name..."
     
     # Use modern `docker compose` if available, fallback to `docker-compose`
-    local compose_cmd="docker compose"
-    if ! command -v docker compose &> /dev/null; then
-        compose_cmd="docker-compose"
-    fi
-
-    if ! $compose_cmd up -d --build >> "$LOG_FILE" 2>&1; then
-        error "Docker compose failed for $repo_name."
+    if docker compose version &> /dev/null; then
+        if ! docker compose up -d --build >> "$LOG_FILE" 2>&1; then
+            error "Docker compose failed for $repo_name."
+            return 1
+        fi
+    elif command -v docker-compose &> /dev/null; then
+        if ! docker-compose up -d --build >> "$LOG_FILE" 2>&1; then
+            error "Docker-compose failed for $repo_name."
+            return 1
+        fi
+    else
+        error "No docker compose command available."
         return 1
     fi
 

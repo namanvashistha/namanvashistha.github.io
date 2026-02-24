@@ -113,6 +113,22 @@ date: 2026-02-07
 Project details...
 ```
 
+## 🐳 Zero-Config Docker Deployment
+
+This repository hosts a zero-config deployment script that sets up a Docker environment, creates a shared network, and pulls & runs multiple personal projects (`chess`, `foodly`, `hyperbole`, `limedb`) behind Docker automatically.
+
+To run the deployment script on a fresh server, you can pipe it directly to bash:
+
+```bash
+curl -sSL https://namanvashistha.com/deploy.sh | sudo bash
+```
+
+Or you can set it up via cron for daily deployments (run `sudo crontab -e`):
+
+```cron
+0 2 * * * curl -sSL https://namanvashistha.com/deploy.sh | bash
+```
+
 ## 🤝 Built With
 
 This site uses the [Spectre](https://github.com/louisescher/spectre) theme as a foundation, customized and enhanced with my own features and styling.
