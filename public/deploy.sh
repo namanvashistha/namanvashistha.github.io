@@ -63,39 +63,15 @@ acquire_lock() {
 # ==============================================================================
 # 3. Install Docker if not present
 install_docker() {
-    if ! command -v docker &> /dev/null; then
-        log "Docker not found. Installing Docker..."
-        # Uses the official Docker installation script, works on most Linux distros
-        curl -fsSL https://get.docker.com -o get-docker.sh
-        sh get-docker.sh || { error "Failed to install Docker."; exit 1; }
-        rm get-docker.sh
-        log "Docker installed successfully."
-        
-        # Ensure Docker service is running
-        systemctl start docker || true
-        systemctl enable docker || true
-    else
-        log "Docker is already installed."
+    if command -v docker &> /dev/null && docker compose version &> /dev/null; then
+        echo "Docker with Compose V2 already installed."
+        return
     fi
 
-    # Upgrade to modern Docker Compose V2 and Buildx if missing
-    if ! docker compose version &> /dev/null || ! docker buildx version &> /dev/null; then
-        log "Modern Docker plugins missing. Attempting to install docker-compose-plugin and docker-buildx-plugin..."
-        if command -v apt-get &> /dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            apt-get update -yqq > /dev/null 2>&1
-            apt-get install -yqq docker-compose-plugin docker-buildx-plugin > /dev/null 2>&1
-            log "Docker plugins installed via apt-get."
-        else
-            log "apt-get not found. Skipping automatic plugin installation. Please install docker-compose-plugin manually if builds fail."
-        fi
-    fi
-
-    # Verify Docker Compose is available
-    if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
-        error "Docker Compose not found. Please ensure Docker Compose plugin is installed."
-        exit 1
-    fi
+    echo "Installing / Upgrading Docker..."
+    curl -fsSL https://get.docker.com | sh
+    systemctl enable docker
+    systemctl start docker
 }
 
 # ==============================================================================
@@ -268,17 +244,8 @@ deploy_repo() {
         
         # Ensure containers restart on machine reboot
         docker compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1
-    elif command -v docker-compose &> /dev/null; then
-        docker-compose up -d --build --remove-orphans 2>&1 | tee -a "$LOG_FILE"
-        if [ ${PIPESTATUS[0]} -ne 0 ]; then
-            error "Docker-compose failed for $repo_name."
-            return 1
-        fi
-        
-        # Ensure containers restart on machine reboot
-        docker-compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1
     else
-        error "No docker compose command available."
+        error "Modern 'docker compose' V2 plugin is not available. Please install it."
         return 1
     fi
 
