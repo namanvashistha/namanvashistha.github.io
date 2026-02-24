@@ -30,7 +30,17 @@ const { Content: About } = await render(about!);
 >
 	<div class="layout-grid-left" slot="left">
 		<Card class="flex-col-card">
-			<ImageGlow quality={100} width={360} height={360} src={ProfilePicture} alt={`${name} profile picture`} loading='eager' />
+			<ImageGlow 
+				quality={100} 
+				width={360} 
+				height={360} 
+				src={ProfilePicture} 
+				alt={`${name} profile picture`} 
+				loading='eager' 
+				fetchpriority='high'
+				widths={[120, 240, 360]}
+				sizes="(max-width: 640px) 120px, (max-width: 1024px) 240px, 360px"
+			/>
 			<h2>{name}</h2>
 			<ul class="overview-list">
 				{quickInfo.map((info) => (
@@ -77,6 +87,8 @@ const { Content: About } = await render(about!);
 							src={post.data.image}
 							alt={post.data.title}
 							width={240}
+							widths={[120, 240, 360]}
+							sizes="(max-width: 640px) 120px, 240px"
 							class="post-cover-image"
 							loading="lazy"
 						/>
@@ -110,6 +122,8 @@ const { Content: About } = await render(about!);
 							src={project.data.image}
 							alt={project.data.title}
 							width={240}
+							widths={[120, 240, 360]}
+							sizes="(max-width: 640px) 120px, 240px"
 							class="post-cover-image"
 							loading="lazy"
 						/>

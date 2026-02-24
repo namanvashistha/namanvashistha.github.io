@@ -73,7 +73,16 @@ const { Content, headings } = await render(post);
   <article slot="right" data-pagefind-body>
     <Card>
       <div class="article-header" id="_top" data-pagefind-ignore>
-        <ImageGlow quality={100} class="article-image" src={post.data.image} alt={post.data.title} />
+        <ImageGlow 
+          quality={100} 
+          class="article-image" 
+          src={post.data.image} 
+          alt={post.data.title} 
+          fetchpriority="high"
+          loading="eager"
+          widths={[320, 640, 1024]}
+          sizes="(max-width: 640px) 320px, (max-width: 1024px) 640px, 1024px"
+        />
         <div class="header">
           <div>
             <h1 class="no-mt article-h1" data-pagefind-weight="10">{post.data.title}</h1>

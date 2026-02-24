@@ -11,14 +11,16 @@ const height = props.height;
 ---
 
 <div class="glow-image">
-  <Image {...props} />
+  <Image {...props as any} />
   <Image
     width={width ? ((typeof width === 'number' ? width : Number.parseInt(width)) / 4) : undefined} 
     height={height ? ((typeof height === 'number' ? height : Number.parseInt(height)) / 4) : undefined}
-    {...props}
+    {...props as any}
     class='glow'
     class:list={[props.class]}
     quality={75}
+    fetchpriority="low"
+    loading="lazy"
   />
 </div>
 <style>

@@ -1,0 +1,14 @@
+/*
+  X-Robots-Tag: noindex, nofollow, nosnippet, noarchive
+  
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/_astro/*
+  Cache-Control: public, max-age=36000
+
+/images/*
+  Cache-Control: public, max-age=36000
+
+/img/*
+  Cache-Control: public, max-age=36000
