@@ -93,8 +93,22 @@ deploy_repo() {
 setup_caddy() {
     log "Setting up Caddy Docker Proxy..."
 
-    # Caddy-docker-proxy watches Docker labels and auto-generates routes.
-    # Each project's docker-compose.yml defines its own routing via labels.
+    # Auto-detect TLS: if subdomain resolves to this machine's IP → EC2 (Let's Encrypt).
+    # Otherwise → Cloudflare Tunnel (disable auto HTTPS to prevent redirect loops).
+    local public_ip
+    public_ip=$(curl -s --max-time 3 ifconfig.me || echo "unknown")
+    local first_repo="${REPOS[0]%%|*}"
+    local domain_ip
+    domain_ip=$(dig +short "${first_repo}.${ROOT_DOMAIN}" 2>/dev/null | tail -n1 || echo "")
+
+    local tls_labels=""
+    if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
+        log "Direct IP match → Caddy will provision Let's Encrypt TLS."
+    else
+        log "Behind Cloudflare/Tunnel → Disabling Caddy auto-HTTPS."
+        tls_labels="--label caddy.auto_https=off"
+    fi
+
     docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
     docker run -d \
         --name caddy_proxy \
@@ -104,6 +118,7 @@ setup_caddy() {
         -p 443:443 \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v caddy_data:/data \
+        $tls_labels \
         lucaslorentz/caddy-docker-proxy:ci-alpine >> "$LOG_FILE" 2>&1 || { error "Failed to start Caddy."; exit 1; }
 
     log "Caddy Docker Proxy is running."
