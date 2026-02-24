@@ -11,6 +11,7 @@ REPOS=(
     "hyperbole|https://github.com/namanvashistha/hyperbole.git"
     "limedb|https://github.com/namanvashistha/limedb.git"
 )
+ROOT_DOMAIN="namanvashistha.com"
 
 # Determine the appropriate home directory, even if run with sudo
 if [ -n "${SUDO_USER:-}" ]; then
@@ -105,8 +106,9 @@ setup_caddy() {
     if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
         log "Direct IP match → Caddy will provision Let's Encrypt TLS."
     else
-        log "Behind Cloudflare/Tunnel → Caddy auto-HTTPS to disable_redirects."
-        tls_labels="--label caddy.auto_https=disable_redirects"
+        log "Behind Cloudflare/Tunnel → Disabling Caddy auto-HTTPS redirects."
+        # caddy-docker-proxy requires an EMPTY 'caddy' label for global options
+        tls_labels="--label caddy= --label caddy.auto_https=disable_redirects"
     fi
 
     docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
