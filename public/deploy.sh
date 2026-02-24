@@ -105,6 +105,41 @@ setup_caddy() {
     log "Configuring Caddy Reverse Proxy..."
     mkdir -p "$CADDY_DIR"
     local caddyfile="$CADDY_DIR/Caddyfile"
+    
+    # -------------------------------------------------------------
+    # AUTO-DETECT TLS REQUIREMENT
+    # -------------------------------------------------------------
+    # If the domain's DNS points directly to THIS machine's public IP (e.g., EC2/VPS),
+    # Caddy should provision Let's Encrypt TLS.
+    # If it points elsewhere (e.g., Cloudflare Tunnel / Proxy), Cloudflare handles TLS,
+    # so Caddy should just serve over HTTP internally.
+    
+    local public_ip=$(curl -s --max-time 5 ifconfig.me || echo "unknown")
+    
+    # Use the first repo's subdomain for the IP check, since the root domain might point elsewhere (e.g., GitHub Pages)
+    local first_repo_info="${REPOS[0]}"
+    local first_repo_name="${first_repo_info%%|*}"
+    local check_domain="${first_repo_name}.${ROOT_DOMAIN}"
+
+    # Use dig/getent to resolve the domain to an IP securely
+    local domain_ip=""
+    if command -v dig >/dev/null 2>&1; then
+        domain_ip=$(dig +short "$check_domain" | tail -n1)
+    elif command -v getent >/dev/null 2>&1; then
+        domain_ip=$(getent ahostsv4 "$check_domain" | awk '{ print $1 }' | head -n1)
+    else
+        domain_ip=$(ping -c 1 "$check_domain" | grep PING | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
+    fi
+
+    local ENABLE_TLS="false"
+    if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
+        log "Detected Public IP match for $check_domain. Enabling automatic Let's Encrypt TLS in Caddy."
+        ENABLE_TLS="true"
+    else
+        log "Domain $check_domain does not resolve directly to this machine's public IP ($public_ip != $domain_ip)."
+        log "Assuming Cloudflare Tunnel / External Proxy. Disabling Let's Encrypt in Caddy (serving HTTP internally)."
+    fi
+    # -------------------------------------------------------------
 
     # Start fresh Caddyfile
     > "$caddyfile"
@@ -119,11 +154,14 @@ setup_caddy() {
         # For zero-config, we route domain -> container_name:80. The docker-compose MUST name the web service
         # the same as the repo name, or at least have a container named $repo_name for this to route automatically.
         
-        # Example format:
-        # chess.namanvashistha.com {
-        #     reverse_proxy chess:80
-        # }
-        echo "${repo_name}.${ROOT_DOMAIN} {" >> "$caddyfile"
+        # If ENABLE_TLS is true, Caddy handles Let's Encrypt SSL automatically (good for EC2).
+        # If false, we explicitly tell Caddy to serve HTTP since Cloudflare handles HTTPS.
+        if [ "$ENABLE_TLS" = "true" ]; then
+            echo "${repo_name}.${ROOT_DOMAIN} {" >> "$caddyfile"
+        else
+            echo "http://${repo_name}.${ROOT_DOMAIN} {" >> "$caddyfile"
+        fi
+        
         echo "    reverse_proxy ${repo_name}:80" >> "$caddyfile"
         echo "}" >> "$caddyfile"
         echo "" >> "$caddyfile"
