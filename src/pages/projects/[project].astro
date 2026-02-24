@@ -41,7 +41,7 @@ const { Content } = await render(project);
           const Tag = info.link ? 'a' : 'div';
           return (
             <li>
-              <Tag href={info.link} class='project-info-item'>
+              <Tag href={info.link} class='project-info-item' target={info.link ? '_blank' : undefined} rel={info.link ? 'noopener noreferrer' : undefined}>
                 <Icon type={info.icon.type} name={info.icon.name as any} width={24} height={24} class='glow-icon' />
                 <span>{info.text}</span>
               </Tag>

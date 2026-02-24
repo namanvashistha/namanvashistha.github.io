@@ -3,6 +3,7 @@ import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import expressiveCode from 'astro-expressive-code';
 import { loadEnv } from 'vite';
+import rehypeExternalLinks from 'rehype-external-links';
 import spectre, { type GiscusMapping } from './package/src';
 import { spectreDark } from './src/ec-theme';
 
@@ -24,6 +25,11 @@ const config = defineConfig({
 	output: 'static',
 	build: {
 		inlineStylesheets: 'always',
+	},
+	markdown: {
+		rehypePlugins: [
+			[rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }]
+		]
 	},
 	integrations: [
 		expressiveCode({
