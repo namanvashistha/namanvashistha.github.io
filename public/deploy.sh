@@ -119,7 +119,7 @@ setup_caddy() {
         --name caddy_proxy \
         --network "$CADDY_NETWORK" \
         --restart unless-stopped \
-        $port_args \
+        -p 80:80 -p 443:443 \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v caddy_data:/data \
         $extra_args \
