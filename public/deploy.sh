@@ -9,10 +9,10 @@ set -u
 # 1. Global variable: Repo list
 # Format: "repo_name|git_url|container_name|internal_port"
 REPOS=(
-    "chess|https://github.com/namanvashistha/chess.git|chess_go-app_1|9000"
-    "foodly|https://github.com/namanvashistha/foodly.git|foodly_app_1|80"
-    "hyperbole|https://github.com/namanvashistha/hyperbole.git|hyperbole-web|8080"
-    "limedb|https://github.com/namanvashistha/limedb.git|limedb_web_1|3000"
+    "chess|https://github.com/namanvashistha/chess.git|go-app|9000"
+    "foodly|https://github.com/namanvashistha/foodly.git|app|80"
+    "hyperbole|https://github.com/namanvashistha/hyperbole.git|hyperbole|8080"
+    "limedb|https://github.com/namanvashistha/limedb.git|web|3000"
 )
 
 # Determine the appropriate home directory, even if run with sudo
@@ -139,18 +139,32 @@ setup_caddy() {
     > "$caddyfile"
 
     for repo_info in "${REPOS[@]}"; do
-        # Parse the string using Bash string manipulation or IFS
-        IFS='|' read -r repo_name repo_url container_name internal_port <<< "$repo_info"
+        # Parse the string: "repo|url|service_name|port"
+        IFS='|' read -r repo_name repo_url service_name internal_port <<< "$repo_info"
         
         # Set defaults if not provided in the array
-        container_name="${container_name:-$repo_name}"
+        service_name="${service_name:-$repo_name}"
         internal_port="${internal_port:-80}"
+        
+        # Dynamically discover the container name for this compose service
+        local target_dir="$BASE_DIR/$repo_name"
+        local live_container="$service_name"
+        if [ -d "$target_dir" ] && [ -f "$target_dir/docker-compose.yml" ] || [ -f "$target_dir/docker-compose.yaml" ]; then
+            cd "$target_dir" || true
+            # Get the exact container name created by compose v1 or v2
+            discovered_container=$(docker compose ps -q "$service_name" 2>/dev/null | xargs docker inspect --format '{{.Name}}' 2>/dev/null | sed 's/^\///' | head -n 1)
+            if [ -n "$discovered_container" ]; then
+                live_container="$discovered_container"
+                log "Discovered container '$live_container' for service '$service_name' in $repo_name"
+            fi
+            cd - > /dev/null || true
+        fi
         
         # Bridge the independent docker-compose container to the shared Caddy network
         # This keeps the repo's docker-compose completely unmodified and independent,
         # but allows Caddy to see it.
-        log "Bridging $container_name to $DOCKER_NETWORK..."
-        docker network connect "$DOCKER_NETWORK" "$container_name" >> "$LOG_FILE" 2>&1 || true
+        log "Bridging $live_container to $DOCKER_NETWORK..."
+        docker network connect "$DOCKER_NETWORK" "$live_container" >> "$LOG_FILE" 2>&1 || true
         
         # If ENABLE_TLS is true, Caddy handles Let's Encrypt SSL automatically (good for EC2).
         # If false, we explicitly tell Caddy to serve HTTP since Cloudflare handles HTTPS.
@@ -160,7 +174,7 @@ setup_caddy() {
             echo "http://${repo_name}.${ROOT_DOMAIN} {" >> "$caddyfile"
         fi
         
-        echo "    reverse_proxy ${container_name}:${internal_port}" >> "$caddyfile"
+        echo "    reverse_proxy ${live_container}:${internal_port}" >> "$caddyfile"
         echo "}" >> "$caddyfile"
         echo "" >> "$caddyfile"
     done
