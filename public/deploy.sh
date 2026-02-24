@@ -105,8 +105,8 @@ setup_caddy() {
     if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
         log "Direct IP match → Caddy will provision Let's Encrypt TLS."
     else
-        log "Behind Cloudflare/Tunnel → Disabling Caddy auto-HTTPS."
-        tls_labels="--label caddy.auto_https=off"
+        log "Behind Cloudflare/Tunnel → Caddy auto-HTTPS to disable_redirects."
+        tls_labels="--label caddy.auto_https=disable_redirects"
     fi
 
     docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
