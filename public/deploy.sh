@@ -4,14 +4,13 @@ set -u
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
-# Format: "repo_name|git_url|internal_port"
+# Format: "repo_name|git_url"
 REPOS=(
-    "chess|https://github.com/namanvashistha/chess.git|9000"
-    "foodly|https://github.com/namanvashistha/foodly.git|80"
-    "hyperbole|https://github.com/namanvashistha/hyperbole.git|8080"
-    "limedb|https://github.com/namanvashistha/limedb.git|3000"
+    "chess|https://github.com/namanvashistha/chess.git"
+    "foodly|https://github.com/namanvashistha/foodly.git"
+    "hyperbole|https://github.com/namanvashistha/hyperbole.git"
+    "limedb|https://github.com/namanvashistha/limedb.git"
 )
-ROOT_DOMAIN="namanvashistha.com"
 
 # Determine the appropriate home directory, even if run with sudo
 if [ -n "${SUDO_USER:-}" ]; then
@@ -23,8 +22,7 @@ fi
 BASE_DIR="$TARGET_HOME/namanvashistha"
 LOG_FILE="$BASE_DIR/deploy.log"
 LOCK_FILE="$BASE_DIR/.deploy.lock"
-CADDY_DIR="$BASE_DIR/caddy"
-DOCKER_NETWORK="naman_shared_net"
+CADDY_NETWORK="caddy"
 
 # ==============================================================================
 # LOGGING AND LOCKING
@@ -61,8 +59,7 @@ install_docker() {
 # REPOSITORY DEPLOYMENT
 # ==============================================================================
 deploy_repo() {
-    IFS='|' read -r repo_name repo_url internal_port <<< "$1"
-    internal_port="${internal_port:-80}"
+    IFS='|' read -r repo_name repo_url <<< "$1"
     local target_dir="$BASE_DIR/$repo_name"
 
     log "--- Deploying: $repo_name ---"
@@ -87,57 +84,45 @@ deploy_repo() {
     docker compose up -d --build --remove-orphans >> "$LOG_FILE" 2>&1 || { error "Compose failed."; return 1; }
     docker compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1 || true
 
-    # Container Discovery & Proxy Config
-    local live_container=""
-    for cid in $(docker compose ps -q 2>/dev/null); do
-        if docker inspect "$cid" --format '{{json .NetworkSettings.Ports}} {{json .Config.ExposedPorts}}' | grep -q "${internal_port}/tcp"; then
-            live_container=$(docker inspect "$cid" --format '{{.Name}}' | sed 's/^\///')
-            break
-        fi
-    done
-
-
-    if [ -n "$live_container" ]; then
-        log "Bridging $live_container to Caddy via port $internal_port"
-        docker network connect "$DOCKER_NETWORK" "$live_container" >> "$LOG_FILE" 2>&1 || true
-        
-        local caddy_scheme="http://"
-        [ "$ENABLE_TLS" = "true" ] && caddy_scheme=""
-        echo "${caddy_scheme}${repo_name}.${ROOT_DOMAIN} {
-    reverse_proxy ${live_container}:${internal_port}
-}
-" >> "$CADDY_DIR/Caddyfile"
-    fi
     log "Success: $repo_name"
+}
+
+# ==============================================================================
+# CADDY (via caddy-docker-proxy)
+# ==============================================================================
+setup_caddy() {
+    log "Setting up Caddy Docker Proxy..."
+
+    # Caddy-docker-proxy watches Docker labels and auto-generates routes.
+    # Each project's docker-compose.yml defines its own routing via labels.
+    docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
+    docker run -d \
+        --name caddy_proxy \
+        --network "$CADDY_NETWORK" \
+        --restart unless-stopped \
+        -p 80:80 \
+        -p 443:443 \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v caddy_data:/data \
+        lucaslorentz/caddy-docker-proxy:ci-alpine >> "$LOG_FILE" 2>&1 || { error "Failed to start Caddy."; exit 1; }
+
+    log "Caddy Docker Proxy is running."
 }
 
 # ==============================================================================
 # MAIN
 # ==============================================================================
 main() {
-    mkdir -p "$BASE_DIR" "$CADDY_DIR"
+    mkdir -p "$BASE_DIR"
     touch "$LOG_FILE"
-    
+
     acquire_lock
     install_docker
 
-    if ! docker network ls | grep -qw "$DOCKER_NETWORK"; then
-        docker network create "$DOCKER_NETWORK" > /dev/null
+    # Create shared caddy network (all services join this)
+    if ! docker network ls | grep -qw "$CADDY_NETWORK"; then
+        docker network create "$CADDY_NETWORK" > /dev/null
     fi
-
-    # Auto-detect TLS
-    local public_ip
-    public_ip=$(curl -s --max-time 3 ifconfig.me || echo "unknown")
-    local domain_ip
-    domain_ip=$(ping -c 1 "${REPOS[0]%%|*}.${ROOT_DOMAIN}" 2>/dev/null | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -n 1 || echo "")
-    
-    ENABLE_TLS="false"
-    if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
-        ENABLE_TLS="true"
-    fi
-
-    # Initialize Caddyfile
-    > "$CADDY_DIR/Caddyfile"
 
     local failed_repos=0
     for repo in "${REPOS[@]}"; do
@@ -146,26 +131,13 @@ main() {
         fi
     done
 
-    # Start Caddy
-    docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
-    docker run -d \
-        --name caddy_proxy \
-        --network "$DOCKER_NETWORK" \
-        --restart unless-stopped \
-        -p 80:80 \
-        -p 443:443 \
-        -v "$CADDY_DIR/Caddyfile:/etc/caddy/Caddyfile" \
-        -v caddy_data:/data \
-        -v caddy_config:/config \
-        caddy:latest >> "$LOG_FILE" 2>&1 || { error "Failed to start Caddy."; exit 1; }
+    setup_caddy
 
     log "--------------------------------------------------"
     if [ "$failed_repos" -gt 0 ]; then
         log "Completed with $failed_repos failures. See $LOG_FILE"
-        exit 0
     else
         log "Deployment completed successfully!"
-        exit 0
     fi
 }
 
