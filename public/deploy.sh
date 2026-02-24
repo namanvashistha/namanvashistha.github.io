@@ -151,7 +151,7 @@ setup_caddy() {
         local live_container="$service_name"
         if [ -d "$target_dir" ] && [ -f "$target_dir/docker-compose.yml" ] || [ -f "$target_dir/docker-compose.yaml" ]; then
             cd "$target_dir" || true
-            # Get the exact container name created by compose v1 or v2
+            # Get the exact container name created by Compose V2
             discovered_container=$(docker compose ps -q "$service_name" 2>/dev/null | xargs docker inspect --format '{{.Name}}' 2>/dev/null | sed 's/^\///' | head -n 1)
             if [ -n "$discovered_container" ]; then
                 live_container="$discovered_container"
@@ -253,20 +253,15 @@ deploy_repo() {
     
     log "Building and starting containers for $repo_name..."
     
-    # Use modern `docker compose` if available, fallback to `docker-compose`
-    if docker compose version &> /dev/null; then
-        docker compose up -d --build --remove-orphans 2>&1 | tee -a "$LOG_FILE"
-        if [ ${PIPESTATUS[0]} -ne 0 ]; then
-            error "Docker compose failed for $repo_name."
-            return 1
-        fi
-        
-        # Ensure containers restart on machine reboot
-        docker compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1
-    else
-        error "Modern 'docker compose' V2 plugin is not available. Please install it."
+    # 6. Run modern Docker Compose V2 to build and start containers
+    docker compose up -d --build --remove-orphans 2>&1 | tee -a "$LOG_FILE"
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        error "Docker compose failed for $repo_name."
         return 1
     fi
+    
+    # Ensure containers restart on machine reboot
+    docker compose ps -q | xargs -r docker update --restart unless-stopped >> "$LOG_FILE" 2>&1
 
     log "Successfully deployed $repo_name."
 }
