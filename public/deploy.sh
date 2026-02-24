@@ -101,14 +101,17 @@ setup_caddy() {
     local domain_ip
     domain_ip=$(dig +short "${first_repo}.${ROOT_DOMAIN}" 2>/dev/null | tail -n1 || echo "")
 
-    local port_args="-p 80:80"
+    local port_args=""
     local extra_args=""
     if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
         log "Direct IP match → EC2 mode: Caddy will provision Let's Encrypt."
         port_args="-p 80:80 -p 443:443"
     else
-        log "Behind Cloudflare/Tunnel → HTTP-only mode: only port 80 exposed."
-        extra_args="--label caddy= --label caddy.auto_https=disable_redirects"
+        log "Behind Cloudflare/Tunnel → HTTP-only mode."
+        # auto_https=off makes Caddy serve plain HTTP on internal port 443.
+        # We map host:80 → container:443 so cloudflared can reach it.
+        port_args="-p 80:443"
+        extra_args="--label caddy= --label caddy.auto_https=off"
     fi
 
     docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
