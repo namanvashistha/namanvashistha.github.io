@@ -44,6 +44,15 @@
         "type": "lucide",
         "name": "twitter"
       }
+    },
+    {
+      "id": 7,
+      "text": "Substack",
+      "link": "https://namanvashistha.substack.com/",
+      "icon": {
+        "name": "bookmark-minus",
+        "type": "lucide"
+      }
     }
   ]
 }
