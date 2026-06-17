@@ -62,7 +62,7 @@ import Layout from '../layouts/Layout.astro';
 
   .card-description {
     margin: 0;
-    color: #c7c7c7;
+    color: var(--text-muted);
     line-height: 1.6;
   }
 
@@ -73,11 +73,12 @@ import Layout from '../layouts/Layout.astro';
     gap: 0.625rem;
     padding: 1rem 1.5rem;
     background: var(--primary);
-    color: white;
+    color: var(--on-primary);
     text-decoration: none;
     border: 2px solid var(--primary);
+    border-radius: var(--radius-sm);
     transition: all 0.2s ease;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 1rem;
   }
 
@@ -91,13 +92,14 @@ import Layout from '../layouts/Layout.astro';
     background: transparent;
     color: var(--primary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+    box-shadow: 0 4px 12px oklch(0.7 var(--accent-c) var(--hue) / 0.3);
   }
 
   .pdf-container {
     width: 100%;
-    border: 1px solid #353535;
-    background: #1a1a1a;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
     position: relative;
     overflow: hidden;
   }

@@ -88,20 +88,25 @@ const { Content, headings } = await render(post);
             <h1 class="no-mt article-h1" data-pagefind-weight="10">{post.data.title}</h1>
           </div>
           <div class="article-info">
-            <span>{post.data.createdAt.toLocaleDateString('en-GB')}</span>
-            <span>/</span>
-            <span>{timeToRead(post)} minute{timeToRead(post) === 1 ? "" : "s"} read</span>
-            <span>/</span>
-            <span>Tags: {post.data.tags.map((tag) => tag.id).join(", ")}</span>
-            <span>/</span>
-            <span class="hits-label">Views:</span>
-            <img
-              src={`https://hits.sh/namanvashistha.com/blog/${post.id}.svg?style=flat-square&label=&#8203;&color=8c5cf5&labelColor=1a1a1a&extraCount=100`}
-              alt="view count"
-              height="18"
-              class="hits-badge"
-            />
+            <span class="meta-item">{post.data.createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+            <span class="meta-item">{timeToRead(post)} min read</span>
+            <span class="meta-item">
+              <span class="hits-label">Views:</span>
+              <img
+                src={`https://hits.sh/namanvashistha.com/blog/${post.id}.svg?style=flat-square&label=&#8203;&color=8b5cf6&labelColor=191b1f&extraCount=100`}
+                alt="view count"
+                height="18"
+                class="hits-badge"
+              />
+            </span>
           </div>
+          {post.data.tags && post.data.tags.length > 0 && (
+            <ul class="article-tags">
+              {post.data.tags.map((tag) => (
+                <li><a class="article-tag" href={`/blog?tags=${tag.id}`}>{tag.id}</a></li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
       <Content />
@@ -160,21 +165,23 @@ const { Content, headings } = await render(post);
   }
 
   .toc-card ol li a {
-    color: #c7c7c7;
+    color: var(--text-muted);
     font-size: .925rem;
     padding: .25rem .5rem;
+    border-radius: var(--radius-sm);
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }
 
   .toc-card ol li a:hover {
-    color: white;
+    color: var(--text);
     text-decoration: none;
   }
 
   .toc-card ol li a.active {
-    color: white;
+    color: var(--on-primary);
     background: var(--primary);
+    border-radius: var(--radius-sm);
   }
 
   .left {
@@ -194,7 +201,7 @@ const { Content, headings } = await render(post);
   }
 
   .comments * {
-    border-color: #353535 !important;
+    border-color: var(--border) !important;
   }
 
 

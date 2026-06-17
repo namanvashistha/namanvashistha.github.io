@@ -1,10 +1,51 @@
 :root {
-	--primary: #8c5cf5;
-	/* Needed for some hover effects. This is just the R, G and B values of the hex color above */
-	--primary-rgb: 140, 92, 245;
-	/* Used for links */
-	--primary-light: #a277ff;
-	--primary-lightest: #c2a8fd;
+	/* ── Palette knob ─────────────────────────────────────────
+	   Whole theme derives from one hue. Swap --hue to recolor the
+	   entire site. Neutrals are tinted toward it; authored in OKLCH.
+	     violet 293 · indigo 270 · blue 245 · teal 195 · emerald 165
+	     amber 75 · coral 30 · crimson 15 · magenta 330              */
+	--hue: 195;
+	/* Accent saturation. Low = muted/monochrome, high = vivid. */
+	--accent-c: 0.13;
+
+	/* ── Accent ───────────────────────────────────────────── */
+	--primary: oklch(0.7 var(--accent-c) var(--hue));
+	--primary-light: oklch(0.8 calc(var(--accent-c) * 0.85) var(--hue));
+	--primary-lightest: oklch(0.88 calc(var(--accent-c) * 0.55) var(--hue));
+	--on-primary: oklch(0.99 0.01 var(--hue));
+
+	/* ── Surfaces (mid-tone "dim", tinted toward the hue) ─── */
+	--bg: oklch(0.28 0.022 var(--hue));
+	--surface-1: oklch(0.325 0.026 var(--hue));
+	--surface-2: oklch(0.37 0.03 var(--hue));
+	--surface-3: oklch(0.43 0.032 var(--hue));
+
+	/* ── Borders ──────────────────────────────────────────── */
+	--border: oklch(0.44 0.028 var(--hue));
+	--border-strong: oklch(0.55 0.03 var(--hue));
+
+	/* ── Text (tinted off-white, not pure white) ──────────── */
+	--text: oklch(0.96 0.018 var(--hue));
+	--text-muted: oklch(0.82 0.026 var(--hue));
+	--text-subtle: oklch(0.68 0.03 var(--hue));
+
+	/* ── Radius ───────────────────────────────────────────── */
+	--radius-sm: 6px;
+	--radius: 12px;
+	--radius-lg: 16px;
+
+	/* ── Elevation ────────────────────────────────────────── */
+	--shadow-sm: 0 1px 2px oklch(0.1 0.02 var(--hue) / 0.4);
+	--shadow: 0 14px 40px -16px oklch(0.08 0.03 var(--hue) / 0.7);
+	--shadow-accent: 0 12px 36px -14px oklch(0.7 var(--accent-c) var(--hue) / 0.45);
+
+	/* ── Type families ────────────────────────────────────── */
+	--font-display: "Bricolage Grotesque Variable", "Geist", system-ui, sans-serif;
+	--font-body: "Geist", Arial, Helvetica, sans-serif;
+	--font-mono: "Geist Mono", "Courier New", Courier, monospace;
+
+	/* ── Motion ───────────────────────────────────────────── */
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .overview-list {
@@ -52,7 +93,7 @@ main {
 
 .glow-icon {
 	color: var(--primary);
-	filter: drop-shadow(0 0 4px var(--primary));
+	filter: drop-shadow(0 0 3px oklch(0.7 var(--accent-c) var(--hue) / 0.5));
 }
 
 .expressive-code {
@@ -82,12 +123,12 @@ main {
 }
 
 .expressive-code figure pre {
-	border-radius: 0 !important;
+	border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
 }
 
 .expressive-code figcaption {
 	border: none !important;
-	border-radius: 0 !important;
+	border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
 }
 
 .expressive-code figcaption::before {
@@ -95,7 +136,7 @@ main {
 }
 
 .expressive-code span.title:not(.is-terminal span.title) {
-	border-radius: 0 !important;
+	border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
 }
 
 .expressive-code span.title::after {
@@ -104,7 +145,7 @@ main {
 }
 
 .expressive-code .frame.has-title:not(.is-terminal) figcaption.header {
-	border-radius: 0 !important;
+	border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
 }
 
 .post-container {
@@ -113,12 +154,15 @@ main {
 	align-items: center;
 	gap: 1rem;
 	padding: 1rem;
-	border: 1px solid #353535;
-	color: #ffffff;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	color: var(--text);
 	text-decoration: none;
 	transition:
-		background-color 0.15s ease,
-		border 0.15s ease;
+		background-color 0.25s var(--ease-out-expo),
+		border-color 0.25s var(--ease-out-expo),
+		transform 0.25s var(--ease-out-expo),
+		box-shadow 0.25s var(--ease-out-expo);
 }
 
 .post-text-content {
@@ -131,10 +175,12 @@ main {
 
 .post-container:hover,
 .post-container:focus-visible {
-	background-color: rgba(var(--primary-rgb), 0.125);
-	border: 1px solid var(--primary);
-	color: white;
+	background-color: var(--surface-2);
+	border-color: var(--primary);
+	color: var(--text);
 	text-decoration: none;
+	transform: translateY(-3px);
+	box-shadow: var(--shadow), var(--shadow-accent);
 }
 
 .post-container:focus-visible {
@@ -145,6 +191,7 @@ main {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	gap: 1rem;
 }
 
 .post-header h3 {
@@ -152,23 +199,33 @@ main {
 }
 
 .post-date {
-	color: #d4d4d4;
+	color: var(--text-subtle);
+	font-size: 0.9rem;
+	white-space: nowrap;
 }
 
 .text-glow {
 	color: var(--primary);
-	filter: drop-shadow(0 0 12px var(--primary));
+	filter: drop-shadow(0 0 8px oklch(0.7 var(--accent-c) var(--hue) / 0.55));
 }
 
 .block-link {
-	color: white;
-	padding: 0.25rem 0.5rem;
+	color: var(--text);
+	padding: 0.4rem 0.75rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	display: inline-block;
+	transition:
+		background-color 0.15s ease,
+		border-color 0.15s ease,
+		color 0.15s ease;
 }
 
 .block-link:hover,
 .block-link:focus-visible {
-	color: white;
+	color: var(--on-primary);
 	background-color: var(--primary);
+	border-color: var(--primary);
 	text-decoration: none;
 	outline: none;
 }
@@ -217,4 +274,64 @@ main {
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+}
+
+/* ── Animated underline for in-content links ──────────────── */
+.prose a,
+article .prose a,
+.work-experience-desc a {
+	color: var(--primary-light);
+	text-decoration: none;
+	background-image: linear-gradient(var(--primary-light), var(--primary-light));
+	background-position: 0 100%;
+	background-repeat: no-repeat;
+	background-size: 0% 1.5px;
+	transition: background-size 0.3s var(--ease-out-expo), color 0.15s ease;
+}
+
+.prose a:hover,
+article .prose a:hover,
+.work-experience-desc a:hover {
+	color: var(--primary-lightest);
+	text-decoration: none;
+	background-size: 100% 1.5px;
+}
+
+/* ── Focus ring ───────────────────────────────────────────── */
+*:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+	border-radius: var(--radius-sm);
+}
+
+/* ── Orchestrated page-load reveal ────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+	.card {
+		animation: reveal-up 0.6s var(--ease-out-expo) both;
+	}
+
+	.layout-grid-left > .card:nth-child(2) {
+		animation-delay: 0.06s;
+	}
+	.layout-grid-right > .card:nth-child(2),
+	.layout-grid-right > article > .card:nth-child(2) {
+		animation-delay: 0.08s;
+	}
+	.layout-grid-right > .card:nth-child(3) {
+		animation-delay: 0.16s;
+	}
+	.layout-grid-right > .card:nth-child(4) {
+		animation-delay: 0.24s;
+	}
+}
+
+@keyframes reveal-up {
+	from {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }

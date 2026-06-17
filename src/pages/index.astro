@@ -97,7 +97,6 @@ const { Content: About } = await render(about!);
 								<h3>{post.data.title}</h3>
 								<span class="post-date">{post.data.createdAt.toLocaleDateString('en-GB')}</span>
 							</div>
-							<span>{post.data.description}</span>
 							{post.data.tags && post.data.tags.length > 0 && (
 								<ul class="tags-list inline-tags">
 									{post.data.tags.map((tag: any) => (
@@ -132,7 +131,6 @@ const { Content: About } = await render(about!);
 								<h3>{project.data.title}</h3>
 								<span class="post-date">{project.data.date.toLocaleDateString('en-GB')}</span>
 							</div>
-							<span>{project.data.description}</span>
 							{project.data.tags && project.data.tags.length > 0 && (
 								<ul class="tags-list inline-tags">
 									{project.data.tags.map((tag: any) => (
