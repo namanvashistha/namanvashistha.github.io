@@ -4,41 +4,43 @@
 	   entire site. Neutrals are tinted toward it; authored in OKLCH.
 	     violet 293 · indigo 270 · blue 245 · teal 195 · emerald 165
 	     amber 75 · coral 30 · crimson 15 · magenta 330              */
-	/* "Orchid Dusk": soft pink-lavender primary + warm apricot secondary,
-	   over a rich (not black) ink base, lit by two faint ambient orbs. */
-	--hue: 318;
-	--hue-2: 62;
-	--accent-c: 0.15;
-	--accent-2-c: 0.13;
+	/* "Orchid Dusk": warm orchid accent on cool slate neutrals.
+	   --hue drives the accent; --hue-neutral tints the greys (kept
+	   cooler than the accent so warm-on-cool contrast reads designed). */
+	--hue: 298;
+	--hue-2: 58;
+	--hue-neutral: 252;
+	--accent-c: 0.17;
+	--accent-2-c: 0.12;
 
 	/* ── Primary accent (interactive: links, nav, hover, focus) ── */
-	--primary: oklch(0.72 var(--accent-c) var(--hue));
-	--primary-light: oklch(0.81 calc(var(--accent-c) * 0.85) var(--hue));
-	--primary-lightest: oklch(0.89 calc(var(--accent-c) * 0.55) var(--hue));
+	--primary: oklch(0.73 var(--accent-c) var(--hue));
+	--primary-light: oklch(0.82 calc(var(--accent-c) * 0.8) var(--hue));
+	--primary-lightest: oklch(0.9 calc(var(--accent-c) * 0.5) var(--hue));
 	--on-primary: oklch(0.99 0.01 var(--hue));
 
 	/* ── Secondary accent (highlights: icons, featured, stats) ── */
-	--secondary: oklch(0.82 var(--accent-2-c) var(--hue-2));
-	--secondary-light: oklch(0.88 calc(var(--accent-2-c) * 0.7) var(--hue-2));
+	--secondary: oklch(0.83 var(--accent-2-c) var(--hue-2));
+	--secondary-light: oklch(0.89 calc(var(--accent-2-c) * 0.7) var(--hue-2));
 
-	/* ── Surfaces (deep neutral, refined faint cool tint) ─── */
-	--bg: oklch(0.205 0.009 var(--hue));
-	--surface-1: oklch(0.262 0.011 var(--hue));
-	--surface-1-top: oklch(0.3 0.012 var(--hue));
-	--surface-2: oklch(0.32 0.013 var(--hue));
-	--surface-3: oklch(0.385 0.015 var(--hue));
+	/* ── Surfaces (deep cool slate, tinted toward --hue-neutral) ─ */
+	--bg: oklch(0.2 0.012 var(--hue-neutral));
+	--surface-1: oklch(0.255 0.014 var(--hue-neutral));
+	--surface-1-top: oklch(0.295 0.016 var(--hue-neutral));
+	--surface-2: oklch(0.315 0.017 var(--hue-neutral));
+	--surface-3: oklch(0.38 0.019 var(--hue-neutral));
 
 	/* ── Borders ──────────────────────────────────────────── */
-	--border: oklch(0.36 0.012 var(--hue));
-	--border-strong: oklch(0.48 0.015 var(--hue));
+	--border: oklch(0.36 0.016 var(--hue-neutral));
+	--border-strong: oklch(0.48 0.019 var(--hue-neutral));
 
-	/* ── Text (near-neutral off-white) ────────────────────── */
-	--text: oklch(0.95 0.006 var(--hue));
-	--text-muted: oklch(0.78 0.01 var(--hue));
-	--text-subtle: oklch(0.63 0.012 var(--hue));
+	/* ── Text (cool off-white) ────────────────────────────── */
+	--text: oklch(0.95 0.006 var(--hue-neutral));
+	--text-muted: oklch(0.77 0.011 var(--hue-neutral));
+	--text-subtle: oklch(0.62 0.014 var(--hue-neutral));
 
 	/* ── Card highlight (top "glass" edge) ────────────────── */
-	--card-highlight: oklch(0.98 0.01 var(--hue) / 0.06);
+	--card-highlight: oklch(0.98 0.01 var(--hue-neutral) / 0.07);
 
 	/* ── Radius ───────────────────────────────────────────── */
 	--radius-sm: 6px;
@@ -103,8 +105,8 @@ main {
 }
 
 .glow-icon {
-	color: var(--secondary);
-	filter: drop-shadow(0 0 4px oklch(0.79 var(--accent-2-c) var(--hue-2) / 0.55));
+	color: var(--primary-light);
+	filter: drop-shadow(0 0 4px oklch(0.73 var(--accent-c) var(--hue) / 0.5));
 }
 
 .expressive-code {
@@ -228,8 +230,8 @@ main {
 }
 
 .text-glow {
-	color: var(--secondary);
-	filter: drop-shadow(0 0 8px oklch(0.79 var(--accent-2-c) var(--hue-2) / 0.55));
+	color: var(--primary-light);
+	filter: drop-shadow(0 0 8px oklch(0.73 var(--accent-c) var(--hue) / 0.55));
 }
 
 .block-link {

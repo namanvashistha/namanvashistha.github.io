@@ -48,7 +48,7 @@ body::before {
 		),
 		radial-gradient(
 			62% 50% at 106% 110%,
-			oklch(0.82 var(--accent-2-c) var(--hue-2) / 0.07),
+			oklch(0.62 var(--accent-c) var(--hue) / 0.09),
 			transparent 60%
 		);
 }
