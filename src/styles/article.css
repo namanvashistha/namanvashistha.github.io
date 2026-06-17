@@ -153,18 +153,20 @@ ol li a.active {
 	border-radius: 999px;
 	text-decoration: none;
 	transition:
-		background 0.15s var(--ease-out-expo),
-		color 0.15s var(--ease-out-expo),
-		border-color 0.15s var(--ease-out-expo);
+		background 0.18s var(--ease-out-expo),
+		color 0.18s var(--ease-out-expo),
+		border-color 0.18s var(--ease-out-expo),
+		transform 0.18s var(--ease-out-expo);
 }
 
 .article-tag:hover,
 .article-tag:focus-visible {
 	background: var(--surface-3);
 	color: var(--text);
-	border-color: color-mix(in oklch, var(--primary) 35%, var(--border));
+	border-color: color-mix(in oklch, var(--primary) 40%, var(--border));
 	text-decoration: none;
 	outline: none;
+	transform: translateY(-1px);
 }
 
 .hits-badge {
@@ -249,4 +251,26 @@ table tbody tr {
 
 table tbody tr td {
 	padding: 0.5rem 1.5rem 0.5rem 0;
+}
+
+/* ── Reading comfort ──────────────────────────────────────── */
+article :where(p, ul, ol, blockquote) {
+	max-width: 70ch;
+}
+
+article p {
+	text-wrap: pretty;
+}
+
+article :where(ul, ol) {
+	padding-left: 1.4rem;
+}
+
+article :where(ul, ol) li {
+	margin: 0.35rem 0;
+	padding-left: 0.25rem;
+}
+
+article :where(ul, ol) li::marker {
+	color: var(--primary-light);
 }

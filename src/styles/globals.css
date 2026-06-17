@@ -4,30 +4,41 @@
 	   entire site. Neutrals are tinted toward it; authored in OKLCH.
 	     violet 293 · indigo 270 · blue 245 · teal 195 · emerald 165
 	     amber 75 · coral 30 · crimson 15 · magenta 330              */
-	--hue: 195;
-	/* Accent saturation. Low = muted/monochrome, high = vivid. */
-	--accent-c: 0.13;
+	/* "Orchid Dusk": soft pink-lavender primary + warm apricot secondary,
+	   over a rich (not black) ink base, lit by two faint ambient orbs. */
+	--hue: 318;
+	--hue-2: 62;
+	--accent-c: 0.15;
+	--accent-2-c: 0.13;
 
-	/* ── Accent ───────────────────────────────────────────── */
-	--primary: oklch(0.7 var(--accent-c) var(--hue));
-	--primary-light: oklch(0.8 calc(var(--accent-c) * 0.85) var(--hue));
-	--primary-lightest: oklch(0.88 calc(var(--accent-c) * 0.55) var(--hue));
+	/* ── Primary accent (interactive: links, nav, hover, focus) ── */
+	--primary: oklch(0.72 var(--accent-c) var(--hue));
+	--primary-light: oklch(0.81 calc(var(--accent-c) * 0.85) var(--hue));
+	--primary-lightest: oklch(0.89 calc(var(--accent-c) * 0.55) var(--hue));
 	--on-primary: oklch(0.99 0.01 var(--hue));
 
-	/* ── Surfaces (mid-tone "dim", tinted toward the hue) ─── */
-	--bg: oklch(0.28 0.022 var(--hue));
-	--surface-1: oklch(0.325 0.026 var(--hue));
-	--surface-2: oklch(0.37 0.03 var(--hue));
-	--surface-3: oklch(0.43 0.032 var(--hue));
+	/* ── Secondary accent (highlights: icons, featured, stats) ── */
+	--secondary: oklch(0.82 var(--accent-2-c) var(--hue-2));
+	--secondary-light: oklch(0.88 calc(var(--accent-2-c) * 0.7) var(--hue-2));
+
+	/* ── Surfaces (deep neutral, refined faint cool tint) ─── */
+	--bg: oklch(0.205 0.009 var(--hue));
+	--surface-1: oklch(0.262 0.011 var(--hue));
+	--surface-1-top: oklch(0.3 0.012 var(--hue));
+	--surface-2: oklch(0.32 0.013 var(--hue));
+	--surface-3: oklch(0.385 0.015 var(--hue));
 
 	/* ── Borders ──────────────────────────────────────────── */
-	--border: oklch(0.44 0.028 var(--hue));
-	--border-strong: oklch(0.55 0.03 var(--hue));
+	--border: oklch(0.36 0.012 var(--hue));
+	--border-strong: oklch(0.48 0.015 var(--hue));
 
-	/* ── Text (tinted off-white, not pure white) ──────────── */
-	--text: oklch(0.96 0.018 var(--hue));
-	--text-muted: oklch(0.82 0.026 var(--hue));
-	--text-subtle: oklch(0.68 0.03 var(--hue));
+	/* ── Text (near-neutral off-white) ────────────────────── */
+	--text: oklch(0.95 0.006 var(--hue));
+	--text-muted: oklch(0.78 0.01 var(--hue));
+	--text-subtle: oklch(0.63 0.012 var(--hue));
+
+	/* ── Card highlight (top "glass" edge) ────────────────── */
+	--card-highlight: oklch(0.98 0.01 var(--hue) / 0.06);
 
 	/* ── Radius ───────────────────────────────────────────── */
 	--radius-sm: 6px;
@@ -92,8 +103,8 @@ main {
 }
 
 .glow-icon {
-	color: var(--primary);
-	filter: drop-shadow(0 0 3px oklch(0.7 var(--accent-c) var(--hue) / 0.5));
+	color: var(--secondary);
+	filter: drop-shadow(0 0 4px oklch(0.79 var(--accent-2-c) var(--hue-2) / 0.55));
 }
 
 .expressive-code {
@@ -154,10 +165,16 @@ main {
 	align-items: center;
 	gap: 1rem;
 	padding: 1rem;
-	border: 1px solid var(--border);
+	border: 1px solid color-mix(in oklch, var(--primary) 26%, var(--border));
 	border-radius: var(--radius);
 	color: var(--text);
 	text-decoration: none;
+	background:
+		radial-gradient(
+			130% 130% at 0% 0%,
+			oklch(0.72 var(--accent-c) var(--hue) / 0.08),
+			transparent 52%
+		);
 	transition:
 		background-color 0.25s var(--ease-out-expo),
 		border-color 0.25s var(--ease-out-expo),
@@ -175,10 +192,16 @@ main {
 
 .post-container:hover,
 .post-container:focus-visible {
-	background-color: var(--surface-2);
 	border-color: var(--primary);
 	color: var(--text);
 	text-decoration: none;
+	background:
+		radial-gradient(
+			130% 130% at 0% 0%,
+			oklch(0.72 var(--accent-c) var(--hue) / 0.16),
+			transparent 55%
+		),
+		var(--surface-2);
 	transform: translateY(-3px);
 	box-shadow: var(--shadow), var(--shadow-accent);
 }
@@ -205,8 +228,8 @@ main {
 }
 
 .text-glow {
-	color: var(--primary);
-	filter: drop-shadow(0 0 8px oklch(0.7 var(--accent-c) var(--hue) / 0.55));
+	color: var(--secondary);
+	filter: drop-shadow(0 0 8px oklch(0.79 var(--accent-2-c) var(--hue-2) / 0.55));
 }
 
 .block-link {

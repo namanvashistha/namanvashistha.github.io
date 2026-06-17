@@ -33,6 +33,37 @@ body {
 	margin: 0;
 }
 
+/* ── Ambient aurora: two faint accent orbs lighting the page ── */
+body::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -2;
+	pointer-events: none;
+	background:
+		radial-gradient(
+			70% 55% at 6% -8%,
+			oklch(0.72 var(--accent-c) var(--hue) / 0.09),
+			transparent 60%
+		),
+		radial-gradient(
+			62% 50% at 106% 110%,
+			oklch(0.82 var(--accent-2-c) var(--hue-2) / 0.07),
+			transparent 60%
+		);
+}
+
+/* ── Film grain: subtle tactile texture, also kills banding ── */
+body::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	opacity: 0.035;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 /* Keyboard focus indicator */
 *:focus-visible {
 	outline: 2px solid var(--primary, #8c5cf5);
@@ -134,4 +165,66 @@ pre.astro-code code {
 	flex-direction: column;
 	font-size: 0.875em;
 	gap: 0.5rem;
+}
+
+/* ── Global polish ────────────────────────────────────────── */
+::selection {
+	background: oklch(0.72 var(--accent-c) var(--hue) / 0.32);
+	color: var(--text);
+}
+
+input,
+textarea,
+select,
+button {
+	accent-color: var(--primary);
+}
+
+html {
+	caret-color: var(--primary);
+}
+
+/* Tabular figures so dates and numbers align cleanly */
+.post-date,
+.article-info,
+.work-experience-duration {
+	font-variant-numeric: tabular-nums;
+}
+
+/* Themed scrollbar */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--border-strong) transparent;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--border-strong);
+	border-radius: 999px;
+	border: 2px solid transparent;
+	background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: color-mix(in oklch, var(--primary) 45%, var(--border-strong));
+	background-clip: padding-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
 }
