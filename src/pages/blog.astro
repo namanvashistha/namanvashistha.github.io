@@ -43,8 +43,8 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
 				<h2>Latest Posts</h2>
 			</div>
 			<div class="content-container">
-				{posts.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime()).map((post) => (
-					<a href={`/blog/${post.id}`} class="post-container" data-tags={post.data.tags.map((tag) => tag.id).join(",")}>
+				{posts.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime()).map((post, i) => (
+					<a href={`/blog/${post.id}`} class:list={["post-container", i === 0 && "featured"]} data-tags={post.data.tags.map((tag) => tag.id).join(",")}>
 						<Image
 							src={post.data.image}
 							alt={post.data.title}
@@ -57,7 +57,6 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
 								<h3>{post.data.title}</h3>
 								<span class="post-date">{post.data.createdAt.toLocaleDateString('en-GB')}</span>
 							</div>
-							<span>{post.data.description}</span>
 							{post.data.tags && post.data.tags.length > 0 && (
 								<ul class="tags-list inline-tags">
 									{post.data.tags.map((tag: any) => (

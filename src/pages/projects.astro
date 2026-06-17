@@ -66,7 +66,6 @@ const tags = projects.flatMap((project) => project.data.tags ? project.data.tags
 								<h3>{post.data.title}</h3>
 								<span class="post-date">{post.data.date.getFullYear()}</span>
 							</div>
-							<span>{post.data.description}</span>
 							{post.data.tags && post.data.tags.length > 0 && (
 								<ul class="tags-list inline-tags">
 									{post.data.tags.map((tag: any) => (

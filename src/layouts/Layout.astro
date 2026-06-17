@@ -1,9 +1,9 @@
 ---
+import '@fontsource-variable/bricolage-grotesque/wght.css';
 import '../styles/reset.css';
 import '../styles/globals.css';
 
 import { name, themeColor, twitterHandle } from 'spectre:globals';
-import Background from '../components/Background.astro';
 import LayoutGrid from '../components/LayoutGrid.astro';
 import Navbar from '../components/Navbar.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
@@ -90,6 +90,5 @@ const shortDescription = description ? (description.length > 160 ? description.s
 			</LayoutGrid>
 			<slot name="404" />
 		</main>
-		<Background />
 	</body>
 </html>
