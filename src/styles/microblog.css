@@ -136,6 +136,17 @@
   z-index: 2;
 }
 
+/* Body images: fit the column, cap height so tall portraits stay reasonable */
+.microblog-body img,
+.microblog-prose img {
+  max-width: 100%;
+  max-height: 28rem;
+  width: auto;
+  height: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
 .microblog-body :first-child {
   margin-top: 0;
 }

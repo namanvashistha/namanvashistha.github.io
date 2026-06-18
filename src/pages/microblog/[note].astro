@@ -76,7 +76,7 @@ const fullDate = entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'full
       <div class="microblog-detail-head" data-pagefind-ignore>
         <time class="microblog-detail-date" datetime={entry.data.createdAt.toISOString()} data-localtime="full">{fullDate}</time>
       </div>
-      <div class="prose">
+      <div class="prose microblog-prose">
         <Content />
       </div>
       {entry.data.tags && entry.data.tags.length > 0 && (
