@@ -5,57 +5,133 @@
   line-height: 1.5;
 }
 
+/* Timeline feed */
 .microblog-feed {
   display: flex;
   flex-direction: column;
 }
 
 .microblog-entry {
-  padding: 1.25rem 0;
-  border-bottom: 1px solid var(--border);
+  position: relative;
+  padding: .9rem .9rem .9rem 2.4rem;
 }
 
-.microblog-entry:first-child {
-  padding-top: 0;
+/* Hover wash: left edge aligns with the rail line at x = 1.2rem */
+.microblog-entry::before {
+  content: "";
+  position: absolute;
+  inset: .2rem .2rem .2rem 1.2rem;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  opacity: 0;
+  z-index: 0;
+  transition: opacity .25s var(--ease-out-expo);
 }
 
-.microblog-entry:last-child {
-  padding-bottom: 0;
-  border-bottom: none;
+.microblog-entry:hover::before {
+  opacity: 1;
+}
+
+.microblog-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Connector line at x = 1.2rem. Ends are tucked under the node dots. */
+.microblog-rail {
+  position: absolute;
+  left: 1.2rem;
+  top: 1.2rem;
+  bottom: -1.5rem;
+  width: 1px;
+  background: var(--border);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.microblog-entry:last-child .microblog-rail {
+  display: none;
 }
 
 .microblog-entry:target {
   scroll-margin-top: 5rem;
 }
 
-.microblog-meta {
-  display: flex;
+/* Timestamp acts as the stretched link to the detail page */
+.microblog-time {
+  display: inline-flex;
   align-items: center;
-  gap: .5rem;
-  margin-bottom: .5rem;
-}
-
-.microblog-meta time {
-  font-family: var(--font-mono);
-  font-size: .8rem;
-  color: var(--text-subtle);
-}
-
-.microblog-permalink {
-  color: var(--text-subtle);
+  gap: .35rem;
   text-decoration: none;
+  margin-bottom: .4rem;
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: -0.01em;
+  color: var(--text-subtle);
+  transition: color .2s var(--ease-out-expo);
+}
+
+.microblog-time::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.microblog-time:hover,
+.microblog-time:focus-visible {
+  text-decoration: none;
+}
+
+.microblog-entry:hover .microblog-time,
+.microblog-time:focus-visible {
+  color: var(--text);
+}
+
+/*
+ * Node dot: a flex child of the timestamp row, so align-items:center keeps it
+ * vertically centered on the date regardless of line-height. `left` shifts it
+ * onto the rail (center = 1.2rem + 0.5px); the negative margin reclaims the
+ * in-flow space so the date text stays at the content's left edge.
+ */
+.microblog-node {
+  position: relative;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.14);
+  left: calc(-1.2rem - 4px);
+  margin-right: calc(-9px - .35rem);
+  z-index: 1;
+  transition: transform .25s var(--ease-out-expo), box-shadow .25s var(--ease-out-expo);
+}
+
+.microblog-entry:hover .microblog-node {
+  transform: scale(1.4);
+  box-shadow: 0 0 0 5px rgba(var(--primary-rgb), 0.18), 0 0 14px rgba(var(--primary-rgb), 0.45);
+}
+
+/* Arrow cue slides in on hover */
+.microblog-go {
+  color: var(--primary-light);
   opacity: 0;
-  transition: opacity .2s var(--ease-out-expo), color .2s var(--ease-out-expo);
+  transform: translateX(-3px);
+  transition: opacity .25s var(--ease-out-expo), transform .25s var(--ease-out-expo);
 }
 
-.microblog-entry:hover .microblog-permalink,
-.microblog-permalink:focus-visible {
+.microblog-entry:hover .microblog-go,
+.microblog-time:focus-visible .microblog-go {
   opacity: 1;
+  transform: translateX(0);
 }
 
-.microblog-permalink:hover,
-.microblog-permalink:focus-visible {
-  color: var(--primary);
+/* Real links/tags inside the body stay clickable above the stretched link */
+.microblog-body a,
+.microblog-entry .inline-tags {
+  position: relative;
+  z-index: 2;
 }
 
 .microblog-body :first-child {
@@ -68,4 +144,109 @@
 
 .microblog-entry .inline-tags {
   margin-top: .75rem;
+}
+
+/* Empty state */
+.microblog-empty {
+  color: var(--text-subtle);
+  margin: 0;
+  padding: 1rem 0;
+}
+
+/* Detail page */
+.microblog-detail-head {
+  margin-bottom: 1.5rem;
+}
+
+.microblog-detail-date {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: .85rem;
+  color: var(--text-subtle);
+  margin-bottom: .75rem;
+}
+
+/* Tag links on the detail page: no underline, subtle accent on hover */
+.microblog-detail-head a.inline-tag {
+  text-decoration: none;
+  transition:
+    background .18s var(--ease-out-expo),
+    color .18s var(--ease-out-expo),
+    border-color .18s var(--ease-out-expo);
+}
+
+.microblog-detail-head a.inline-tag:hover,
+.microblog-detail-head a.inline-tag:focus-visible {
+  color: var(--text) !important;
+  background: var(--surface-3) !important;
+  border-color: color-mix(in oklch, var(--primary) 40%, var(--border));
+  text-decoration: none;
+  outline: none;
+}
+
+.microblog-nav-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.microblog-nav-link {
+  display: block;
+  text-decoration: none;
+  color: var(--text-muted);
+  border: 1px solid color-mix(in oklch, var(--primary) 20%, var(--border));
+  border-radius: var(--radius-sm);
+  padding: .6rem .75rem;
+  background: radial-gradient(130% 130% at 0% 0%, oklch(0.72 var(--accent-c) var(--hue) / 0.06), transparent 52%);
+  transition:
+    border-color .25s var(--ease-out-expo),
+    color .25s var(--ease-out-expo),
+    transform .25s var(--ease-out-expo),
+    box-shadow .25s var(--ease-out-expo),
+    background-color .25s var(--ease-out-expo);
+}
+
+.microblog-nav-link:hover,
+.microblog-nav-link:focus-visible {
+  border-color: var(--primary);
+  color: var(--text);
+  text-decoration: none;
+  outline: none;
+  transform: translateY(-2px);
+  background:
+    radial-gradient(130% 130% at 0% 0%, oklch(0.72 var(--accent-c) var(--hue) / 0.14), transparent 55%),
+    var(--surface-2);
+  box-shadow: var(--shadow), var(--shadow-accent);
+}
+
+.microblog-nav-dir {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-subtle);
+  margin-bottom: .25rem;
+}
+
+.microblog-nav-excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: .9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .microblog-entry::before,
+  .microblog-node,
+  .microblog-time,
+  .microblog-go,
+  .microblog-nav-link {
+    transition: none;
+  }
+  .microblog-go {
+    transform: none;
+  }
 }

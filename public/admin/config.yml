@@ -19,7 +19,7 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}"
     summary: "{{body}}"
     fields:
-      - {label: "Publish Date", name: "createdAt", widget: "datetime", default: "{{now}}"}
+      - {label: "Publish Date", name: "createdAt", widget: "datetime", default: "{{now}}", input_timezone: "Asia/Kolkata"}
       - {label: "Tags", name: "tags", widget: "relation", collection: "data", file: "tags", search_fields: ["tags.*.id"], display_fields: ["tags.*.id"], value_field: "tags.*.id", multiple: true, required: false, options_length: 1000}
       - {label: "Note", name: "body", widget: "markdown"}
 

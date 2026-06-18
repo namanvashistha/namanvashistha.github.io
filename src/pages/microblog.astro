@@ -23,33 +23,41 @@ const rendered = await Promise.all(
         <Icon type="lucide" name="message-square" width={24} height={24} class='glow-icon' />
         <h2 class="no-mt">Microblog</h2>
       </div>
-      <p class="microblog-intro">Short notes and half-formed thoughts — the stuff that doesn't warrant a full post.</p>
+      <p class="microblog-intro">Short notes and half-formed thoughts - the stuff that doesn't warrant a full post.</p>
     </Card>
   </div>
   <div class="layout-grid-right" slot="right">
     <Card>
-      <div class="microblog-feed">
-        {rendered.map(({ entry, Content }) => (
-          <article id={entry.id} class="microblog-entry">
-            <div class="microblog-meta">
-              <time datetime={entry.data.createdAt.toISOString()}>
-                {entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
-              </time>
-              <a class="microblog-permalink" href={`/microblog#${entry.id}`} aria-label="Permalink to this note">#</a>
-            </div>
-            <div class="prose microblog-body">
-              <Content />
-            </div>
-            {entry.data.tags && entry.data.tags.length > 0 && (
-              <ul class="tags-list inline-tags">
-                {entry.data.tags.map((tag: any) => (
-                  <li><span class="inline-tag">{tag.id}</span></li>
-                ))}
-              </ul>
-            )}
-          </article>
-        ))}
-      </div>
+      {rendered.length === 0 ? (
+        <p class="microblog-empty">Nothing here yet. First note is on its way.</p>
+      ) : (
+        <div class="microblog-feed">
+          {rendered.map(({ entry, Content }) => (
+            <article id={entry.id} class="microblog-entry">
+              <span class="microblog-rail" aria-hidden="true"></span>
+              <div class="microblog-content">
+                <a class="microblog-time" href={`/microblog/${entry.id}`}>
+                  <span class="microblog-node" aria-hidden="true"></span>
+                  <time datetime={entry.data.createdAt.toISOString()}>
+                    {entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
+                  </time>
+                  <span class="microblog-go" aria-hidden="true">→</span>
+                </a>
+                <div class="prose microblog-body">
+                  <Content />
+                </div>
+                {entry.data.tags && entry.data.tags.length > 0 && (
+                  <ul class="tags-list inline-tags">
+                    {entry.data.tags.map((tag: any) => (
+                      <li><span class="inline-tag">{tag.id}</span></li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </Card>
   </div>
 </Layout>

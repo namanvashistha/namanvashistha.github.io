@@ -1,0 +1,108 @@
+---
+import '../../styles/article.css';
+import '../../styles/article-list.css';
+import '../../styles/microblog.css';
+
+import type { CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import Card from '../../components/Card.astro';
+import Layout from '../../layouts/Layout.astro';
+
+interface Props {
+  entry: CollectionEntry<'microblog'>;
+  title: string;
+  description: string;
+  prev: { id: string; excerpt: string } | null;
+  next: { id: string; excerpt: string } | null;
+}
+
+export const getStaticPaths = (async () => {
+  const excerpt = (entry: CollectionEntry<'microblog'>, max = 70): string => {
+    const plain = (entry.body || '')
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/[#>*_`~\[\]()!\-]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return plain.length > max ? plain.slice(0, max).trim() + '…' : plain;
+  };
+
+  const entries = await getCollection('microblog');
+  const sorted = entries.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime());
+  return sorted.map((entry, i) => {
+    const newer = sorted[i - 1];
+    const older = sorted[i + 1];
+    return {
+      params: { note: entry.id },
+      props: {
+        entry,
+        title: excerpt(entry),
+        description: excerpt(entry, 155),
+        prev: newer ? { id: newer.id, excerpt: excerpt(newer, 60) } : null,
+        next: older ? { id: older.id, excerpt: excerpt(older, 60) } : null,
+      },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { entry, title, description, prev, next } = Astro.props;
+const { Content } = await render(entry);
+const fullDate = entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'full', timeStyle: 'short' });
+---
+<Layout
+  title={title}
+  description={description}
+  article={{ createdAt: entry.data.createdAt }}
+>
+  <div class="left" slot="left">
+    <Card class="toc-card microblog-nav-card">
+      <a href="/microblog" class="block-link" data-pagefind-ignore>← All microblogs</a>
+      {prev && (
+        <a class="microblog-nav-link" href={`/microblog/${prev.id}`} data-pagefind-ignore>
+          <span class="microblog-nav-dir">Newer</span>
+          <span class="microblog-nav-excerpt">{prev.excerpt}</span>
+        </a>
+      )}
+      {next && (
+        <a class="microblog-nav-link" href={`/microblog/${next.id}`} data-pagefind-ignore>
+          <span class="microblog-nav-dir">Older</span>
+          <span class="microblog-nav-excerpt">{next.excerpt}</span>
+        </a>
+      )}
+    </Card>
+  </div>
+  <article slot="right" data-pagefind-body>
+    <Card>
+      <div class="microblog-detail-head" data-pagefind-ignore>
+        <time class="microblog-detail-date" datetime={entry.data.createdAt.toISOString()}>{fullDate}</time>
+      </div>
+      <div class="prose">
+        <Content />
+      </div>
+      {entry.data.tags && entry.data.tags.length > 0 && (
+          <ul class="tags-list inline-tags">
+            {entry.data.tags.map((tag) => (
+              <li><a class="inline-tag" href={`/blog?tags=${tag.id}`}>{tag.id}</a></li>
+            ))}
+          </ul>
+        )}
+    </Card>
+  </article>
+</Layout>
+<style is:global>
+  .left {
+    height: 100%;
+    position: relative;
+  }
+
+  .toc-card {
+    position: sticky;
+    top: 2rem;
+  }
+
+  article {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+</style>
