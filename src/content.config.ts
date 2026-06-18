@@ -124,4 +124,12 @@ const projects = defineCollection({
 		}),
 });
 
-export const collections = { tags, posts, projects, other, about, quickInfo, socials, workExperience };
+const microblog = defineCollection({
+	loader: glob({ base: 'src/content/microblog', pattern: '**/*.{md,mdx}' }),
+	schema: z.object({
+		createdAt: z.coerce.date().default(() => new Date()),
+		tags: z.array(reference('tags')).optional().default([]),
+	}),
+});
+
+export const collections = { tags, posts, projects, other, about, quickInfo, socials, workExperience, microblog };
