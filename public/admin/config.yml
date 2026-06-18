@@ -5,13 +5,15 @@ backend:
   base_url: https://github-oauth.namanvashistha15.workers.dev
   auth_endpoint: /api/auth
 
-# Files upload into src/content/assets; markdown body images are written with
-# public_folder as a verbatim prefix. Sveltia uses the GLOBAL public_folder for
-# body images (collection/field-level is ignored), so keep this relative: every
-# collection lives one level under src/content, so "../assets" resolves to
-# src/content/assets and Astro optimizes the image. Absolute "/src/..." would 404.
-media_folder: "src/content/assets"
-public_folder: "../assets"
+# Sveltia requires the GLOBAL public_folder to be an absolute URL ("/...") and
+# uses it verbatim for markdown *body* images (collection/field overrides are
+# ignored for the markdown widget). So body images must live under /public to
+# resolve in the build: they upload to public/uploads and are referenced as
+# /uploads/<file>. Cover images use the *collection* public_folder instead (see
+# posts/projects below), so those stay in src/content/assets and Astro optimizes
+# them. Existing relative "../assets/..." references in content are unaffected.
+media_folder: "public/uploads"
+public_folder: "/uploads"
 
 collections:
   - name: "microblog"
