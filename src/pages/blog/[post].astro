@@ -91,9 +91,8 @@ const { Content, headings } = await render(post);
             <span class="meta-item">{post.data.createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
             <span class="meta-item">{timeToRead(post)} min read</span>
             <span class="meta-item">
-              <span class="hits-label">Views:</span>
               <img
-                src={`https://hits.sh/namanvashistha.com/blog/${post.id}.svg?style=flat-square&label=&#8203;&color=8b5cf6&labelColor=191b1f&extraCount=100`}
+                src={`https://hits.sh/namanvashistha.com/blog/${post.id}.svg?style=flat-square&label=Views&color=8b5cf6&labelColor=20222b&extraCount=100`}
                 alt="view count"
                 height="18"
                 class="hits-badge"

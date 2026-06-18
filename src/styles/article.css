@@ -171,17 +171,9 @@ ol li a.active {
 
 .hits-badge {
 	display: block;
-	opacity: 0.85;
-	margin-left: -25px;
-	position: relative;
-	z-index: 0;
-	min-width: 52px;
 	height: 18px;
-}
-
-.hits-label {
-	position: relative;
-	z-index: 1;
+	opacity: 0.9;
+	border-radius: 4px;
 }
 
 @media screen and (max-width: 640px) {
