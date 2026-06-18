@@ -71,10 +71,12 @@
   transition: color .2s var(--ease-out-expo);
 }
 
+/* Stretched link: expands past the content box to match the hover wash region
+   exactly (entry insets .2rem on three sides, 1.2rem on the left at the rail). */
 .microblog-time::after {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -.7rem -.7rem -.7rem -1.2rem;
   z-index: 1;
 }
 
@@ -127,9 +129,9 @@
   transform: translateX(0);
 }
 
-/* Real links/tags inside the body stay clickable above the stretched link */
-.microblog-body a,
-.microblog-entry .inline-tags {
+/* Only real links inside the note body sit above the stretched link.
+   Tag spans stay below it so clicking them still opens the note. */
+.microblog-body a {
   position: relative;
   z-index: 2;
 }
