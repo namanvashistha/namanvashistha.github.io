@@ -1,0 +1,71 @@
+.microblog-intro {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+.microblog-feed {
+  display: flex;
+  flex-direction: column;
+}
+
+.microblog-entry {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.microblog-entry:first-child {
+  padding-top: 0;
+}
+
+.microblog-entry:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.microblog-entry:target {
+  scroll-margin-top: 5rem;
+}
+
+.microblog-meta {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .5rem;
+}
+
+.microblog-meta time {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  color: var(--text-subtle);
+}
+
+.microblog-permalink {
+  color: var(--text-subtle);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity .2s var(--ease-out-expo), color .2s var(--ease-out-expo);
+}
+
+.microblog-entry:hover .microblog-permalink,
+.microblog-permalink:focus-visible {
+  opacity: 1;
+}
+
+.microblog-permalink:hover,
+.microblog-permalink:focus-visible {
+  color: var(--primary);
+}
+
+.microblog-body :first-child {
+  margin-top: 0;
+}
+
+.microblog-body :last-child {
+  margin-bottom: 0;
+}
+
+.microblog-entry .inline-tags {
+  margin-top: .75rem;
+}

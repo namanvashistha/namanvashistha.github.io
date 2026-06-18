@@ -1,0 +1,55 @@
+---
+import '../styles/article-list.css';
+import '../styles/microblog.css';
+
+import { getCollection, render } from 'astro:content';
+import Card from '../components/Card.astro';
+import Icon from '../components/Icon.astro';
+import Layout from '../layouts/Layout.astro';
+
+const entries = await getCollection('microblog');
+const sorted = entries.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime());
+const rendered = await Promise.all(
+  sorted.map(async (entry) => ({ entry, Content: (await render(entry)).Content }))
+);
+---
+<Layout
+  title="Microblog"
+  description="Short notes and half-formed thoughts."
+>
+  <div class="layout-grid-left" slot="left">
+    <Card class="flex-col-card">
+      <div class="header-container">
+        <Icon type="lucide" name="message-square" width={24} height={24} class='glow-icon' />
+        <h2 class="no-mt">Microblog</h2>
+      </div>
+      <p class="microblog-intro">Short notes and half-formed thoughts — the stuff that doesn't warrant a full post.</p>
+    </Card>
+  </div>
+  <div class="layout-grid-right" slot="right">
+    <Card>
+      <div class="microblog-feed">
+        {rendered.map(({ entry, Content }) => (
+          <article id={entry.id} class="microblog-entry">
+            <div class="microblog-meta">
+              <time datetime={entry.data.createdAt.toISOString()}>
+                {entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
+              </time>
+              <a class="microblog-permalink" href={`/microblog#${entry.id}`} aria-label="Permalink to this note">#</a>
+            </div>
+            <div class="prose microblog-body">
+              <Content />
+            </div>
+            {entry.data.tags && entry.data.tags.length > 0 && (
+              <ul class="tags-list inline-tags">
+                {entry.data.tags.map((tag: any) => (
+                  <li><span class="inline-tag">{tag.id}</span></li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Layout>

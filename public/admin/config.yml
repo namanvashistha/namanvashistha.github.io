@@ -9,6 +9,20 @@ media_folder: "src/content/assets"
 public_folder: "/src/content/assets"
 
 collections:
+  - name: "microblog"
+    label: "Microblog"
+    folder: "src/content/microblog"
+    public_folder: "../assets"
+    create: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}"
+    summary: "{{body}}"
+    fields:
+      - {label: "Publish Date", name: "createdAt", widget: "datetime", default: "{{now}}"}
+      - {label: "Tags", name: "tags", widget: "relation", collection: "data", file: "tags", search_fields: ["tags.*.id"], display_fields: ["tags.*.id"], value_field: "tags.*.id", multiple: true, required: false, options_length: 1000}
+      - {label: "Note", name: "body", widget: "markdown"}
+
   - name: "posts"
     label: "Blog Posts"
     folder: "src/content/posts"
