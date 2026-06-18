@@ -168,8 +168,9 @@
   margin-bottom: .75rem;
 }
 
-/* Tag links on the detail page: no underline, subtle accent on hover */
-.microblog-detail-head a.inline-tag {
+/* Tag links on the detail page: no underline, subtle accent on hover.
+   (Timeline tags are spans, so `a.inline-tag` only matches detail-page links.) */
+a.inline-tag {
   text-decoration: none;
   transition:
     background .18s var(--ease-out-expo),
@@ -177,8 +178,8 @@
     border-color .18s var(--ease-out-expo);
 }
 
-.microblog-detail-head a.inline-tag:hover,
-.microblog-detail-head a.inline-tag:focus-visible {
+a.inline-tag:hover,
+a.inline-tag:focus-visible {
   color: var(--text) !important;
   background: var(--surface-3) !important;
   border-color: color-mix(in oklch, var(--primary) 40%, var(--border));

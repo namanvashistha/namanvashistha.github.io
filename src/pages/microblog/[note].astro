@@ -74,7 +74,7 @@ const fullDate = entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'full
   <article slot="right" data-pagefind-body>
     <Card>
       <div class="microblog-detail-head" data-pagefind-ignore>
-        <time class="microblog-detail-date" datetime={entry.data.createdAt.toISOString()}>{fullDate}</time>
+        <time class="microblog-detail-date" datetime={entry.data.createdAt.toISOString()} data-localtime="full">{fullDate}</time>
       </div>
       <div class="prose">
         <Content />
@@ -89,6 +89,7 @@ const fullDate = entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'full
     </Card>
   </article>
 </Layout>
+<script src="../../scripts/microblog-time.ts"></script>
 <style is:global>
   .left {
     height: 100%;

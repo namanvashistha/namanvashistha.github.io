@@ -38,7 +38,7 @@ const rendered = await Promise.all(
               <div class="microblog-content">
                 <a class="microblog-time" href={`/microblog/${entry.id}`}>
                   <span class="microblog-node" aria-hidden="true"></span>
-                  <time datetime={entry.data.createdAt.toISOString()}>
+                  <time datetime={entry.data.createdAt.toISOString()} data-localtime="list">
                     {entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
                   </time>
                   <span class="microblog-go" aria-hidden="true">→</span>
@@ -61,3 +61,4 @@ const rendered = await Promise.all(
     </Card>
   </div>
 </Layout>
+<script src="../scripts/microblog-time.ts"></script>
