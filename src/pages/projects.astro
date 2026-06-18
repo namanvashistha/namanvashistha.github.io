@@ -54,13 +54,13 @@ const tags = projects.flatMap((project) => project.data.tags ? project.data.tags
 			<div class="content-container">
 				{projects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).map((post) => (
 					<a href={`/projects/${post.id}`} class="post-container" data-tags={post.data.tags ? post.data.tags.map((tag: any) => tag.id).join(",") : ""}>
-						<Image
+						{post.data.image && (<Image
 							src={post.data.image}
 							alt={post.data.title}
 							width={240}
 							class="post-cover-image"
 							loading="lazy"
-						/>
+						/>)}
 						<div class="post-text-content">
 							<div class="post-header">
 								<h3>{post.data.title}</h3>
