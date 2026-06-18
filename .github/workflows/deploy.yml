@@ -40,7 +40,7 @@ jobs:
 
             - name: Setup uv
               if: steps.resume_check.outputs.changed == 'true'
-              uses: astral-sh/setup-uv@v8
+              uses: astral-sh/setup-uv@v8.2.0
               with:
                   enable-cache: true
 
