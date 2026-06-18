@@ -83,7 +83,7 @@ const { Content: About } = await render(about!);
 			<div class="content-container">
 				{posts.sort((a, b) => b.data.createdAt.getTime() - a.data.createdAt.getTime()).slice(0, 2).map((post) => (
 					<a href={`/blog/${post.id}`} class="post-container">
-						<Image
+						{post.data.image && (<Image
 							src={post.data.image}
 							alt={post.data.title}
 							width={240}
@@ -91,7 +91,7 @@ const { Content: About } = await render(about!);
 							sizes="(max-width: 640px) 120px, 240px"
 							class="post-cover-image"
 							loading="lazy"
-						/>
+						/>)}
 						<div class="post-text-content">
 							<div class="post-header">
 								<h3>{post.data.title}</h3>
@@ -117,7 +117,7 @@ const { Content: About } = await render(about!);
 			<div class="content-container">
 				{projects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 2).map((project) => (
 					<a href={`/projects/${project.id}`} class="post-container">
-						<Image
+						{project.data.image && (<Image
 							src={project.data.image}
 							alt={project.data.title}
 							width={240}
@@ -125,7 +125,7 @@ const { Content: About } = await render(about!);
 							sizes="(max-width: 640px) 120px, 240px"
 							class="post-cover-image"
 							loading="lazy"
-						/>
+						/>)}
 						<div class="post-text-content">
 							<div class="post-header">
 								<h3>{project.data.title}</h3>

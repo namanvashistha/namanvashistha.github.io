@@ -99,10 +99,9 @@ const posts = defineCollection({
 			title: z.string(),
 			createdAt: z.coerce.date(),
 			updatedAt: z.coerce.date().optional(),
-			description: z.string(),
-			tags: z.array(reference('tags')),
+			tags: z.array(reference('tags')).optional().default([]),
 			draft: z.boolean().optional().default(false),
-			image: image(),
+			image: image().optional(),
 		}),
 });
 
@@ -111,9 +110,8 @@ const projects = defineCollection({
 	schema: ({ image }) =>
 		z.object({
 			title: z.string(),
-			description: z.string(),
 			date: z.coerce.date(),
-			image: image(),
+			image: image().optional(),
 			tags: z.array(reference('tags')).optional().default([]),
 			link: z.string().url().optional(),
 			info: z.array(
