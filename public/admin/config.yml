@@ -5,15 +5,18 @@ backend:
   base_url: https://github-oauth.namanvashistha15.workers.dev
   auth_endpoint: /api/auth
 
+# Files upload into src/content/assets; markdown body images are written with
+# public_folder as a verbatim prefix. Sveltia uses the GLOBAL public_folder for
+# body images (collection/field-level is ignored), so keep this relative: every
+# collection lives one level under src/content, so "../assets" resolves to
+# src/content/assets and Astro optimizes the image. Absolute "/src/..." would 404.
 media_folder: "src/content/assets"
-public_folder: "/src/content/assets"
+public_folder: "../assets"
 
 collections:
   - name: "microblog"
     label: "Microblog"
     folder: "src/content/microblog"
-    media_folder: "/src/content/assets"
-    public_folder: "../assets"
     create: true
     extension: "md"
     format: "frontmatter"
@@ -22,7 +25,7 @@ collections:
     fields:
       - {label: "Publish Date", name: "createdAt", widget: "datetime", default: "{{now}}", input_timezone: "Asia/Kolkata"}
       - {label: "Tags", name: "tags", widget: "relation", collection: "data", file: "tags", search_fields: ["tags.*.id"], display_fields: ["tags.*.id"], value_field: "tags.*.id", multiple: true, required: false, options_length: 1000}
-      - {label: "Note", name: "body", widget: "markdown", media_folder: "/src/content/assets", public_folder: "../assets"}
+      - {label: "Note", name: "body", widget: "markdown"}
 
   - name: "posts"
     label: "Blog Posts"
