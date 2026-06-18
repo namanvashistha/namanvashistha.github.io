@@ -27,38 +27,37 @@ const rendered = await Promise.all(
     </Card>
   </div>
   <div class="layout-grid-right" slot="right">
-    <Card>
-      {rendered.length === 0 ? (
+    {rendered.length === 0 ? (
+      <Card>
         <p class="microblog-empty">Nothing here yet. First note is on its way.</p>
-      ) : (
-        <div class="microblog-feed">
-          {rendered.map(({ entry, Content }) => (
-            <article id={entry.id} class="microblog-entry">
-              <span class="microblog-rail" aria-hidden="true"></span>
-              <div class="microblog-content">
-                <a class="microblog-time" href={`/microblog/${entry.id}`}>
-                  <span class="microblog-node" aria-hidden="true"></span>
-                  <time datetime={entry.data.createdAt.toISOString()} data-localtime="list">
-                    {entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
-                  </time>
-                  <span class="microblog-go" aria-hidden="true">→</span>
-                </a>
-                <div class="prose microblog-body">
-                  <Content />
-                </div>
-                {entry.data.tags && entry.data.tags.length > 0 && (
-                  <ul class="tags-list inline-tags">
-                    {entry.data.tags.map((tag: any) => (
-                      <li><span class="inline-tag">{tag.id}</span></li>
-                    ))}
-                  </ul>
-                )}
+      </Card>
+    ) : (
+      <div class="microblog-feed">
+        {rendered.map(({ entry, Content }) => (
+          <article id={entry.id} class="microblog-entry">
+            <Card class="microblog-card">
+              <a class="microblog-time" href={`/microblog/${entry.id}`}>
+                <span class="microblog-node" aria-hidden="true"></span>
+                <time datetime={entry.data.createdAt.toISOString()} data-localtime="list">
+                  {entry.data.createdAt.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
+                </time>
+                <span class="microblog-go" aria-hidden="true">→</span>
+              </a>
+              <div class="prose microblog-body">
+                <Content />
               </div>
-            </article>
-          ))}
-        </div>
-      )}
-    </Card>
+              {entry.data.tags && entry.data.tags.length > 0 && (
+                <ul class="tags-list inline-tags">
+                  {entry.data.tags.map((tag: any) => (
+                    <li><span class="inline-tag">{tag.id}</span></li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+          </article>
+        ))}
+      </div>
+    )}
   </div>
 </Layout>
 <script src="../scripts/microblog-time.ts"></script>
