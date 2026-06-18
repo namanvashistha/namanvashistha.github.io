@@ -1,138 +1,66 @@
-# 👋 My Personal Portfolio
+# My corner of the internet
 
-Hey! This is my personal portfolio website built with Astro. It's where I share my blog posts, showcase my projects, and host my resume.
+This is my personal site — where I write, share what I'm building, and keep my resume. It lives at [namanvashistha.com](https://namanvashistha.com).
 
-## 🚀 What's Inside
+There's a blog for longer writing, a microblog for short notes and half-formed thoughts, a projects page for things I've built (LimeDB, chess engines, and the like), and a resume with a proper PDF preview. Everything's searchable with Ctrl+K.
 
-- **Blog** - Technical articles and thoughts about development, databases, and whatever I'm learning
-- **Projects** - Cool stuff I've built (like LimeDB, chess engines, and more)
-- **Resume** - View or download my latest resume with a slick PDF preview
-- **Search** - Fast full-text search powered by Pagefind
+## Running it locally
 
-## 🛠️ Tech Stack
-
-Built with some awesome tools:
-
-- **[Astro](https://astro.build)** - Fast, content-focused framework
-- **TypeScript** - Because types make everything better
-- **MDX** - Markdown with JSX superpowers for blog posts
-- **PDF.js** - Beautiful resume rendering
-- **Pagefind** - Lightning-fast static search
-- **Tailwind-ish** - Custom CSS with CSS variables for theming
-
-## 🎨 Features
-
-- **Blazing fast** - 100/100 Lighthouse scores
-- **Fully responsive** - Looks great on all devices
-- **Dark theme** - Easy on the eyes with a customizable color scheme
-- **Type-safe** - Full TypeScript throughout
-- **SEO optimized** - Auto-generated sitemap, proper meta tags
-- **Search** - Find anything with Ctrl+K
-- **Dynamic PDF rendering** - Resume page with sharp, responsive PDF display
-- **Comments** - Powered by giscus (can toggle off if needed)
-
-## 📦 Getting Started
+Built with [Astro](https://astro.build) and TypeScript. I use [Bun](https://bun.sh), but npm works too.
 
 ```bash
-# Install dependencies
-npm install
-
-# Start dev server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+bun install      # install dependencies
+bun run dev      # start the dev server
+bun run build    # build for production
+bun run preview  # preview the build
 ```
 
-## 🎯 Project Structure
+## How it's laid out
 
 ```
-/
-├── public/          # Static assets (fonts, images, resume.pdf)
-├── src/
-│   ├── assets/      # Optimized images
-│   ├── components/  # Reusable Astro components
-│   ├── content/     # Blog posts and projects (MDX)
-│   ├── layouts/     # Page layouts
-│   ├── pages/       # Routes (blog, projects, resume)
-│   ├── scripts/     # Client-side scripts
-│   └── styles/      # Global styles
-└── package.json
+public/          static assets — fonts, images, resume.pdf, the CMS admin
+src/
+  components/    reusable Astro components
+  content/       posts, projects, microblog notes (Markdown/MDX) + site data
+  layouts/       page shells
+  pages/         the actual routes
+  styles/        CSS (theming via variables in globals.css)
 ```
 
-## 🎨 Color Customization
+The look is a dark purple/lime theme. Colors live as CSS variables in `src/styles/globals.css` — change `--primary` and the rest follows.
 
-The site uses CSS variables for easy theming. Current color scheme is a vibrant purple/lime, but you can change it by editing the `--primary` values in `src/styles/globals.css`:
+## Writing a post
 
-```css
-:root {
-  --primary: #8c5cf5;
-  --primary-rgb: 140, 92, 245;
-  --primary-light: #a277ff;
-  --primary-lightest: #c2a8fd;
-}
-```
-
-## 🌐 Live Site
-
-Check it out at [namanvashistha.com](https://namanvashistha.com)
-
-## 📝 Adding Content
-
-### New Blog Post
-
-Create a new `.mdx` file in `src/content/posts/`:
+Drop a `.mdx` file in `src/content/posts/`:
 
 ```mdx
 ---
-title: "Your Post Title"
-description: "Brief description"
+title: "Your post title"
 createdAt: 2026-02-07
-tags:
-  - tag1
-  - tag2
+tags: [databases, learning]
 ---
 
-Your content here...
+Your words here.
 ```
 
-### New Project
+Microblog notes are even simpler — a `.md` file in `src/content/microblog/` with just a date and the note. No title needed.
 
-Create a new `.mdx` file in `src/content/projects/`:
+Or skip the files entirely and use the CMS at `/admin` (powered by [Sveltia](https://github.com/sveltia/sveltia-cms)), which writes everything back to the repo for you.
 
-```mdx
----
-title: "Project Name"
-description: "What it does"
-date: 2026-02-07
----
+## Deploying my projects
 
-Project details...
-```
-
-## 🐳 Zero-Config Docker Deployment
-
-This repository hosts a zero-config deployment script that sets up a Docker environment, creates a shared network, and pulls & runs multiple personal projects (`chess`, `foodly`, `hyperbole`, `limedb`) behind Docker automatically.
-
-To run the deployment script on a fresh server, you can pipe it directly to bash:
+This repo also hosts a small zero-config script that spins up my side projects (`chess`, `foodly`, `hyperbole`, `limedb`) on a fresh server with Docker:
 
 ```bash
 curl -sSL https://namanvashistha.com/deploy.sh | sudo bash
 ```
 
-Or you can set it up via cron for daily deployments (run `sudo crontab -e`):
+Run it on a schedule with cron (`sudo crontab -e`) if you want daily redeploys:
 
 ```cron
 0 2 * * * curl -sSL https://namanvashistha.com/deploy.sh | bash
 ```
 
-## 🤝 Built With
+## Credits
 
-This site uses the [Spectre](https://github.com/louisescher/spectre) theme as a foundation, customized and enhanced with my own features and styling.
-
-## 📄 License
-
-Feel free to fork and use this as inspiration for your own portfolio!
+Built on the [Spectre](https://github.com/louisescher/spectre) theme, then customized and extended. Fork it and make it yours if it's useful.
