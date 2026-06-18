@@ -22,9 +22,12 @@ const path = Astro.url.pathname;
     <li>
       <a href="/resume" class:list={{ active: path.startsWith('/resume') }}>Resume</a>
     </li>
-    <li class="nav-separator" aria-hidden="true">/</li>
-    <li>
-      <input id="search" type="text" placeholder="Search" />
+    <li class="search-item">
+      <div class="search-wrapper">
+        <Icon type="lucide" name="search" width={16} height={16} class="search-icon" />
+        <input id="search" type="text" placeholder="Search" />
+        <kbd class="search-kbd" aria-hidden="true">⌘K</kbd>
+      </div>
       <div id="search-results"></div>
     </li>
   </ul>
@@ -247,23 +250,55 @@ const path = Astro.url.pathname;
     color: var(--text);
   }
 
-  #search {
+  .search-item {
+    margin-left: .9rem;
+  }
+
+  .search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
     background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    color: var(--text);
+    padding: 0 .55rem;
+    transition: border-color .15s var(--ease-out-expo), box-shadow .15s var(--ease-out-expo);
+  }
+
+  .search-wrapper:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px oklch(0.73 var(--accent-c) var(--hue) / 0.18);
+  }
+
+  .search-icon {
+    color: var(--text-subtle);
+    flex: none;
+  }
+
+  #search {
+    background: none;
+    border: none;
     outline: none;
-    padding: .35rem .7rem;
-    width: 160px;
-    transition: border-color .15s ease;
+    color: var(--text);
+    padding: .4rem 0;
+    width: 120px;
+    font: inherit;
   }
 
   #search::placeholder {
     color: var(--text-subtle);
   }
 
-  #search:focus {
-    border-color: var(--primary);
+  .search-kbd {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    line-height: 1.5;
+    color: var(--text-subtle);
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0 .3rem;
   }
 
   #search-results {
@@ -383,10 +418,23 @@ const path = Astro.url.pathname;
       top: 0;
     }
 
+    .search-item {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    .search-wrapper {
+      width: 100%;
+      margin: .5rem 0;
+    }
+
     #search {
       width: 100%;
-      max-width: none;
-      padding: .75rem 1rem;
+      padding: .55rem 0;
+    }
+
+    .search-kbd {
+      display: none;
     }
 
     #search-results {
