@@ -2,47 +2,38 @@
   "socials": [
     {
       "id": 1,
+      "text": "GitHub",
+      "link": "https://github.com/namanvashistha",
       "icon": {
         "type": "lucide",
         "name": "github"
-      },
-      "text": "GitHub",
-      "link": "https://github.com/namanvashistha"
+      }
     },
     {
       "id": 2,
+      "text": "LinkedIn",
+      "link": "https://linkedin.com/in/namanvashistha",
       "icon": {
         "type": "lucide",
         "name": "linkedin"
-      },
-      "text": "LinkedIn",
-      "link": "https://linkedin.com/in/namanvashistha"
+      }
     },
     {
       "id": 3,
+      "text": "LeetCode",
+      "link": "https://leetcode.com/namanvashistha15",
       "icon": {
         "type": "lucide",
         "name": "code-2"
-      },
-      "text": "LeetCode",
-      "link": "https://leetcode.com/namanvashistha15"
+      }
     },
     {
       "id": 5,
+      "text": "Dev.to",
+      "link": "https://dev.to/namanvashistha",
       "icon": {
         "type": "lucide",
         "name": "book-open"
-      },
-      "text": "Dev.to",
-      "link": "https://dev.to/namanvashistha"
-    },
-    {
-      "id": 6,
-      "text": "X",
-      "link": "https://x.com/naman_vash9166",
-      "icon": {
-        "type": "lucide",
-        "name": "twitter"
       }
     },
     {
@@ -50,8 +41,8 @@
       "text": "Substack",
       "link": "https://namanvashistha.substack.com/",
       "icon": {
-        "name": "bookmark-minus",
-        "type": "lucide"
+        "type": "lucide",
+        "name": "bookmark-minus"
       }
     }
   ]
