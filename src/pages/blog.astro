@@ -39,7 +39,7 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
   <div class="layout-grid-right" slot="right">
 		<Card>
 			<div class="header-container">
-				<Icon type="lucide" name="rss" width={24} height={24} class='glow-icon' />
+				<Icon type="lucide" name="newspaper" width={24} height={24} class='glow-icon' />
 				<h2>Latest Posts</h2>
 			</div>
 			<div class="content-container">
@@ -55,7 +55,7 @@ const tags = posts.flatMap((post) => post.data.tags.map((tag) => tag.id));
 						<div class="post-text-content">
 							<div class="post-header">
 								<h3>{post.data.title}</h3>
-								<span class="post-date">{post.data.createdAt.toLocaleDateString('en-GB')}</span>
+								<span class="post-date">{post.data.createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
 							</div>
 							{post.data.tags && post.data.tags.length > 0 && (
 								<ul class="tags-list inline-tags">
