@@ -10,6 +10,7 @@ REPOS=(
     "foodly|https://github.com/namanvashistha/foodly.git"
     "hyperbole|https://github.com/namanvashistha/hyperbole.git"
     "limedb|https://github.com/namanvashistha/limedb.git"
+    "text-to-image-bot|https://github.com/namanvashistha/text-to-image-bot.git"
 )
 ROOT_DOMAIN="namanvashistha.com"
 
