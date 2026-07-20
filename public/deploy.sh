@@ -11,6 +11,7 @@ REPOS=(
     "hyperbole|https://github.com/namanvashistha/hyperbole.git"
     "limedb|https://github.com/namanvashistha/limedb.git"
     "text-to-image-bot|https://github.com/namanvashistha/text-to-image-bot.git"
+    "homeassistant|https://github.com/namanvashistha/homeassistant.git"
 )
 ROOT_DOMAIN="namanvashistha.com"
 
