@@ -9,7 +9,8 @@ section: homelab
 Fork at `~/personal/ESP32-Cheap-Yellow-Display`. Own sketches live separately in
 `~/personal/experiments/cyd/`:
 
-- `Leetcode/` — pulls stats to the display
+- `Leetcode/` — daily question on the display, see
+  [CYD LeetCode daily](/docs/homelab/cyd-leetcode/)
 - `TouchTest/` — touch calibration, start here when the panel misbehaves
 
 ## ONVIF camera
