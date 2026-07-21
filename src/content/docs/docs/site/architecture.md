@@ -26,6 +26,17 @@ hand-written `jsonListLoader` that reads a single key out of a file.
 - `tags`, `socials`, `workExperience`, `quickInfo` — JSON, one key each
 - `tags` is referenced by the others via `reference('tags')`
 
+## Why Starlight for /docs
+
+A hand-rolled content collection reusing `Layout.astro` would have been ~4 files
+and looked like the rest of the site. Starlight cost an Astro 6 → 7 upgrade, and
+`/docs` looks different because it brings its own theme. Bought: a real docs
+sidebar generated from folders, with no layout code to maintain.
+
+Two things it broke on the way in — Expressive Code can't also be its own
+integration (config moved inside `starlight({…})`), and `disable404Route` is
+required or Starlight's 404 replaces ours.
+
 ## Gotchas
 
 - `public/_headers` sets `X-Robots-Tag: noindex` on `/*`. That's Cloudflare/Netlify

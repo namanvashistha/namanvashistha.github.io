@@ -18,6 +18,15 @@ themselves with labels in their own compose file — no central Caddyfile.
    `caddy: http://name.namanvashistha.com` + `caddy.reverse_proxy: "{{upstreams PORT}}"`
 3. Re-run `deploy.sh`
 
+## Why labels instead of a Caddyfile
+
+Routing lives in each service's own compose file, not in a central config. A repo
+carries its own hostname and port, so adding a service touches one line here and
+nothing else — and there's no central file to drift out of sync with reality.
+
+The cost: routing is only discoverable by reading every compose file, which is
+why [what runs where](/docs/infra/domains/) exists as a written map.
+
 ## Two TLS modes
 
 Auto-detected by comparing the public IP to the first repo's DNS record.

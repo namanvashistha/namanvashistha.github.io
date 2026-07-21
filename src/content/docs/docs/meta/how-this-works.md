@@ -66,12 +66,17 @@ Only `title` is required.
 search, same as blog posts. Write accordingly: no credentials, no internal
 hostnames paired with known weaknesses, nothing that would be a disclosure.
 
-They started out unlisted; see [0004](/docs/decisions/0004-notes-are-public/)
-for why that changed.
+They started out unlisted — `noindex`, out of the sitemap, out of the search
+index. That was right while the section was empty, and wrong once it wasn't:
+⌘K returned nothing from `/docs`, so notes couldn't be retrieved even by their
+author. Being findable is the whole point.
 
-## Decisions
+## Recording why
 
-Anything that answers "why is it like this" goes in `decisions/` as a numbered
-record — context, decision, consequences. Write it when the decision is made,
-while the reasoning is still fresh, and don't rewrite history afterwards. A
-superseded decision gets a **new** record that says so.
+"Why is it like this" goes **inline, in the note about the thing** — a short
+`## Why X` section, not a separate decisions section. Context, what was chosen,
+what it cost. Write it while the reasoning is fresh; if it's later reversed, say
+so in the same place rather than leaving the old answer standing.
+
+A decision only earns a paragraph if it's non-obvious *and* still binding.
+Choosing a library nobody will revisit isn't worth writing down.
