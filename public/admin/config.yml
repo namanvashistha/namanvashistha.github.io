@@ -31,9 +31,13 @@ collections:
 
   # Starlight-rendered notes at /docs. The folder is nested one level deeper than
   # Starlight's default (src/content/docs) so the routes land under /docs instead
-  # of the site root. Subfolders become sidebar sections, so the "Section / path"
-  # control below is what puts a note in a section.
-  # Fields map 1:1 onto Starlight's frontmatter schema — it rejects unknown keys.
+  # of the site root. Each subfolder becomes a sidebar section.
+  #
+  # Sveltia does not support Decap's `nested` collections yet (planned for 2.0),
+  # so the directory tree is driven by the `path` template below instead: the
+  # "Section" field decides which subfolder the file is written to. `section`
+  # ends up in the frontmatter, which is harmless — Starlight ignores keys its
+  # schema doesn't declare.
   - name: "docs"
     label: "Second Brain"
     folder: "src/content/docs/docs"
@@ -41,9 +45,10 @@ collections:
     extension: "md"
     format: "frontmatter"
     slug: "{{slug}}"
-    meta: {path: {widget: "string", label: "Section / path", index_file: "index"}}
+    path: "{{section}}/{{slug}}"
     fields:
       - {label: "Title", name: "title", widget: "string"}
+      - {label: "Section", name: "section", widget: "string", default: "notes", hint: "Folder this note lives in — becomes a sidebar section. Reuse an existing name or type a new one."}
       - {label: "Description", name: "description", widget: "text", required: false}
       - label: "Sidebar"
         name: "sidebar"
