@@ -1,6 +1,7 @@
 ---
 title: How this works
 description: How the second brain is wired up.
+section: meta
 sidebar:
   order: 1
 ---
@@ -19,8 +20,24 @@ leaves the rest of the site alone.
 
 ## Adding a section
 
-Create a folder. The sidebar is generated from the directory tree, so a new
-folder is a new section — no config change.
+The sidebar is generated from the directory tree, so a new folder is a new
+section — no config change either way.
+
+- **From an editor** — make a folder, put notes in it.
+- **From the CMS** — type a name into the **Section** field. The note is written
+  to that folder. Reuse an existing name to file it alongside; type a new one to
+  start a section.
+
+The CMS writes `section:` into the frontmatter, which Starlight ignores — it
+drops frontmatter keys its schema doesn't declare. Notes created in an editor
+don't need the field, since their folder already says where they live. Adding it
+anyway keeps a note in place if it's later edited from the CMS.
+
+:::caution
+Don't edit this page's parent — the `/docs` landing page — from the CMS. It sits
+at the collection root with no section, so saving it would file it into a folder
+and `/docs/` would stop resolving. Edit it in an editor instead.
+:::
 
 ## Frontmatter
 
