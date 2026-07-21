@@ -18,13 +18,17 @@ const path = Astro.url.pathname;
     <!-- <li>
       <a href="/microblog" class:list={{ active: path.startsWith('/microblog') }}>Microblog</a>
     </li> -->
-    <li class="nav-separator" aria-hidden="true">/</li>
+    <!-- <li class="nav-separator" aria-hidden="true">/</li> -->
     <li>
       <a href="/projects" class:list={{ active: path.startsWith('/projects') }}>Projects</a>
     </li>
     <li class="nav-separator" aria-hidden="true">/</li>
     <li>
       <a href="/resume" class:list={{ active: path.startsWith('/resume') }}>Resume</a>
+    </li>
+    <li class="nav-separator" aria-hidden="true">/</li>
+    <li>
+      <a href="/docs" class:list={{ active: path.startsWith('/docs') }}>Notes</a>
     </li>
     <li class="search-item">
       <div class="search-wrapper">

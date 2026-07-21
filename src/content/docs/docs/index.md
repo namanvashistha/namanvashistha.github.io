@@ -1,5 +1,5 @@
 ---
-title: Second Brain
+title: index
 description: Notes, references and things worth keeping.
 ---
 

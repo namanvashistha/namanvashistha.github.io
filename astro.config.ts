@@ -40,15 +40,13 @@ const config = defineConfig({
 		// why blog posts keep the spectreDark theme.
 		starlight({
 			title: 'Second Brain',
-			// Docs are unlisted: no nav link, out of the sitemap (see filter below),
-			// out of the Pagefind index the navbar search reads, and noindex.
+			// Docs are public and indexed. Starlight's own search UI stays off, but
+			// its pages still emit data-pagefind-body, so the site-wide Pagefind
+			// index that the navbar (⌘K) reads picks them up.
 			pagefind: false,
 			// The site already has src/pages/404.astro; Starlight's would win the
 			// route collision and replace it.
 			disable404Route: true,
-			head: [
-				{ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' } },
-			],
 			expressiveCode: {
 				themes: [spectreDark],
 			},
@@ -60,9 +58,7 @@ const config = defineConfig({
 			],
 		}),
 		mdx(),
-		sitemap({
-			filter: (page) => !page.includes('/docs'),
-		}),
+		sitemap(),
 		spectre({
 			name: 'Naman Vashistha',
 			openGraph: {

@@ -4,7 +4,7 @@ description: Jackett into Radarr.
 section: homelab
 ---
 
-Radarr at `radarr.namanvashistha.info`. Separate from the `deploy.sh` box.
+Radarr runs on its own host, separate from the `deploy.sh` box.
 
 `~/personal/experiments/jackett_to_radarr/` bulk-registers Jackett indexers into
 Radarr, which the UI makes tedious one at a time.
@@ -18,6 +18,6 @@ Run it after re-exporting `jackett_indexes.json` — it doesn't dedupe, so
 re-running adds duplicates.
 
 :::caution
-`transfer_script.py` has the Radarr API key hardcoded in the URL. Move it to an
-env var before this directory ever becomes a git repo.
+Credentials belong in env vars, not in the script. Check before this directory
+ever becomes a git repo.
 :::

@@ -8,7 +8,7 @@
 		"build": "astro build",
 		"preview": "astro preview",
 		"astro": "astro",
-		"postbuild": "pagefind --site dist --glob \"{blog,microblog,projects,resume}/**/*.{html}\"",
+		"postbuild": "pagefind --site dist",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write ."
 	},

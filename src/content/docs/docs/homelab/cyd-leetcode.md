@@ -37,6 +37,6 @@ or mirrored screen. `TouchTest/` in the same folder isolates the touch side.
   The two have diverged; `.ino` is the real one.
 
 :::caution
-The sketch has real WiFi passwords in plaintext. Keep this folder out of git, or
-move credentials into a `secrets.h` that's gitignored, before publishing it.
+Credentials live in the sketch itself. Move them into a gitignored `secrets.h`
+before this folder ever becomes a repo.
 :::

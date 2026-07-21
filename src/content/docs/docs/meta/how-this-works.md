@@ -62,6 +62,16 @@ Only `title` is required.
 
 ## Visibility
 
-These pages are unlisted: no navbar link, `noindex`, excluded from the sitemap,
-and excluded from the site search index. They are reachable by URL — treat them
-as public, just not advertised.
+**These pages are public and indexed** — in the navbar, the sitemap, and the ⌘K
+search, same as blog posts. Write accordingly: no credentials, no internal
+hostnames paired with known weaknesses, nothing that would be a disclosure.
+
+They started out unlisted; see [0004](/docs/decisions/0004-notes-are-public/)
+for why that changed.
+
+## Decisions
+
+Anything that answers "why is it like this" goes in `decisions/` as a numbered
+record — context, decision, consequences. Write it when the decision is made,
+while the reasoning is still fresh, and don't rewrite history afterwards. A
+superseded decision gets a **new** record that says so.

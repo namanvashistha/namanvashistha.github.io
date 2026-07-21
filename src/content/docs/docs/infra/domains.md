@@ -22,7 +22,7 @@ it's a Telegram long-poll bot, so no subdomain.
 
 ## Notes
 
-- `home.` is internet-facing and controls the house. Strong password + MFA;
-  Cloudflare Access or a VPN in front would be better.
+- `home.` is internet-facing, so it gets the strictest treatment: strong owner
+  password, MFA, and ideally Cloudflare Access or a VPN in front of it.
 - The apex is the only thing not on the server — pushing to `main` deploys it
   via Actions, everything else needs `deploy.sh` run on the box.
