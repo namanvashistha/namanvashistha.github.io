@@ -103,18 +103,21 @@ setup_caddy() {
     local domain_ip
     domain_ip=$(dig +short "${first_repo}.${ROOT_DOMAIN}" 2>/dev/null | tail -n1 || echo "")
 
-    local port_args=""
     local extra_args=""
     if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
         log "Direct IP match → EC2 mode: Caddy will provision Let's Encrypt."
-        port_args="-p 80:80 -p 443:443"
     else
         log "Behind Cloudflare/Tunnel → HTTP-only mode."
-        # auto_https=off makes Caddy serve plain HTTP on internal port 443.
-        # We map host:80 → container:443 so cloudflared can reach it.
-        port_args="-p 80:443"
         extra_args="--label caddy= --label caddy.auto_https=off"
     fi
+
+    # Ports are the same in both modes. Services set `caddy: http://host` labels,
+    # and an explicit http:// site address makes Caddy listen on 80 inside the
+    # container — so host:80 → container:80 is what actually carries traffic.
+    # (An earlier `port_args` var mapped host:80 → container:443 for the
+    # Cloudflare case, on the assumption that auto_https=off moves the listener
+    # to 443. It doesn't, and the var was never passed to `docker run`, which is
+    # the only reason routing kept working. Removed rather than wired in.)
 
     docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
     docker run -d \
