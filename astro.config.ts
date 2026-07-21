@@ -1,3 +1,4 @@
+import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
@@ -27,9 +28,11 @@ const config = defineConfig({
 		inlineStylesheets: 'always',
 	},
 	markdown: {
-		rehypePlugins: [
-			[rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }]
-		]
+		processor: unified({
+			rehypePlugins: [
+				[rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }]
+			]
+		})
 	},
 	integrations: [
 		expressiveCode({
