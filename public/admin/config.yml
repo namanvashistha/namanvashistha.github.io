@@ -29,6 +29,34 @@ collections:
       - {label: "Tags", name: "tags", widget: "relation", collection: "data", file: "tags", search_fields: ["tags.*.id"], display_fields: ["tags.*.id"], value_field: "tags.*.id", multiple: true, required: false, options_length: 1000}
       - {label: "Note", name: "body", widget: "markdown"}
 
+  # Starlight-rendered notes at /docs. The folder is nested one level deeper than
+  # Starlight's default (src/content/docs) so the routes land under /docs instead
+  # of the site root. Subfolders become sidebar sections, so the "Section / path"
+  # control below is what puts a note in a section.
+  # Fields map 1:1 onto Starlight's frontmatter schema — it rejects unknown keys.
+  - name: "docs"
+    label: "Second Brain"
+    folder: "src/content/docs/docs"
+    create: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    meta: {path: {widget: "string", label: "Section / path", index_file: "index"}}
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Description", name: "description", widget: "text", required: false}
+      - label: "Sidebar"
+        name: "sidebar"
+        widget: "object"
+        required: false
+        collapsed: true
+        fields:
+          - {label: "Label", name: "label", widget: "string", required: false}
+          - {label: "Order", name: "order", widget: "number", required: false, value_type: "int"}
+          - {label: "Hidden", name: "hidden", widget: "boolean", default: false, required: false}
+      - {label: "Draft", name: "draft", widget: "boolean", default: false, required: false}
+      - {label: "Body", name: "body", widget: "markdown"}
+
   - name: "posts"
     label: "Blog Posts"
     folder: "src/content/posts"
