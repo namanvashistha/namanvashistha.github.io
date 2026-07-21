@@ -32,9 +32,15 @@ The sidebar is generated from the directory tree, so a new folder is a new
 section — no config change either way.
 
 - **From an editor** — make a folder, put notes in it.
-- **From the CMS** — type a name into the **Section** field, and optionally
-  **Subsection**. The note is written to that folder. Reuse an existing name to
-  file it alongside; type a new one to start a section.
+- **From the CMS** — type a name into the **Section** field. The note is written
+  to that folder. Reuse an existing name to file it alongside; type a new one to
+  start a section.
+
+The CMS handles **one** level. Its `path` template has to match how deep the
+files actually are — a three-segment template made the collection list zero
+entries, because Sveltia matches entries against the template instead of walking
+the tree. Subsection folders are editor-only: make one in an editor, and the CMS
+will still edit notes inside it.
 
 The CMS writes `section:` into the frontmatter, which Starlight ignores — it
 drops frontmatter keys its schema doesn't declare. Notes created in an editor

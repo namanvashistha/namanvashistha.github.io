@@ -38,6 +38,12 @@ collections:
   # "Section" field decides which subfolder the file is written to. `section`
   # ends up in the frontmatter, which is harmless — Starlight ignores keys its
   # schema doesn't declare.
+  #
+  # The template must match the actual depth of the files. A three-segment
+  # "{{section}}/{{subsection}}/{{slug}}" made the collection list ZERO entries,
+  # because every note is two levels deep — Sveltia matches entries against the
+  # template rather than walking the tree. Subsection folders are therefore
+  # editor-only; the CMS handles one level.
   - name: "docs"
     label: "Second Brain"
     folder: "src/content/docs/docs"
@@ -45,11 +51,10 @@ collections:
     extension: "md"
     format: "frontmatter"
     slug: "{{slug}}"
-    path: "{{section}}/{{subsection}}/{{slug}}"
+    path: "{{section}}/{{slug}}"
     fields:
       - {label: "Title", name: "title", widget: "string"}
-      - {label: "Section", name: "section", widget: "string", default: "notes", hint: "Top-level folder — becomes a sidebar section. Reuse an existing name or type a new one."}
-      - {label: "Subsection", name: "subsection", widget: "string", required: false, hint: "Optional second level, e.g. a project name under 'projects'. Leave blank for most notes. Two levels is the limit."}
+      - {label: "Section", name: "section", widget: "string", default: "notes", hint: "Folder this note lives in — becomes a sidebar section. Reuse an existing name or type a new one."}
       - {label: "Description", name: "description", widget: "text", required: false}
       - label: "Sidebar"
         name: "sidebar"
