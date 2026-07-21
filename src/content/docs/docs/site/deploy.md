@@ -32,7 +32,7 @@ months out of date and made `npm i` fail to resolve.
 
 ```bash
 bun install
-bun run dev      # see env/mac-setup if this fails on rolldown
+bun run dev      # see dev/mac-setup if this fails on rolldown
 bun run build    # runs pagefind in postbuild
 bun run lint     # currently fails repo-wide on pre-existing formatting drift
 ```

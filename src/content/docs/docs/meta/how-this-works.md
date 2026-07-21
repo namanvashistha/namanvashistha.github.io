@@ -10,9 +10,14 @@ sidebar:
 
 ```
 src/content/docs/docs/
-  index.md              → /docs/
-  meta/how-this-works.md → /docs/meta/how-this-works/
+  index.md                        → /docs/
+  meta/how-this-works.md          → /docs/meta/how-this-works/
+  projects/limedb/overview.md     → /docs/projects/limedb/overview/
 ```
+
+**Two levels, no more.** Section, optionally a subsection, then the note.
+Starlight will happily nest deeper, but deeper filing is filing for its own
+sake — and the CMS only has fields for two.
 
 The extra `docs/` nesting is deliberate. Starlight serves `src/content/docs/` at
 the site root, so nesting one level deeper moves everything under `/docs` and
@@ -24,9 +29,9 @@ The sidebar is generated from the directory tree, so a new folder is a new
 section — no config change either way.
 
 - **From an editor** — make a folder, put notes in it.
-- **From the CMS** — type a name into the **Section** field. The note is written
-  to that folder. Reuse an existing name to file it alongside; type a new one to
-  start a section.
+- **From the CMS** — type a name into the **Section** field, and optionally
+  **Subsection**. The note is written to that folder. Reuse an existing name to
+  file it alongside; type a new one to start a section.
 
 The CMS writes `section:` into the frontmatter, which Starlight ignores — it
 drops frontmatter keys its schema doesn't declare. Notes created in an editor

@@ -45,10 +45,11 @@ collections:
     extension: "md"
     format: "frontmatter"
     slug: "{{slug}}"
-    path: "{{section}}/{{slug}}"
+    path: "{{section}}/{{subsection}}/{{slug}}"
     fields:
       - {label: "Title", name: "title", widget: "string"}
-      - {label: "Section", name: "section", widget: "string", default: "notes", hint: "Folder this note lives in — becomes a sidebar section. Reuse an existing name or type a new one."}
+      - {label: "Section", name: "section", widget: "string", default: "notes", hint: "Top-level folder — becomes a sidebar section. Reuse an existing name or type a new one."}
+      - {label: "Subsection", name: "subsection", widget: "string", required: false, hint: "Optional second level, e.g. a project name under 'projects'. Leave blank for most notes. Two levels is the limit."}
       - {label: "Description", name: "description", widget: "text", required: false}
       - label: "Sidebar"
         name: "sidebar"

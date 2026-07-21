@@ -1,7 +1,7 @@
 ---
 title: Mac setup gotchas
 description: Rosetta Node, and why builds fail on it.
-section: env
+section: dev
 ---
 
 ## Two Homebrews
