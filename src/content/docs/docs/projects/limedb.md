@@ -2,7 +2,6 @@
 title: LimeDB
 description: Distributed KV store in Go — where things live.
 section: projects
-subsection: limedb
 ---
 
 Distributed key-value store in Go. Every node accepts reads and writes; requests

@@ -2,8 +2,6 @@
 title: How this works
 description: How the second brain is wired up.
 section: meta
-sidebar:
-  order: 1
 ---
 
 ## Where notes live
@@ -12,12 +10,17 @@ sidebar:
 src/content/docs/docs/
   index.md                        → /docs/
   meta/how-this-works.md          → /docs/meta/how-this-works/
-  projects/limedb/overview.md     → /docs/projects/limedb/overview/
+  projects/limedb.md              → /docs/projects/limedb/
+  projects/limedb/internals.md    → /docs/projects/limedb/internals/
 ```
 
 **Two levels, no more.** Section, optionally a subsection, then the note.
-Starlight will happily nest deeper, but deeper filing is filing for its own
-sake — and the CMS only has fields for two.
+Starlight will nest deeper, but deeper filing is filing for its own sake — and
+the CMS only has fields for two.
+
+Don't make a subsection folder for a single note. A group wrapping one item
+reads as `projects › limedb › LimeDB`, which is noise. Keep it flat until a
+project earns a second note, then promote it to a folder.
 
 The extra `docs/` nesting is deliberate. Starlight serves `src/content/docs/` at
 the site root, so nesting one level deeper moves everything under `/docs` and

@@ -2,7 +2,6 @@
 title: Chess
 description: Bitboard engine plus a real-time web app.
 section: projects
-subsection: chess
 ---
 
 Two things in one repo: a bitboard chess engine, and a real-time two-player web

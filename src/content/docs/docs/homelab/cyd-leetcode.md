@@ -2,8 +2,6 @@
 title: CYD LeetCode daily
 description: Daily question on the Cheap Yellow Display.
 section: homelab
-sidebar:
-  order: 2
 ---
 
 `~/personal/experiments/cyd/Leetcode/Leetcode.ino`. Pulls LeetCode's daily
