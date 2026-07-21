@@ -11,7 +11,7 @@ Five separate repos, one workflow. This note is the map; each has its own README
 | `dsa/` | NeetCode 150 as markdown — 18 topic folders, one file per problem, `README.md` is the master index |
 | `stride/` | Chrome extension, replaces new tab with a prep dashboard (category → subcategory → links) |
 | `lumen/` | Chrome MV3 extension, exports LinkedIn connections to Telegram |
-| `jobs-scrape-to-notion/` | Scrapes listings into Notion |
+| `jobs-scrape-to-notion/` | Scrapes LinkedIn listings into a Notion database — [setup walkthrough](/blog/linkedin-to-notion-scraper/) |
 | `resume/` | Standalone LaTeX resume repo — separate from the one in the site |
 
 ## Two resume pipelines

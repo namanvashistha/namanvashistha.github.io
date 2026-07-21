@@ -13,6 +13,12 @@ Fork at `~/personal/ESP32-Cheap-Yellow-Display`. Own sketches live separately in
   [CYD LeetCode daily](/docs/homelab/cyd-leetcode/)
 - `TouchTest/` — touch calibration, start here when the panel misbehaves
 
+## ESP32 accountability tracker
+
+Separate device from the CYD. Three signals on one display: a large number for
+total active days (long-term accountability), colour for today's status, and a
+separate weekly indicator.
+
 ## ONVIF camera
 
 `~/personal/experiments/camera/` — Python. ONVIF for discovery/control, WebRTC
