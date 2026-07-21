@@ -1,6 +1,8 @@
 import { defineCollection, reference, z } from 'astro:content';
 import type { icons as lucideIcons } from '@iconify-json/lucide/icons.json';
 import type { icons as simpleIcons } from '@iconify-json/simple-icons/icons.json';
+import { docsLoader } from '@astrojs/starlight/loaders';
+import { docsSchema } from '@astrojs/starlight/schema';
 import { glob } from 'astro/loaders';
 import { promises as fs } from 'node:fs';
 
@@ -132,4 +134,11 @@ const microblog = defineCollection({
 	}),
 });
 
-export const collections = { tags, posts, projects, other, about, quickInfo, socials, workExperience, microblog };
+// Starlight owns this collection. Files live in src/content/docs/docs so the
+// generated routes sit under /docs rather than at the site root.
+const docs = defineCollection({
+	loader: docsLoader(),
+	schema: docsSchema(),
+});
+
+export const collections = { tags, posts, projects, other, about, quickInfo, socials, workExperience, microblog, docs };
