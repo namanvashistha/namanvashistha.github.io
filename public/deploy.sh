@@ -6,9 +6,10 @@ set -u
 # ==============================================================================
 # Format: "repo_name|git_url"
 #
-# ORDER MATTERS: dash is first because its compose creates the `caddy` network
-# and the proxy itself. Every other repo attaches to that network with
-# `external: true` and will fail to come up if it doesn't exist yet.
+# dash is first because it now carries the caddy proxy container, and getting
+# the proxy up before the services it routes to is the sane order on a fresh
+# box. Not a hard dependency — the `caddy` network is created in main() before
+# any repo is touched, so the others would come up fine regardless.
 REPOS=(
     "dash|https://github.com/namanvashistha/dash.git"
     "chess|https://github.com/namanvashistha/chess.git"
@@ -103,7 +104,17 @@ main() {
     acquire_lock
     install_docker
 
-    # No network/volume setup here any more — dash's compose creates both.
+    # The caddy network and volume stay here rather than in dash's compose.
+    # Compose won't adopt resources it didn't create — pointing dash's compose
+    # at them with `name:` fails with "has incorrect label
+    # com.docker.compose.network" — and making them compose-owned would mean
+    # tearing down every container on the box once. Both commands are
+    # idempotent, so this is a no-op after the first run.
+    if ! docker network ls | grep -qw "caddy"; then
+        docker network create caddy > /dev/null
+    fi
+    docker volume create caddy_data > /dev/null 2>&1 || true
+
     local failed_repos=0
     for repo in "${REPOS[@]}"; do
         if ! deploy_repo "$repo"; then
