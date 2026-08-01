@@ -5,15 +5,18 @@ set -u
 # CONFIGURATION
 # ==============================================================================
 # Format: "repo_name|git_url"
+#
+# ORDER MATTERS: dash is first because its compose creates the `caddy` network
+# and the proxy itself. Every other repo attaches to that network with
+# `external: true` and will fail to come up if it doesn't exist yet.
 REPOS=(
+    "dash|https://github.com/namanvashistha/dash.git"
     "chess|https://github.com/namanvashistha/chess.git"
     "foodly|https://github.com/namanvashistha/foodly.git"
     "hyperbole|https://github.com/namanvashistha/hyperbole.git"
     "limedb|https://github.com/namanvashistha/limedb.git"
     "text-to-image-bot|https://github.com/namanvashistha/text-to-image-bot.git"
-    "dash|https://github.com/namanvashistha/dash.git"
 )
-ROOT_DOMAIN="namanvashistha.com"
 
 # Determine the appropriate home directory, even if run with sudo
 if [ -n "${SUDO_USER:-}" ]; then
@@ -25,7 +28,6 @@ fi
 BASE_DIR="$TARGET_HOME/namanvashistha"
 LOG_FILE="$BASE_DIR/deploy.log"
 LOCK_FILE="$BASE_DIR/.deploy.lock"
-CADDY_NETWORK="caddy"
 
 # ==============================================================================
 # LOGGING AND LOCKING
@@ -90,48 +92,6 @@ deploy_repo() {
     log "Success: $repo_name"
 }
 
-# ==============================================================================
-# CADDY (via caddy-docker-proxy)
-# ==============================================================================
-setup_caddy() {
-    log "Setting up Caddy Docker Proxy..."
-
-    # Auto-detect TLS mode based on IP
-    local public_ip
-    public_ip=$(curl -s --max-time 3 ifconfig.me || echo "unknown")
-    local first_repo="${REPOS[0]%%|*}"
-    local domain_ip
-    domain_ip=$(dig +short "${first_repo}.${ROOT_DOMAIN}" 2>/dev/null | tail -n1 || echo "")
-
-    local extra_args=""
-    if [ "$public_ip" != "unknown" ] && [ "$public_ip" = "$domain_ip" ]; then
-        log "Direct IP match → EC2 mode: Caddy will provision Let's Encrypt."
-    else
-        log "Behind Cloudflare/Tunnel → HTTP-only mode."
-        extra_args="--label caddy= --label caddy.auto_https=off"
-    fi
-
-    # Ports are the same in both modes. Services set `caddy: http://host` labels,
-    # and an explicit http:// site address makes Caddy listen on 80 inside the
-    # container — so host:80 → container:80 is what actually carries traffic.
-    # (An earlier `port_args` var mapped host:80 → container:443 for the
-    # Cloudflare case, on the assumption that auto_https=off moves the listener
-    # to 443. It doesn't, and the var was never passed to `docker run`, which is
-    # the only reason routing kept working. Removed rather than wired in.)
-
-    docker rm -f caddy_proxy >> "$LOG_FILE" 2>&1 || true
-    docker run -d \
-        --name caddy_proxy \
-        --network "$CADDY_NETWORK" \
-        --restart unless-stopped \
-        -p 80:80 -p 443:443 \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        -v caddy_data:/data \
-        $extra_args \
-        lucaslorentz/caddy-docker-proxy:ci-alpine >> "$LOG_FILE" 2>&1 || { error "Failed to start Caddy."; exit 1; }
-
-    log "Caddy Docker Proxy is running."
-}
 
 # ==============================================================================
 # MAIN
@@ -143,19 +103,13 @@ main() {
     acquire_lock
     install_docker
 
-    # Create shared caddy network (all services join this)
-    if ! docker network ls | grep -qw "$CADDY_NETWORK"; then
-        docker network create "$CADDY_NETWORK" > /dev/null
-    fi
-
+    # No network/volume setup here any more — dash's compose creates both.
     local failed_repos=0
     for repo in "${REPOS[@]}"; do
         if ! deploy_repo "$repo"; then
             failed_repos=$((failed_repos + 1))
         fi
     done
-
-    setup_caddy
 
     log "--------------------------------------------------"
     if [ "$failed_repos" -gt 0 ]; then
