@@ -10,12 +10,18 @@ set -u
 # the proxy up before the services it routes to is the sane order on a fresh
 # box. Not a hard dependency — the `caddy` network is created in main() before
 # any repo is touched, so the others would come up fine regardless.
+#
+# chess, foodly, hyperbole and limedb used to be here. They are now deployed by
+# ConOps (a container in dash), which watches their GitHub repos and redeploys on
+# new commits. Do NOT add them back while they are registered there — both would
+# race to run `compose up` on the same project.
+#
+# These two stay because ConOps cannot deploy them: it clones into its own
+# runtime directory, and both depend on files that are not in git. dash needs a
+# gitignored .env (CF_TUNNEL_TOKEN, BESZEL_*, AUTOKUMA_*) plus its ./beszel and
+# ./ecards bind mounts; text-to-image-bot declares `env_file: .env` outright.
 REPOS=(
     "dash|https://github.com/namanvashistha/dash.git"
-    "chess|https://github.com/namanvashistha/chess.git"
-    "foodly|https://github.com/namanvashistha/foodly.git"
-    "hyperbole|https://github.com/namanvashistha/hyperbole.git"
-    "limedb|https://github.com/namanvashistha/limedb.git"
     "text-to-image-bot|https://github.com/namanvashistha/text-to-image-bot.git"
 )
 
