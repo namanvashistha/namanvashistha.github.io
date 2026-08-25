@@ -1,0 +1,29 @@
+name: Publish dev.to drafts
+
+on:
+    schedule:
+        - cron: "0 6 * * *"
+    workflow_dispatch:
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Publish every draft
+              env:
+                  KEY: ${{ secrets.DEVTO_API_KEY }}
+              # dev.to re-reads `published` from the article's own frontmatter on every
+              # save (forem app/models/article.rb, evaluate_front_matter), so the API
+              # field alone gets overwritten. Flip it in the body too. The RSS importer
+              # always writes `published: false` into line 3, so first-match is enough.
+              run: |
+                  curl -sSf -H "api-key: $KEY" 'https://dev.to/api/articles/me/unpublished?per_page=1000' \
+                    | jq -c '.[] | {id, article: {published: true, body_markdown: (.body_markdown | sub("published: false"; "published: true"))}}' \
+                    | while read -r row; do
+                        id=$(jq -r .id <<<"$row")
+                        jq -c '{article}' <<<"$row" \
+                          | curl -sSf -X PUT -H "api-key: $KEY" -H 'content-type: application/json' \
+                              -d @- "https://dev.to/api/articles/$id" > /dev/null
+                        echo "published $id"
+                        sleep 3
+                      done
