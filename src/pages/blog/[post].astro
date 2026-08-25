@@ -42,6 +42,10 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { Content, headings } = await render(post);
+
+// Posts with no artwork of their own point at assets/default.png. It still earns
+// its keep as an OG image, but above the title it is just noise, so drop it here.
+const heroImage = /\/default\.[^/]+$/.test(post.data.image?.src ?? '') ? undefined : post.data.image;
 ---
 
 <Layout
@@ -72,10 +76,10 @@ const { Content, headings } = await render(post);
   <article slot="right" data-pagefind-body>
     <Card>
       <div class="article-header" id="_top" data-pagefind-ignore>
-        {post.data.image && <ImageGlow
+        {heroImage && <ImageGlow
           quality={100}
           class="article-image"
-          src={post.data.image}
+          src={heroImage}
           alt={post.data.title}
           fetchpriority="high"
           loading="eager"
